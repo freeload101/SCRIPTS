@@ -1,0 +1,72 @@
+
+# This script pulls new tickets and sorts them to the last status other then new
+# CURL OPS   -x puts everything though BURP -k ignores cert -i shows header info -v is verbos -s is silent  "-x localhost:8080 -kiv" for debug
+# normal
+#export VARCURLOPS=" -k -s "
+# debug / burp
+# export VARCURLOPS=" -x localhost:8080 -kiv "
+
+export VARCURLOPS="-skL"
+
+# basic filters to put on all output ?
+export VARFILTERS='(label|\buser_name\b|\bsha256\bparent_sha256|assigned_to_uid|\bcmdline\b|external_ip|\bfilename\b|first_seen|\bhostname\b|\bioc_description\b|\blast_behavio\b|\blast_seen\b|\bparent_cmdline\b)'
+
+############################## DONT EDIT BELOW THIS LINE ... DONT EVEN LOOK AT THIS HORRID CODE ################
+
+
+#################################### INIT STUFF ################################################################
+
+taskkill /F /IM curl.exe 2> /dev/null
+rm -Rf tmp* 
+FS=$'\n'
+IFS=$'\n'
+
+
+
+############################## functions #######################################################################
+function BASE_CURL_GET(){ 
+curl ${VARCURLOPS}    "https://api.crowdstrike.com$1" -H  "accept: application/json" -H  "Content-Type: application/json" -H "authorization: bearer ${TOKEN}" "$2"
+}
+
+# we get a bearer token every time becasue well... they only last 30 min and im not about to do some time math for a token ...
+export TOKEN=`curl -s -X POST "https://api.crowdstrike.com/oauth2/token" -H "accept: application/json" -H "Content-Type: application/x-www-form-urlencoded" -d "client_id=5d008#############################83&client_secret=9#############################8fB" | grep access_token| sed 's/.*token\": \"//g' | sed 's/\".*//g'`
+
+# base curl function just accepts URL
+function BASE_CURL_POST(){ 
+curl ${VARCURLOPS} -X POST  "https://api.crowdstrike.com$1" -H  "accept: application/json" -H  "Content-Type: application/json" -H "authorization: bearer ${TOKEN}" "$2"
+}
+
+######################################################## MAIN ##################################################
+
+# get first 500 alerts
+# !!!!!!!!!!!! change this to all later ... !!!!!!!!!!!!!!!
+BASE_CURL_GET "/detects/queries/detects/v1?filter=&limit=500&offset=0&q=&sort=last_behavior|desc" | awk '{gsub("ldt:","\nltd:"); print}' | grep ltd  | sed -r 's/(ltd:\b)(.*:.*[0-9]\b)(\b\".*)/\2/g' > tmp 
+
+
+# split up the output into 500 ID per 
+if [ `wc -l tmp | awk '{print $1}'` -ge "100" ]
+then
+split tmp -l 100 tmp_
+cp tmp tmp_1
+fi
+
+
+
+# pull all at 500 ldt's per batch
+COUNTER=1
+for i in `ls tmp_*`; do
+        BASE_CURL_POST "/detects/entities/summaries/GET/v1" "-d `cat ${i} | sed -e 's/^/"ldt:/g' -e 's/$/",/g' | tr -d '\n' | sed -e 's/\",$/"]}/g' -e 's/^\"ldt:/{\"ids\":[\"ldt:/g'|sort -u `" > tmp_DETAILS_${i} &
+done 
+
+sleep .5
+
+while [[ `ps -a | grep curl |wc -l` != '0' ]]
+do
+echo Debug:	Waiting for downloads to complete  `ps -a | grep curl |wc -l`  current
+sleep .5
+done
+
+
+cat tmp_DETAILS_tmp_*| awk '{gsub("{","\n"); print}' |   awk '{gsub(",\"","\n\""); print}' | grep -iaE "(\bcmdline\b|ioc_source|\bstatus\b|hostname)"| sed 's/\"cmdline\".*\(..................................\)/\"cmdline\":\"\1/' | sed -r 's/\"hostname\":\"(.*)\"/Host,\1,/g' |sed -r 's/^\".*\":\"(.*)\"/\1,/g' |  tr -d '\n' | awk '{gsub("Host,","\n"); print}' > tmp_DETAILS_ALL
+
+cat tmp_DETAILS_ALL | sort  | grep "new,$" -B 1
