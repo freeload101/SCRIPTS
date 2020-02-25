@@ -244,6 +244,3 @@ echo [+] Exiting in 20 seconds...
 timeout /t 20
 
 exit
-
-
-
