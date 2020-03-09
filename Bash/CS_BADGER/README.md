@@ -44,7 +44,7 @@ bash CS_BADGER.py -k
 
 * Add cookie valid checks
 
-* Test/Add Support ?/Document single quote support within single quote example:
+* Test/Add Support ?/Document single quote and doubble quote support within single quote example:
 
 bash CS_BADGER.py -q 'search  
 
