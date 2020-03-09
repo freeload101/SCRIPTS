@@ -41,6 +41,7 @@ bash CS_BADGER.py -k
 ![enter image description here](https://github.com/freeload101/SCRIPTS/blob/master/Bash/CS_BADGER/SCREEN_SHOTS/SC_BADGER_KILLALL.jpg?raw=true)
 
 ## TODO:
+* detect 'maximum searches' and auto kill ?
 
 * Add cookie valid checks
 
