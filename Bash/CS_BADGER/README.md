@@ -1,4 +1,4 @@
-# CS_BADGER.py
+# CS_BADGER.sh
 
 This script will automate Splunk searches in CrowdStrike! So you can take a search and feed the CSV or JSON output to automation LIKE A NORMAL PERSON!
 
@@ -36,7 +36,7 @@ When you get error message like:
 The maximum number of concurrent historical searches on this instance has been reached. concurrency_limit=10"
 
 
-python CS_BADGER.py -k
+bash CS_BADGER.py -k
 
 ![enter image description here](https://github.com/freeload101/SCRIPTS/blob/master/Bash/CS_BADGER/SCREEN_SHOTS/SC_BADGER_KILLALL.jpg?raw=true)
 
@@ -46,7 +46,7 @@ python CS_BADGER.py -k
 
 * Test/Add Support ?/Document single quote support within single quote example:
 
-python CS_BADGER.py -q 'search  
+bash CS_BADGER.py -q 'search  
 
 | rex field=your_field "\'(?<your_new_field>[^\']*)\'"
 
