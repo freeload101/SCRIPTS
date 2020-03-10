@@ -112,6 +112,8 @@ sleep 3
 fi
 
 
+
+
 # check if max jobs reached if so kill and wait 60 seconds
 export VAR_ALLSIDS=`curl -ikLs -b cookie -c cookie --compressed  -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' "https://falcon.crowdstrike.com/eam/en-US/splunkd/__raw/servicesNS/csuser/eam2/search/jobs" -H $'Content-Type: application/x-www-form-urlencoded' -H $'X-Requested-With: XMLHttpRequest'|grep '\"sid\">'| sed -r 's/.*\"sid\">(.*)<\/s:key>/\1/g' | sed 's/rt_md_//g'|sort|wc -l`
 
@@ -144,9 +146,17 @@ echo `date` DEBUG: Searching ....
 
 if [[ `head -c 18 tmp.json` == *false* ]]
 then
-# job is completed fetch full results
-curl -kLs -b cookie -c cookie --compressed -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0'  "https://falcon.crowdstrike.com/eam/en-US/splunkd/__raw/servicesNS/csuser/eam2/search/jobs/${var_sid}/results?output_mode=json" -H $'Content-Type: application/x-www-form-urlencoded' -H $'X-Requested-With: XMLHttpRequest' > ./tmp.json 2>&1 > ./tmp.json
-python3 -m json.tool tmp.json
+echo `date` DEBUG: Search Complete! Saving output to tmp.json
+
+# save output as broken json ...
+curl -kLs -b cookie -c cookie --compressed  -X $'GET' -H $'Host: falcon.crowdstrike.com' -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' -H $'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H $'Accept-Language: en-US,en;q=0.5' -H $'Accept-Encoding: gzip, deflate' "https://falcon.crowdstrike.com/eam/en-US/api/search/jobs/${var_sid}/results?isDownload=true&timeFormat=%25FT%25T.%25Q%25%3Az&maxLines=0&count=0&filename=555555&outputMode=json" > ./tmp.json 2>&1 > ./tmp.json
+# fix broken json ...
+sed -i -e '1 s/^{/[{/' -e 's/}}/}},/g'  -e '$s/,$//'  -e "\$a]" tmp.json
+# sleep for file output ...
+sleep 3
+python3 -m json.tool tmp.json > results.json
+head -c 500 results.json
+
 unset  VAR_QUERY 
 
         if [[ "${VAR_2FA}" != "" ]]
@@ -160,7 +170,7 @@ fi
 
 if [[ "${VAR_QUERY}" == "" ]]
 then
-echo `date` DEBUG: Search Complete! no 2FA provided exiting results writen to tmp.json
+echo `date` DEBUG: No 2FA provided exiting
 exit
 fi
 
