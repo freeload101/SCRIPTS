@@ -89,7 +89,7 @@ curl   -ikLs -b cookie -c cookie  --compressed   -i -k -X $'POST' -H $'Host: fal
 echo `date` DEBUG: Cookie file hash: `md5sum cookie|awk '{print $1}'` >> ./out.txt
 echo `date` DEBUG: Cookie file hash: `md5sum cookie|awk '{print $1}'`
 echo `date` DEBUG: Waiting for search query and keeping session alive...
-sleep 290
+sleep 180
 
 if [[ "${VAR_QUERY}" != "" ]]
 then
