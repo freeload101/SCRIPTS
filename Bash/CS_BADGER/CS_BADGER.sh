@@ -104,13 +104,13 @@ done
 function GO_SEARCH(){
 
 
-# check if search is in the search query. 
-if [[ "${VAR_QUERY}" != *search* ]]
+# check if search,|inputlookup or |lookup is in the search query. 
+if [[ (${VAR_QUERY} != search* ) && (${VAR_QUERY} != \|inputlookup* )  && (${VAR_QUERY} != \|lookup* ) ]]
 then
-clear
-echo `date` DEBUG: \*\*\* ERROR ALL SEARCH JOBS MUST START WITH SEARCH\!\!\! \*\*\* 
-exit
+echo `date` DEBUG: '*** WARNING SEARCH JOB DID NOT START WITH SEARCH,|INPUTLOOKUP OR |LOOKUP !!! ***'
+sleep 3
 fi
+
 
 # check if max jobs reached if so kill and wait 60 seconds
 export VAR_ALLSIDS=`curl -ikLs -b cookie -c cookie --compressed  -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' "https://falcon.crowdstrike.com/eam/en-US/splunkd/__raw/servicesNS/csuser/eam2/search/jobs" -H $'Content-Type: application/x-www-form-urlencoded' -H $'X-Requested-With: XMLHttpRequest'|grep '\"sid\">'| sed -r 's/.*\"sid\">(.*)<\/s:key>/\1/g' | sed 's/rt_md_//g'|sort|wc -l`
