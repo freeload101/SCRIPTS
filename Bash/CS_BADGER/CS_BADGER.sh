@@ -38,7 +38,6 @@ echo '                          ████████                      '
 echo '==================================================='
 echo "Destroy All Software" @garybernhardt ....rmccurdy.com
 echo \* If cookie hash is not changing then your login is invalid CS has 5min session timeout
-echo \*\*\* WARNING ALL SEARCH JOBS MUST START WITH SEARCH\!\!\! \*\*\* 
 echo Usage:
 echo $0 -t 2FA_TOKEN -q \'QUERY\'
 echo $0 -q \'QUERY\' if you already have active cookie session
@@ -46,16 +45,15 @@ echo $0 -k kill all jobs
 
 # TODO:
 # * check cookie if not valid error out
- 
+# * catch  'Search auto-finalized' in /preview 
 
 
 
 ############################# CONFIG
-export VAR_USERNAME='XXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-
+export VAR_USERNAME='XXXXXXXXXXXXXXXXXXXXXXXXXXXX
 export VAR_PASSWORD='XXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 # the maxium number of jobs to have before clean all jobs is reached CS max is 10 so I set it to 8 as the threashold just in case. I am running searches in the UI or something.
-export VAR_MAXJOBS=10
+export VAR_MAXJOBS=99
  
  
 
@@ -64,8 +62,7 @@ export VAR_MAXJOBS=10
 ############################## functions #######################################################################
 function LOGIN_KEEPSESSTION(){
 
-# just in case our existing cookies break stuff 
-rm ./cookie*
+ 
 
 
  
@@ -89,7 +86,7 @@ curl   -ikLs -b cookie -c cookie  --compressed   -i -k -X $'POST' -H $'Host: fal
 echo `date` DEBUG: Cookie file hash: `md5sum cookie|awk '{print $1}'` >> ./out.txt
 echo `date` DEBUG: Cookie file hash: `md5sum cookie|awk '{print $1}'`
 echo `date` DEBUG: Waiting for search query and keeping session alive...
-sleep 180
+sleep 120
 
 if [[ "${VAR_QUERY}" != "" ]]
 then
