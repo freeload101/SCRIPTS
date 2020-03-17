@@ -50,7 +50,7 @@ echo $0 -k kill all jobs
 
 
 ############################# CONFIG
-export VAR_USERNAME='XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+export VAR_USERNAME='XXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 export VAR_PASSWORD='XXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 # the maxium number of jobs to have before clean all jobs is reached CS max is 10 so I set it to 8 as the threashold just in case. I am running searches in the UI or something.
 export VAR_MAXJOBS=99
