@@ -227,7 +227,6 @@ echo `date` DEBUG: 2FA not provided using existing cookie file to perform search
         if [[ "${VAR_QUERY}" == "" ]]
         then
         echo `date` DEBUG: No options provided please use -t or -q 
-        clear
         exit
         fi
 
