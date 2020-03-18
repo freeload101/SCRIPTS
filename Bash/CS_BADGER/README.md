@@ -12,7 +12,7 @@ python CS_BADGER.py -q 'search index=\* |head 1'
 
 ## You can also use multi line search like so
 
-python CS_BADGER.py -q 'search event_simpleName=\*ProcessRollup2 
+bash CS_BADGER.sh -q 'search event_simpleName=\*ProcessRollup2 
 
 [search event_simpleName="UserAccountCreated" 
 
