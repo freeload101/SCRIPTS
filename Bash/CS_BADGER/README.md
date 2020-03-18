@@ -5,10 +5,10 @@ This script will automate Splunk searches in CrowdStrike! So you can take a sear
 ![enter image description here](https://github.com/freeload101/SCRIPTS/blob/master/Bash/CS_BADGER/SCREEN_SHOTS/CS_BADGER.jpg?raw=true?raw=true)
 
 ## Create a session using your 2FA token ( or add -q 'query' to search and then exit for single usage )
-python CS_BADGER.py -t 555666
+bash CS_BADGER.sh -t 555666
 
 ## Open new shell to use cookies from your session. Searches must start with search and be escaped by single quotes example:
-python CS_BADGER.py -q 'search index=\* |head 1'
+bash CS_BADGER.sh -q 'search index=\* |head 1'
 
 ## You can also use multi line search like so
 
