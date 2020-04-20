@@ -4,7 +4,7 @@ This script will automate Splunk searches in CrowdStrike! So you can take a sear
 
 ![enter image description here](https://github.com/freeload101/SCRIPTS/blob/master/Bash/CS_BADGER/SCREEN_SHOTS/CS_BADGER.jpg?raw=true?raw=true)
 
-VT SHA-256 Searc
+VT SHA-256 Hash Search!!
 ![enter image description here](https://github.com/freeload101/SCRIPTS/blob/master/Bash/CS_BADGER/SCREEN_SHOTS/CS_BADGER_VT.jpg?raw=true?raw=true)
 
 
