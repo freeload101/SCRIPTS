@@ -2,6 +2,10 @@
 
 This script will automate Splunk searches in CrowdStrike! So you can take a search and feed the CSV or JSON output to automation LIKE A NORMAL PERSON!
 
+
+ *Badgers are known as the gruff and grumpy residents of hillsides and prairies. These striped-faced mustelids are expert excavators, skilled at plucking out earthworms, grubs, insects and all sorts of other critters. Badgers often are portrayed in movies and popular literature as wise and practical.*
+
+
 ![enter image description here](https://github.com/freeload101/SCRIPTS/blob/master/Bash/CS_BADGER/SCREEN_SHOTS/CS_BADGER.jpg?raw=true?raw=true)
 
 VT SHA-256 Hash Search!!
@@ -34,7 +38,7 @@ bash CS_BADGER.sh -q 'search event_simpleName=\*ProcessRollup2
 
 '
 
-## Max searches is 8 by default in the script and 10 CrowdStrike. To clear jobs (sids) use -k option. 
+## Max searches is 99 by default in the script and 10 in CrowdStrike. To clear jobs (sids) use -k option. 
 When you get error message like:
 
 The maximum number of concurrent historical searches on this instance has been reached. concurrency_limit=10"
