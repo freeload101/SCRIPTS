@@ -60,6 +60,19 @@ export VAR_MAXJOBS=99
 
 
 ############################## functions #######################################################################
+function GET_CSRF(){
+export var_xsrf=`curl  -X $'POST' -ikLs -b cookie -c cookie --compressed -H $'Host: falcon.crowdstrike.com' -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' -H $'Accept: application/json' -H $'Accept-Language: en-US,en;q=0.5' -H $'Accept-Encoding: gzip, deflate' -H $'content-type: application/json' "https://falcon.crowdstrike.com/api2/auth/verify" | grep csrf_token | sed -r 's/.*\"csrf_token\": \"(.*)\",/x-csrf-token: \1/g'`
+echo `date` DEBUG: var_xsrf ${var_xsrf}
+}
+
+
+function GO_VT_HASHREPORT(){
+GET_CSRF
+curl -kLs -b cookie -c cookie --compressed -H $'Host: falcon.crowdstrike.com' -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' -H $'Accept: application/json' -H $'Accept-Language: en-US,en;q=0.5' -H $'Accept-Encoding: gzip, deflate' -H $'content-type: application/json' -H "${var_xsrf}" "https://falcon.crowdstrike.com/api2/csapi/modules/entities/virustotal/v1?max_age=0&ids=${VAR_VTHASH}" > VT_HASHREPORT.json
+python3 -m json.tool  VT_HASHREPORT.json > VT_HASHREPORT_results.json
+grep -E "(\"result\"|\"positives\")"  VT_HASHREPORT_results.json | grep -vE "(\"result\": null)" | sort -u  | sed 's/  //g' | sed 's/\"result\": //g'
+}
+
 function LOGIN_KEEPSESSTION(){
 
  
@@ -197,10 +210,11 @@ exit
 ############################# INIT
  
 IFS=$'\n'
-while getopts q:t:k option
+while getopts h:q:t:k option
 do
 case "${option}"
 in
+h) export VAR_VTHASH=${OPTARG};;
 q) export VAR_QUERY=${OPTARG};;
 t) export VAR_2FA=${OPTARG};;
 k) 
@@ -224,9 +238,16 @@ echo `date` DEBUG: 2FA not provided using existing cookie file to perform search
         exit
         fi
 
+        if [[ "${VAR_VTHASH}" != "" ]]
+        then
+        echo `date` DEBUG: GET_VT_HASHREPORT 
+        GO_VT_HASHREPORT
+        exit
+        fi
+
         if [[ "${VAR_QUERY}" == "" ]]
         then
-        echo `date` DEBUG: No options provided please use -t or -q 
+        echo `date` DEBUG: No options provided please use valid option
         exit
         fi
 
