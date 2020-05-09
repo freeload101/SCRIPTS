@@ -5,6 +5,8 @@ This script will automate Splunk searches in CrowdStrike! So you can take a sear
 
  *Badgers are known as the gruff and grumpy residents of hillsides and prairies. These striped-faced mustelids are expert excavators, skilled at plucking out earthworms, grubs, insects and all sorts of other critters. Badgers often are portrayed in movies and popular literature as wise and practical.*
 
+# See Also CrowdStrike Threat Hunting Splunk SPL queries! 
+https://github.com/freeload101/SCRIPTS/tree/master/CrowdStrike%20Threat%20Hunting 
 
 ![enter image description here](https://github.com/freeload101/SCRIPTS/blob/master/Bash/CS_BADGER/SCREEN_SHOTS/CS_BADGER.jpg?raw=true?raw=true)
 
