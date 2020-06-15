@@ -26,7 +26,7 @@ WindowsSensor.exe /repair /uninstall /quiet
 ping 123.123.123.123 -n 5 -w 1 > %temp%\null
 
 rem this also may be broken..
-MsiExec.exe   /quiet /qn /norestart  /x{XXXXXXX-XXXXX-XXXX-XXXX-XXXXXXXXXXXXXX} 
+MsiExec.exe   /quiet /qn /norestart  /x{6096FFC9-2662-4914-AC38-8F85CF4A13CF} 
 ping 123.123.123.123 -n 5 -w 1 > %temp%\null
  
 
