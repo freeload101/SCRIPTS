@@ -95,7 +95,7 @@ powershell -command "Invoke-WebRequest -UseBasicParsing -Uri  https://assets-pub
 
 REM ####################### REINSTALL 
 echo [+] Installing... This may take upto 15 minutes! CS has to checkin to cloud to complete install
-WindowsSensor.exe /install /quiet /norestart CID=CC59063FC51D42959288BCF79B59A1A4-D7 
+WindowsSensor.exe /install /quiet /norestart CID=XXXXXXXXXXXXXXXXXXXXXXXXXXXXX-D7 
 ping 123.123.123.123 -n 1 -w 1 > %temp%\null
 
  
