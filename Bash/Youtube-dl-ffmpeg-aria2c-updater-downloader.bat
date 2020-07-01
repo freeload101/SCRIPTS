@@ -39,6 +39,6 @@ youtube-dl --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --em
 echo All Done! I hope...
 CHOICE /T 5 /C y /CS /D y > %temp%/null
 
-explorer  .\downloads\
+explorer   .\downloads\
 
 
