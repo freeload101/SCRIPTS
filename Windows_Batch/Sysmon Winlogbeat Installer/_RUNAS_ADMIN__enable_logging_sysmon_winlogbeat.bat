@@ -138,10 +138,10 @@ set tasktime=%hour%:%minute%
 mkdir C:\ProgramData\sysmon
 pushd "C:\ProgramData\sysmon\"
 echo [+] Downloading Sysmon...
-@powershell (new-object System.Net.WebClient).DownloadFile('https://live.sysinternals.com/Sysmon64.exe','C:\ProgramData\sysmon\sysmon64.exe')"
+@powershell (new-object System.Net.WebClient).DownloadFile('https://live.sysinternals.com/Sysmon64.exe','C:\ProgramData\sysmon\sysmon64.exe')
 echo [+] Downloading Sysmon config...
-@powershell (new-object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ion-storm/sysmon-config/develop/sysmonconfig-export.xml','C:\ProgramData\sysmon\sysmonconfig-export.xml')"
-@powershell (new-object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ion-storm/sysmon-config/develop/Auto_Update.bat','C:\ProgramData\sysmon\Auto_Update.bat')"
+@powershell (new-object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ion-storm/sysmon-config/develop/sysmonconfig-export.xml','C:\ProgramData\sysmon\sysmonconfig-export.xml')
+@powershell (new-object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ion-storm/sysmon-config/develop/Auto_Update.bat','C:\ProgramData\sysmon\Auto_Update.bat')
 sysmon64.exe -accepteula -i sysmonconfig-export.xml
 sc failure Sysmon64 actions= restart/10000/restart/10000// reset= 120
 echo [+] Sysmon Successfully Installed!
@@ -161,7 +161,7 @@ rd /q/s C:\ProgramData\winlogbeat
 
 echo [+] Downloading Winlogbeat...
  
-@powershell (new-object System.Net.WebClient).DownloadFile('https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-7.6.0-windows-x86_64.zip','%~dp0\winlogbeat.zip')"
+@powershell (new-object System.Net.WebClient).DownloadFile('https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-7.6.0-windows-x86_64.zip','%~dp0\winlogbeat.zip')
 
  
 @powershell Expand-Archive -force -LiteralPath "%~dp0winlogbeat.zip" -DestinationPath '%~dp0'
