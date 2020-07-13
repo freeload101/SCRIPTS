@@ -6,6 +6,25 @@ copy /y nul  list.txt > %temp%/null
 rd /q/s .\aria2 2> %temp%/null
 rd /q/s .\ffmpeg 2> %temp%/null
 
+
+
+echo Opening list.txt save/close notepad with the list of URLs you want downloaded!
+rem CHOICE /T 5 /C y /CS /D y > %temp%/null
+notepad list.txt
+
+:DOWNLOAD
+echo Downloading URLs from list.txt
+rem SUBS:  youtube-dl --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"   
+REM LOW QUALITY: youtube-dl -f "bestvideo[height<=360]+worstaudio/worst[height<=360]"  --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"   
+youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"   
+IF ERRORLEVEL 1 GOTO ERROR
+
+
+GOTO THEEND
+
+
+:ERROR
+
 echo Downloading https://eternallybored.org/misc/wget/1.20.3/64/wget.exe (Warning: May NOT be latest binary !)
 powershell "(New-Object Net.WebClient).DownloadFile('https://eternallybored.org/misc/wget/1.20.3/64/wget.exe', '.\wget.exe')"
 
@@ -28,17 +47,12 @@ powershell "Expand-Archive .\ffmpeg\ffmpeg-latest-win64-static.zip  -Destination
 FOR /F "tokens=* delims=" %%A in ('dir/s/b .\ffmpeg\ffmpeg.exe') do (move  "%%A" .\ ) > %temp%/null
 rd /q/s .\ffmpeg
 
-echo Opening list.txt save/close notepad with the list of URLs you want downloaded!
-CHOICE /T 5 /C y /CS /D y > %temp%/null
-notepad list.txt
+GOTO DOWNLOAD
 
-
-echo Downloading URLs from list.txt
-youtube-dl --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"   
+:THEEND
 
 echo All Done! I hope...
 CHOICE /T 5 /C y /CS /D y > %temp%/null
 
 explorer   .\downloads\
-
-
+pause
