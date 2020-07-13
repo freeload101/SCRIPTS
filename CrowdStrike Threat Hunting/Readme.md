@@ -2,6 +2,8 @@
 
 See also : https://github.com/freeload101/SCRIPTS/tree/master/Bash/CS_BADGER
 
+07/13/2020: Added City,State of possible Wireless Hot Spot usage (WIP old need more wireless network ranges)
+
 07/07/2020: Added HTA files Search
 
 06/17/2020: fixed UserPrincipal to use  event_simpleName IN ("UserLogon*", "Login*")  
