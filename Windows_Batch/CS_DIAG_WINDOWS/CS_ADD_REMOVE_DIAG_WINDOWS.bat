@@ -93,6 +93,13 @@ powershell -command "Invoke-WebRequest -UseBasicParsing -Uri  https://assets.fal
 echo [+] Chcecking assets-public.falcon.crowdstrike.com  >> CS_DIAG_OUT.txt
 powershell -command "Invoke-WebRequest -UseBasicParsing -Uri  https://assets-public.falcon.crowdstrike.com " >> CS_DIAG_OUT.txt
 
+
+echo [+] Running Packet Capture  "%temp%\capture.etl"
+#netsh trace start capture=yes tracefile="%temp%\capture.etl" maxsize=512 filemode=circular overwrite=yes report=no correlation=no IPv4.SourceAddress=(192.168.0.2) IPv4.DestinationAddress=(192.168.0.1) Ethernet.Type=IPv4
+netsh trace start capture=yes tracefile="%temp%\capture.etl" maxsize=512 filemode=circular overwrite=yes report=no correlation=no Ethernet.Type=IPv4
+  
+
+
 REM ####################### REINSTALL 
 echo [+] Installing... This may take upto 15 minutes! CS has to checkin to cloud to complete install
 WindowsSensor.exe /install /quiet /norestart CID=XXXXXXXXXXXXXXXXXXXXXXXXXXXXX-D7 
@@ -132,6 +139,15 @@ exit
 :EOF1
 echo All done
 
+echo [+] Stopping/Opening Packet Capture  "%temp%\capture.etl"
+netsh trace stop
+echo [+] Downloading https://github.com/microsoft/etl2pcapng/releases/download/v1.3.0/etl2pcapng.zip 
+powershell "(New-Object Net.WebClient).DownloadFile('https://github.com/microsoft/etl2pcapng/releases/download/v1.3.0/etl2pcapng.zip', '%temp%\etl2pcapng.zip')"
+powershell "Expand-Archive '%temp%\etl2pcapng.zip' -DestinationPath '%temp%\' -Force"
+"%temp%\etl2pcapng\x86\etl2pcapng.exe" "%temp%\capture.etl" "%temp%\capture.etl.pcap"
+
+notepad  "%temp%\capture.etl.pcap"
+  
 
 for /f "delims=" %%i IN ('dir/s/b %LOCALAPPDATA%\Temp\CrowdStrike*') do (
 echo [+] "%%i"  >> CS_DIAG_OUT.txt
