@@ -2,6 +2,9 @@
 
 See also : https://github.com/freeload101/SCRIPTS/tree/master/Bash/CS_BADGER
 
+
+07/28/2020: Fixed exe descriptions for UUID 158 "Search for remote access servers running" 
+
 07/13/2020: Added City,State of possible Wireless Hot Spot usage (WIP old need more wireless network ranges)
 
 07/07/2020: Added HTA files Search
