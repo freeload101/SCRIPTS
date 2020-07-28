@@ -15,11 +15,7 @@ See also : https://github.com/freeload101/SCRIPTS/tree/master/Bash/CS_BADGER
 
 06/17/2020: Added "Find Chrome Remote Desktop Hits Via DNS" 
 
-**
-
-The below table is OLD please use the link above and contribute! 
-
-**
+**The below table is OLD please use the link above and contribute!**
 
 
 
