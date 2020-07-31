@@ -2,6 +2,7 @@
 
 See also : https://github.com/freeload101/SCRIPTS/tree/master/Bash/CS_BADGER
 
+07/31/2020: Updaed UUID 34 Show me a list of outbound network traffic on **(optional non-standard ports)** and the process info attached to them
 
 07/28/2020: Fixed exe descriptions for UUID 158 "Search for remote access servers running" 
 
