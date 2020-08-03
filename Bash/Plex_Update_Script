@@ -12,7 +12,8 @@ rm *.deb
 
 
 # get download url
-URL1=`curl -silk 'https://plex.tv/api/downloads/5.json?channel=plexpass' | awk '{gsub(":\"","\n"); print}' | grep ".*debian.*amd64.deb" | sed -r 's/.*(https:\/\/.*)\".\"checksum\"/\1/g'`
+# need token ! URL1=`curl -silk 'https://plex.tv/api/downloads/5.json?channel=plexpass' | awk '{gsub(":\"","\n"); print}' | grep ".*debian.*amd64.deb" | sed -r 's/.*(https:\/\/.*)\".\"checksum\"/\1/g'`
+URL1=`curl -silk 'https://plex.tv/api/downloads/5.json?channel=plexpass&X-Plex-Token=___YOURTOKENHERE_____' | awk '{gsub(":\"","\n"); print}' | grep ".*debian.*amd64.deb" | sed -r 's/.*(https:\/\/.*)\".\"checksum\"/\1/g'`
 echo [+] Info Downloading $URL1
 
 wget "$URL1"
@@ -27,14 +28,19 @@ cp /home/plex/usr/lib/plexmediaserver/Resources/start.sh /home/plex/usr/lib/plex
 echo [+] Info Killing Plex
 
 kill `ps auxwww|grep -ia plex | grep \/home\/plex\/usr | awk '{print $2}'`
+sleep 3
 killall "Plex Media Server"
 
-sleep 1
+sleep 3
 
 echo [+] Info Starting PLEX in screen
 cd /home/plex/usr/lib/plexmediaserver/
-screen -S PLEX bash -c "./start.sh"
+#screen -S PLEX bash -c "./start.sh"
+screen -fa -d -m -S PLEX bash -c "./start.sh"
 
 
-echo "[+] Looking for +100m files to cleanup"
-find /  -size +100M  -not -path "/media/*"   -type f -mtime +30  -exec ls -laht  '{}' \; 2> /dev/null
+echo "[+] Info Looking for +100m files to cleanup"
+find /  -size +100M  -not -path "/media/*"   -type f -mtime +30  -exec ls -laht  '{}' \;   2> /dev/null
+
+
+echo "[+] Info Complete please goto http://25.0.0.151:32400/web/  and make sure you can connect and plex is running"
