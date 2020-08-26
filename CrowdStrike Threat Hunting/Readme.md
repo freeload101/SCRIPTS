@@ -2,6 +2,8 @@
 
 See also : https://github.com/freeload101/SCRIPTS/tree/master/Bash/CS_BADGER
 
+08/26/2020: Added: Look for intresting fields after and before a search (ComputerName required)
+
 08/18/2020: Updated: Get count of Cisco AnyConnect VPN IP's ( shows network counts by class C )
 
 07/31/2020: Updated  UUID 34 Show me a list of outbound network traffic on **(optional non-standard ports)** and the process info attached to them
