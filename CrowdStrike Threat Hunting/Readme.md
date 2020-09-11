@@ -2,6 +2,8 @@
 
 See also : https://github.com/freeload101/SCRIPTS/tree/master/Bash/CS_BADGER
 
+09/11/2020: updated Rule 129 
+
 08/26/2020: Added: Look for intresting fields after and before a search (ComputerName required)
 
 08/18/2020: Updated: Get count of Cisco AnyConnect VPN IP's ( shows network counts by class C )
