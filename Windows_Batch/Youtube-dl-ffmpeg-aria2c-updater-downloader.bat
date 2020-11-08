@@ -1,5 +1,4 @@
-@echo off
-
+rem @echo off
 echo '-----------------------------------------------------------------------------------------'
 echo 'rmccurdy.com ( total hack job but just got sick of youtube-dl needing to be updated all the time )'
 echo 'Proxy support for localhost:8080'
@@ -48,8 +47,8 @@ CHOICE /C YN /N /T 5 /D Y /M "Update ALL binaries Y/N?"
 IF ERRORLEVEL 1 SET UPDATE=YES
 IF ERRORLEVEL 2 SET UPDATE=NO
 
-copy /y nul  list.txt > %temp%/null
- 
+rem copy /y nul  list.txt > %temp%/null
+
 rd /q/s .\aria2 2> %temp%/null
 rd /q/s .\ffmpeg 2> %temp%/null
  
@@ -59,7 +58,7 @@ EXIT /B %ERRORLEVEL%
 cls
 echo %date% %time% INFO: Opening list.txt save/close notepad with the list of URLs you want downloaded!
 rem CHOICE /T 1 /C y /CS /D y > %temp%/null
-notepad list.txt
+REM notepad list.txt
 EXIT /B %ERRORLEVEL%
 
  
@@ -94,23 +93,25 @@ EXIT /B %ERRORLEVEL%
 
 :RIP
 echo %date% %time% INFO: Updateing youtube-dl
-youtube-dl -U
+rem youtube-dl -U
 
 echo %date% %time% INFO: Downloading URLs from list.txt
 rem SUBS:  youtube-dl --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M"   
 REM LOW QUALITY: youtube-dl -f "bestvideo[height<=360]+worstaudio/worst[height<=360]"  --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M"   
 REM LINUX ... youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location /usr/bin/ -o "%(uploader)s - %(title)s - %(id)s.%(ext)s"  -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M
 REM try with proxy too
-REM PROXY youtube-dl  --proxy localhost:8080 --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M"
 
+ 
 FOR /F "delims==" %%A IN ('type list.txt') DO (
+echo "%%A"
 start "" youtube-dl                          --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M" %%A  
 )
  
 
-:THEEND
-echo %date% %time% INFO: All Done! I hope...
-CHOICE /T 5 /C y /CS /D y > %temp%/null
+
+
+
+
+:THEEND 
 explorer   .\downloads\
 pause
-
