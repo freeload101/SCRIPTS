@@ -1,1 +1,12 @@
-TESAT
+Features of script/report :
+
+Attempt to uninstall 
+Removing CS Logs
+External IP: 
+Internal IPs:
+Getting Firewall Status
+Exporting Firewall Rules for review
+Testing Connectivity 
+Running Packet Capture ( to capture packets during install )  
+Installing... This may take upto 15 minutes! CS has to checkin to cloud to complete install
+sending sample alert with choice /m crowdstrike_sample_detection
