@@ -47,7 +47,7 @@ CHOICE /C YN /N /T 5 /D Y /M "Update ALL binaries Y/N?"
 IF ERRORLEVEL 1 SET UPDATE=YES
 IF ERRORLEVEL 2 SET UPDATE=NO
 
-copy /y nul  list.txt > %temp%/null
+REM copy /y nul  list.txt > %temp%/null
 
 rd /q/s .\aria2 2> %temp%/null
 rd /q/s .\ffmpeg 2> %temp%/null
@@ -94,6 +94,8 @@ EXIT /B %ERRORLEVEL%
 :RIP
 echo %date% %time% INFO: Updateing youtube-dl
 youtube-dl -U
+echo %date% %time% INFO: Sleeping for update process
+CHOICE /T 2 /C y /CS /D y > %temp%/null
 
 echo %date% %time% INFO: Downloading URLs from list.txt
 rem SUBS:  youtube-dl --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M"   
@@ -101,17 +103,19 @@ REM LOW QUALITY: youtube-dl -f "bestvideo[height<=360]+worstaudio/worst[height<=
 REM LINUX ... youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location /usr/bin/ -o "%(uploader)s - %(title)s - %(id)s.%(ext)s"  -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M
 REM try with proxy too
 
- 
-for /f "delims=" %%A IN ('type list.txt') DO (
+
+for /F "tokens=*" %%A IN (list.txt) DO (
 echo "%%A"
-start "" youtube-dl                          --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M" "%%A"
+start "" youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M" "%%A" 
+
 )
- 
+EXIT /B %ERRORLEVEL%
+
 
 
 
 
 
 :THEEND 
+mkdir .\downloads\
 explorer   .\downloads\
- 
