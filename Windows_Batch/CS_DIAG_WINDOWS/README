@@ -10,3 +10,11 @@ Testing Connectivity
 Running Packet Capture ( to capture packets during install )  
 Installing... This may take upto 15 minutes! CS has to checkin to cloud to complete install
 sending sample alert with choice /m crowdstrike_sample_detection
+
+
+Requirements:
+
+CsUninstallTool.exe
+WindowsSensor.exe
+
+
