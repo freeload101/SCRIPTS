@@ -106,7 +106,9 @@ REM try with proxy too
 
 for /F "tokens=*" %%A IN (list.txt) DO (
 echo "%%A"
+REM start "" youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M" "%%A" &
 start "" youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M" "%%A" 
+
 
 )
 EXIT /B %ERRORLEVEL%
