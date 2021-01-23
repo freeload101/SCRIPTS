@@ -2,6 +2,11 @@
 
 See also : https://github.com/freeload101/SCRIPTS/tree/master/Bash/CS_BADGER
 
+General Notes for CS:
+** *use event_simpleName=DirectoryCreate FilePath=*STRING*     insted of process sourcetype because it takes way to long to search -7days ... it's also cross platform :P**
+
+
+
 09/11/2020: updated Rule 129 
 
 08/26/2020: Added: Look for intresting fields after and before a search (ComputerName required)
