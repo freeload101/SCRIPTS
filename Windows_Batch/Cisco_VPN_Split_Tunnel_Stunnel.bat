@@ -1,8 +1,9 @@
 
 REM shh VPN netblocks non routableish ..
-REM25.0.0.0/8
-REM14.0.0.0/8 
-REM5.0.0.0/8
+REM 25.0.0.0/8
+REM 14.0.0.0/8 
+REM 5.0.0.0/8
+REM for extra credit use Proxifier (proxychains for windows)
 
 REM Temporary Switch gateway script:
 
