@@ -42,7 +42,7 @@ EXIT /B %ERRORLEVEL%
 
 :INIT
 cd "%~dp0"
-
+taskkill /F /IM "youtube-dl.exe" 2> %temp%/null
 CHOICE /C YN /N /T 5 /D Y /M "Update ALL binaries Y/N?"
 IF ERRORLEVEL 1 SET UPDATE=YES
 IF ERRORLEVEL 2 SET UPDATE=NO
