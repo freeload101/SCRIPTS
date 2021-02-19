@@ -2,6 +2,7 @@
 echo '-----------------------------------------------------------------------------------------'
 echo 'rmccurdy.com ( total hack job but just got sick of youtube-dl needing to be updated all the time )'
 echo 'Proxy support for localhost:8080'
+echo 'ver 1.1b'
 echo '-----------------------------------------------------------------------------------------'
 
 CALL :INIT
@@ -21,7 +22,7 @@ CALL :CATCH
 
 
 CALL :DLYTDL
-CALL :CATCH
+CALL :CATCH_TRYSIMPLE
 
 )
  
@@ -31,7 +32,14 @@ CALL :RIP
 
 CALL :THEEND
 
-
+:CATCH_TRYSIMPLE
+IF %ERRORLEVEL% NEQ 0 (
+echo %date% %time% INFO: Something went wrong
+echo %date% %time% INFO: Retrying with basic method
+youtube-dl -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" "%URL%" 
+pause
+)
+EXIT /B %ERRORLEVEL%
 
 :CATCH
 IF %ERRORLEVEL% NEQ 0 (
@@ -42,7 +50,7 @@ EXIT /B %ERRORLEVEL%
 
 :INIT
 cd "%~dp0"
-taskkill /F /IM "youtube-dl.exe" 2> %temp%/null
+
 CHOICE /C YN /N /T 5 /D Y /M "Update ALL binaries Y/N?"
 IF ERRORLEVEL 1 SET UPDATE=YES
 IF ERRORLEVEL 2 SET UPDATE=NO
@@ -108,8 +116,7 @@ for /F "tokens=*" %%A IN (list.txt) DO (
 echo "%%A"
 REM start "" youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M" "%%A" &
 start "" youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M" "%%A" 
-
-
+set URL="%%A" 
 )
 EXIT /B %ERRORLEVEL%
 
