@@ -7,9 +7,10 @@ SET DIR=%~dp0%
 ::run installer
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%DIR%install.ps1' %*"
 
-choco install notepadplusplus -y
+choco install notepadplusplus -y 
 choco install irfanview -y
 choco install irfanview-shellextension -y
+choco install irfanviewplugins -y 
 choco install libreoffice-fresh -y
 
 choco install veracrypt -y
