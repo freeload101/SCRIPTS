@@ -2,7 +2,7 @@
 echo '-----------------------------------------------------------------------------------------'
 echo 'rmccurdy.com ( total hack job but just got sick of youtube-dl needing to be updated all the time )'
 echo 'Proxy support for localhost:8080'
-echo 'ver 1.1b'
+echo 'ver 1.2b'
 echo '-----------------------------------------------------------------------------------------'
 
 CALL :INIT
@@ -28,7 +28,7 @@ CALL :CATCH_TRYSIMPLE
  
 
 CALL :RIP
- 
+CALL :CATCH_TRYSIMPLE
 
 CALL :THEEND
 
@@ -54,12 +54,24 @@ taskkill /F /IM "youtube-dl.exe" 2> %temp%/null
 CHOICE /C YN /N /T 5 /D Y /M "Update ALL binaries Y/N?"
 IF ERRORLEVEL 1 SET UPDATE=YES
 IF ERRORLEVEL 2 SET UPDATE=NO
+SET ERRORLEVEL=0
 
 REM copy /y nul  list.txt > %temp%/null
 
-rd /q/s .\aria2 2> %temp%/null
-rd /q/s .\ffmpeg 2> %temp%/null
- 
+if exist ".\youtube-dl.exe.new" (
+del "youtube-dl.exe.new" > %temp%\null
+)
+
+
+
+
+if exist ".\aria2" (
+rd /q/s ".\aria2" > %temp%\null
+)
+
+if exist ".\ffmpeg" (
+rd /q/s ".\ffmpeg"  > %temp%\null
+)
 EXIT /B %ERRORLEVEL%
 
 :OPENLIST
@@ -100,10 +112,23 @@ wget -e robots=off  -nd -q -U "rmccurdy.com" -q "http://yt-dl.org/downloads/late
 EXIT /B %ERRORLEVEL%
 
 :RIP
+if not exist ".\downloads\" (
+mkdir .\downloads\
+)
+
 echo %date% %time% INFO: Updateing youtube-dl
 youtube-dl -U
-echo %date% %time% INFO: Sleeping for update process
-CHOICE /T 2 /C y /CS /D y > %temp%/null
+
+	:LOOPSAUSE
+	if exist "youtube-dl.exe.new" (
+	echo %date% %time% INFO: Sleeping for update process
+	CHOICE /T 1 /C y /CS /D y > %temp%/null
+	SET ERRORLEVEL=0
+	CALL :LOOPSAUSE
+	)
+
+
+
 
 echo %date% %time% INFO: Downloading URLs from list.txt
 rem SUBS:  youtube-dl --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M"   
@@ -113,7 +138,7 @@ REM try with proxy too
 
 
 for /F "tokens=*" %%A IN (list.txt) DO (
-echo "%%A"
+echo %date% %time% INFO: Downloading "%%A"
 REM start "" youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M" "%%A" &
 start "" youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M" "%%A" 
 set URL="%%A" 
@@ -125,6 +150,7 @@ EXIT /B %ERRORLEVEL%
 
 
 
-:THEEND 
-mkdir .\downloads\
-explorer   .\downloads\
+:THEEND
+echo %date% %time% INFO: All done!
+pause
+exit
