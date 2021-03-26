@@ -5,7 +5,7 @@ See also : https://github.com/freeload101/SCRIPTS/tree/master/Bash/CS_BADGER
 General Notes for CS:
 **use event_simpleName=DirectoryCreate FilePath=\*STRING\*     insted of process sourcetype because it takes way to long to search -7days ... it's also cross platform :P**
 
-
+03/26/2021: added 170-173 and cleaned up some old rules
 
 09/11/2020: updated Rule 129 
 
