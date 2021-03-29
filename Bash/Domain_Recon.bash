@@ -3,6 +3,8 @@
 
 # 2020/10/14: fixed copyright and MX
 # 2020/11/04: Fixed some formatting and added BRAND! using BRANDS
+# BRAND format is like domain_single_string_no_spaces brand_discription_no_spaces
+# xponent UNKNOWN
 
 apt install dos2unix -y
 
