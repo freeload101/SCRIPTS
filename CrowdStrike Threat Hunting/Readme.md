@@ -10,6 +10,8 @@ General Notes for CS:
 04/15/2021: Some  *nix stuff to look at  [initramfs Persistence](https://breachlabs.io/initramfs-persistence-technique)  [gtfobins](https://gtfobins.github.io/)  [persistence methods](https://flaviu.io/advanced-persistent-threat/)  [payload all the things](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Linux%20-%20Persistence.md)  [persistence with corn](https://www.sandflysecurity.com/blog/linux-malware-persistence-with-cron/)  - [u/Hartescout](https://www.reddit.com/user/Hartescout/) 
 
 WIP: RTLO Right To Left Hack File Name
+
+
 | regex FileName="(?i)(TAB|EXE)\.(BAT|BIN|CMD|COM|CPL|EXE|GADGET|INF1|INS|INX|ISU|JOB|JSE|LNK|MSC|MSI|MSP|MST|PAF|PIF|PS1|REG|RGS|SCR|SCT|SHB|SHS|U3P|VB|VBE|VBS|VBSCRIPT|WS|WSF|WSH)$"
 
 
