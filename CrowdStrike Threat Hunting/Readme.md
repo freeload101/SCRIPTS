@@ -5,7 +5,14 @@ See also : https://github.com/freeload101/SCRIPTS/tree/master/Bash/CS_BADGER
 General Notes for CS:
 **use event_simpleName=DirectoryCreate FilePath=\*STRING\*     insted of process sourcetype because it takes way to long to search -7days ... it's also cross platform :P**
 
+
+
 04/15/2021: Some  *nix stuff to look at  [initramfs Persistence](https://breachlabs.io/initramfs-persistence-technique)  [gtfobins](https://gtfobins.github.io/)  [persistence methods](https://flaviu.io/advanced-persistent-threat/)  [payload all the things](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Linux%20-%20Persistence.md)  [persistence with corn](https://www.sandflysecurity.com/blog/linux-malware-persistence-with-cron/)  - [u/Hartescout](https://www.reddit.com/user/Hartescout/) 
+
+WIP: RTLO Right To Left Hack File Name
+| regex FileName="(?i)(TAB|EXE)\.(BAT|BIN|CMD|COM|CPL|EXE|GADGET|INF1|INS|INX|ISU|JOB|JSE|LNK|MSC|MSI|MSP|MST|PAF|PIF|PS1|REG|RGS|SCR|SCT|SHB|SHS|U3P|VB|VBE|VBS|VBSCRIPT|WS|WSF|WSH)$"
+
+
 
 03/26/2021: added 170-173 and cleaned up some old rules
 
