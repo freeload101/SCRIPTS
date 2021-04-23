@@ -1,4 +1,4 @@
-@echo off
+rem @echo off
 echo ###############################################################################
 echo rmccurdyDOTcom
 echo This script will download and install sysmon and winlogbeat!
@@ -161,12 +161,11 @@ rd /q/s C:\ProgramData\winlogbeat
 :DLWGET
 echo %date% %time% INFO: Downloading wget via Powershell (May NOT be latest binary !)
 powershell "(New-Object Net.WebClient).DownloadFile('https://eternallybored.org/misc/wget/1.20.3/64/wget.exe', '.\wget.exe')" > %temp%/null
-EXIT /B %ERRORLEVEL%
-
-
+ 
 echo %date% %time% INFO: Downloading Winlogbeat...
  
 :: DLWINLOGBEAT
+cd "%~dp0"
 rd /q/s WINLOGBEAT
 wget  -q -e robots=off -r  "https://www.elastic.co/downloads/beats/winlogbeat"  -l 1 -A "winlogbeat,inde*,winlogbeat*x86_64.zip" -H --exclude-domains "ir.elastic.co"   -U "rmccurdy.com"  -P WINLOGBEAT
 
