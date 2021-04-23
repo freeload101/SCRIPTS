@@ -158,16 +158,34 @@ timeout /t 2
 taskkill /F /IM winlogbeat.exe
 rd /q/s C:\ProgramData\winlogbeat
 
+:DLWGET
+echo %date% %time% INFO: Downloading wget via Powershell (May NOT be latest binary !)
+powershell "(New-Object Net.WebClient).DownloadFile('https://eternallybored.org/misc/wget/1.20.3/64/wget.exe', '.\wget.exe')" > %temp%/null
+EXIT /B %ERRORLEVEL%
 
-echo [+] Downloading Winlogbeat...
+
+echo %date% %time% INFO: Downloading Winlogbeat...
  
-@powershell (new-object System.Net.WebClient).DownloadFile('https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-7.6.0-windows-x86_64.zip','%~dp0\winlogbeat.zip')
+:: DLWINLOGBEAT
+rd /q/s WINLOGBEAT
+wget  -q -e robots=off -r  "https://www.elastic.co/downloads/beats/winlogbeat"  -l 1 -A "winlogbeat,inde*,winlogbeat*x86_64.zip" -H --exclude-domains "ir.elastic.co"   -U "rmccurdy.com"  -P WINLOGBEAT
+
+
+echo %date% %time% INFO: Extracting winlogbeat.zip
+
+move "%~dp0WINLOGBEAT\artifacts.elastic.co\downloads\beats\winlogbeat\*.zip"  "%~dp0WINLOGBEAT\winlogbeat.zip" > %temp%\null
+
+mkdir %~dp0WINLOGBEAT\EXTRACTED
+
+
+@powershell "Expand-Archive  "%~dp0\WINLOGBEAT\winlogbeat.zip" -DestinationPath %~dp0WINLOGBEAT\EXTRACTED" > %temp%/null
+
+move "%~dp0WINLOGBEAT\EXTRACTED\winlogbea*" "%~dp0WINLOGBEAT\EXTRACTED\winlogbeat"
+
+
 
  
-@powershell Expand-Archive -force -LiteralPath "%~dp0winlogbeat.zip" -DestinationPath '%~dp0'
-
-cd "%~dp0"
-cd winlogbeat*
+cd "%~dp0WINLOGBEAT\EXTRACTED\winlogbeat"
 mkdir "C:\ProgramData\winlogbeat"
 xcopy /q/y/s . C:\ProgramData\winlogbeat\
 
