@@ -1,9 +1,13 @@
 @echo off
+setlocal enabledelayedexpansion
+
 echo '-----------------------------------------------------------------------------------------'
 echo 'rmccurdy.com ( total hack job but just got sick of youtube-dl needing to be updated all the time )'
 echo 'Proxy support for localhost:8080'
-echo 'ver 1.2b'
+echo 'ver 1.0a'
 echo '-----------------------------------------------------------------------------------------'
+
+REM 04/26/2021:  * added fallback to legacy if no file is output in 3 seconds .. ( can't really catch errors on start command without wonky scripting or writing to error files) Reference: https://stackoverflow.com/questions/29740883/how-to-redirect-error-stream-to-variable/38928461#38928461
 
 CALL :INIT
 
@@ -22,48 +26,46 @@ CALL :CATCH
 
 
 CALL :DLYTDL
-CALL :CATCH_TRYSIMPLE
+CALL :CATCH
 
 )
  
+CALL :YTUPDATE
+CALL :CATCH
+
 
 CALL :RIP
-CALL :CATCH_TRYSIMPLE
+CALL :CATCH
 
 CALL :THEEND
 
-:CATCH_TRYSIMPLE
-IF %ERRORLEVEL% NEQ 0 (
-echo %date% %time% INFO: Something went wrong
-echo %date% %time% INFO: Retrying with basic method
-youtube-dl -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" "%URL%" 
-pause
-)
-EXIT /B %ERRORLEVEL%
-
 :CATCH
 IF %ERRORLEVEL% NEQ 0 (
-echo %date% %time% INFO: Something went wrong
+echo %date% %time% ERROR: Something went wrong
 pause
 )
 EXIT /B %ERRORLEVEL%
 
 :INIT
 cd "%~dp0"
+
+set /a WAITTIME = 5
+
 taskkill /F /IM "youtube-dl.exe" 2> %temp%/null
 CHOICE /C YN /N /T 5 /D Y /M "Update ALL binaries Y/N?"
 IF ERRORLEVEL 1 SET UPDATE=YES
 IF ERRORLEVEL 2 SET UPDATE=NO
 SET ERRORLEVEL=0
 
-REM copy /y nul  list.txt > %temp%/null
+REM Remove .part files 
+if  exist ".\downloads" (
+del .\downloads\*.part
+del .\downloads\*.aria2
+)
 
 if exist ".\youtube-dl.exe.new" (
 del "youtube-dl.exe.new" > %temp%\null
 )
-
-
-
 
 if exist ".\aria2" (
 rd /q/s ".\aria2" > %temp%\null
@@ -77,11 +79,9 @@ EXIT /B %ERRORLEVEL%
 :OPENLIST
 cls
 echo %date% %time% INFO: Opening list.txt save/close notepad with the list of URLs you want downloaded!
-rem CHOICE /T 1 /C y /CS /D y > %temp%/null
+CHOICE /T 1 /C y /CS /D y > %temp%/null
 notepad list.txt
 EXIT /B %ERRORLEVEL%
-
- 
 
 :DLWGET
 echo %date% %time% INFO: Downloading wget via Powershell https://eternallybored.org/misc/wget/1.20.3/64/wget.exe (Warning: May NOT be latest binary !)
@@ -109,13 +109,11 @@ EXIT /B %ERRORLEVEL%
 :DLYTDL
 echo %date% %time% INFO: Downloading latest youtube-dl.exe
 wget -e robots=off  -nd -q -U "rmccurdy.com" -q "http://yt-dl.org/downloads/latest/youtube-dl.exe" -O youtube-dl.exe
+CHOICE /T 1 /C y /CS /D y > %temp%/null
 EXIT /B %ERRORLEVEL%
 
-:RIP
-if not exist ".\downloads\" (
-mkdir .\downloads\
-)
-
+:YTUPDATE
+(
 echo %date% %time% INFO: Updateing youtube-dl
 youtube-dl -U
 
@@ -126,29 +124,35 @@ youtube-dl -U
 	SET ERRORLEVEL=0
 	CALL :LOOPSAUSE
 	)
-
-
-
-
-echo %date% %time% INFO: Downloading URLs from list.txt
-rem SUBS:  youtube-dl --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M"   
-REM LOW QUALITY: youtube-dl -f "bestvideo[height<=360]+worstaudio/worst[height<=360]"  --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M"   
-REM LINUX ... youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location /usr/bin/ -o "%(uploader)s - %(title)s - %(id)s.%(ext)s"  -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M
-REM try with proxy too
-
-
-for /F "tokens=*" %%A IN (list.txt) DO (
-echo %date% %time% INFO: Downloading "%%A"
-REM start "" youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M" "%%A" &
-start "" youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M" "%%A" 
-set URL="%%A" 
 )
 EXIT /B %ERRORLEVEL%
 
+:RIP
+(
+	if not exist ".\downloads\" (
+	mkdir .\downloads\
+	)
 
+	rem SUBS:  youtube-dl --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M"   
+	REM LOW QUALITY: youtube-dl -f "bestvideo[height<=360]+worstaudio/worst[height<=360]"  --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M"   
+	REM LINUX ... youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location /usr/bin/ -o "%(uploader)s - %(title)s - %(id)s.%(ext)s"  -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M
+	REM try with proxy too	
 
+	for /F "tokens=*" %%A IN (list.txt) DO (
+		set /a UUID = !RANDOM!
 
+		echo %date% %time% INFO: "%%A" Downloading with aria2c 	
+		start "aria2c %%A"	 cmd /c youtube-dl -w --no-continue --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args " -x 16 -s 16 -k 1M" "%%A" ^& pause
+		echo %date% %time% INFO: "%%A" Waiting %WAITTIME% seconds to retry legacy if no file exist
+		CHOICE /T %WAITTIME% /C y /CS /D y > %temp%/null
 
+			if not exist ".\downloads\*!UUID!*.part*" (
+				echo %date% %time% ERROR: "%%A" No part files found trying legacy mode
+				start "LEGACY %%A"	 cmd /c youtube-dl -w --no-continue --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s"    "%%A" ^& pause
+				)
+		)
+)
+EXIT /B %ERRORLEVEL%
 
 :THEEND
 echo %date% %time% INFO: All done!
