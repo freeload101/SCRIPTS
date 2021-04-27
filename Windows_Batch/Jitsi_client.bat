@@ -2,8 +2,7 @@ REM @echo off
 setlocal enabledelayedexpansion
 
 echo '-----------------------------------------------------------------------------------------'
-echo 'rmccurdy.com ( total hack job but just got sick of youtube-dl needing to be updated all the time )'
-echo 'Proxy support for localhost:8080'
+echo 'rmccurdy.com ( jitsi client for windows installer  )'
 echo 'ver 1.0a'
 echo '-----------------------------------------------------------------------------------------'
 
