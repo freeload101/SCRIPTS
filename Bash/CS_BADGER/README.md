@@ -1,5 +1,7 @@
 # CS_BADGER.sh
 
+** Update 04/29/2021: I am working on a PING/SAML/PYTHON script to eventualy be a splunk app ;) **
+
 This script will automate Splunk searches in CrowdStrike! So you can take a search and feed the CSV or JSON output to automation LIKE A NORMAL PERSON!
 
 
