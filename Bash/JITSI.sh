@@ -31,7 +31,14 @@ cp env.example .env
 mkdir -p ~/.jitsi-meet-cfg/{web/letsencrypt,transcripts,prosody/config,prosody/prosody-plugins-custom,jicofo,jvb,jigasi,jibri}
 
 # fix ICE https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker Interactive Connectivity Establishment
-sed 's/#DOCKER_HOST_ADDRESS=192.168.1.1/DOCKER_HOST_ADDRESS=96.32.194.227/g' -i.bak .env
+sed 's/#DOCKER_HOST_ADDRESS=192.168.1.1/DOCKER_HOST_ADDRESS=25.0.0.151/g' -i.bak .env
+
+# maybe fix ..
+echo 'ENABLE_XMPP_WEBSOCKET=0' >> .env
+
+# fix for NAT ?
+sed 's/#PUBLIC_URL=https:\/\/meet.example.com:8443/PUBLIC_URL=https:\/\/jitsi.rmccurdy.com/g' -i.bak .env
+
 
 
 docker-compose up -d
