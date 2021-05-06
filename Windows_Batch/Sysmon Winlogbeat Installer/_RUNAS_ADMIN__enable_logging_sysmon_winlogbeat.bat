@@ -1,34 +1,57 @@
-rem @echo off
+@echo off
 echo ###############################################################################
 echo rmccurdyDOTcom
+echo Syslog Installer 1.0b
 echo This script will download and install sysmon and winlogbeat!
-echo Usage: update the winogbeat URL and the WINLOGBEAT CONFIG FILE section
+echo Usage: update the  WINLOGBEAT CONFIG FILE section
 echo ###############################################################################
+
+
+
+setlocal
+set hour=%time:~0,2%
+set minute=%time:~3,2%
+set /A minute+=2
+if %minute% GTR 59 (
+ set /A minute-=60
+ set /A hour+=1
+)
+if %hour%==24 set hour=00
+if "%hour:~0,1%"==" " set hour=0%hour:~1,1%
+if "%hour:~1,1%"=="" set hour=0%hour%
+if "%minute:~1,1%"=="" set minute=0%minute%
+set tasktime=%hour%:%minute%
+
 timeout /t 5
-echo [+] Checking powershell version...
+echo [+] %date% %time% INFO: Checking powershell version...
 @powershell if ($PSVersionTable.PSVersion.Major -eq 5) {    Write-Host " [+] You are running PowerShell version 5"}else {    Write-Host " [+] This is version $PSVersionTable.PSVersion.Major Please update!!!";Start-Sleep -s 99 }
 
 
-echo [+] Checking for admin ...
+echo [+] %date% %time% INFO: Checking for admin ...
 FOR /F "tokens=1,2*" %%V IN ('bcdedit') DO SET adminTest=%%V
 IF (%adminTest%)==(Access) goto noAdmin
-echo [+] Clearing Event logs this may take 5+ min
+echo [+] %date% %time% INFO: Clearing Event logs this may take 5+ min
 for /F "tokens=*" %%G in ('wevtutil.exe el') DO (call :do_clear "%%G")
-echo [+] Event Logs have been cleared!
+echo [+] %date% %time% INFO: Event Logs have been cleared!
 goto theEnd
 :do_clear
 rem echo clearing %1
 ::wevtutil.exe cl %1 &
 goto :eof
 :noAdmin
-echo [+] You must run this script as an Administrator!
+echo [+] %date% %time% ERROR: You must run this script as an Administrator!
 echo.
 pause
 exit
 :theEnd
 
+pause
+pause
+pause
+pause
 
-echo [+] killing Sysmon and Winlogbeat
+
+echo [+] %date% %time% INFO: killing Sysmon and Winlogbeat
 sc stop winlogbeat
 sc stop sysmon
 sc stop sysmon64
@@ -40,7 +63,7 @@ timeout /t 2
 
 
  
-echo [+] Disabling PowerShell Executionpolicy
+echo [+] %date% %time% INFO: Disabling PowerShell Executionpolicy
 @powershell.exe   -Enc UwBlAHQALQBFAHgAZQBjAHUAdABpAG8AbgBQAG8AbABpAGMAeQAgAC0ARQB4AGUAYwB1AHQAaQBvAG4AUABvAGwAaQBjAHkAIABVAG4AcgBlAHMAdAByAGkAYwB0AGUAZAAgAC0ARgBvAHIAYwBlAA==
  
 :::: https://raw.githubusercontent.com/rkovar/PowerShell/master/audit.bat
@@ -56,7 +79,7 @@ echo [+] Disabling PowerShell Executionpolicy
 ::
 ::#######################################################################
 ::
-echo [+] Setting log sizes...
+echo [+] %date% %time% INFO: Setting log sizes...
 :: ---------------------
 ::
 :: 540100100 will give you 7 days of local Event Logs with everything logging (Security and Sysmon)
@@ -105,7 +128,7 @@ echo $LogCommandLifecycleEvent = $true >> c:\windows\system32\WindowsPowerShell\
 ::#######################################################################
 ::
 
-echo [+] Enabling PowerShell Logging Cheatsheet ...
+echo [+] %date% %time% INFO: Enabling PowerShell Logging Cheatsheet ...
 
 reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\PowerShell" /v ExecutionPolicy /t REG_SZ /d "RemoteSigned" /f
 ::
@@ -120,32 +143,19 @@ reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Trans
 
 
 
-echo [+] Installing Sysmon...
+echo [+] %date% %time% INFO: Installing Sysmon...
 
-setlocal
-set hour=%time:~0,2%
-set minute=%time:~3,2%
-set /A minute+=2
-if %minute% GTR 59 (
- set /A minute-=60
- set /A hour+=1
-)
-if %hour%==24 set hour=00
-if "%hour:~0,1%"==" " set hour=0%hour:~1,1%
-if "%hour:~1,1%"=="" set hour=0%hour%
-if "%minute:~1,1%"=="" set minute=0%minute%
-set tasktime=%hour%:%minute%
 mkdir C:\ProgramData\sysmon
 pushd "C:\ProgramData\sysmon\"
-echo [+] Downloading Sysmon...
+echo [+] %date% %time% INFO: Downloading Sysmon...
 @powershell (new-object System.Net.WebClient).DownloadFile('https://live.sysinternals.com/Sysmon64.exe','C:\ProgramData\sysmon\sysmon64.exe')
-echo [+] Downloading Sysmon config...
+echo [+] %date% %time% INFO: Downloading Sysmon config...
 @powershell (new-object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ion-storm/sysmon-config/develop/sysmonconfig-export.xml','C:\ProgramData\sysmon\sysmonconfig-export.xml')
 @powershell (new-object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/ion-storm/sysmon-config/develop/Auto_Update.bat','C:\ProgramData\sysmon\Auto_Update.bat')
 sysmon64.exe -accepteula -i sysmonconfig-export.xml
 sc failure Sysmon64 actions= restart/10000/restart/10000// reset= 120
-echo [+] Sysmon Successfully Installed!
-echo [+] Creating Auto Update Task set to Hourly..
+echo [+] %date% %time% INFO: Sysmon Successfully Installed!
+echo [+] %date% %time% INFO: Creating Auto Update Task set to Hourly..
 SchTasks /Create /RU SYSTEM /RL HIGHEST /SC HOURLY /TN Update_Sysmon_Rules /TR C:\ProgramData\sysmon\Auto_Update.bat /F /ST %tasktime%
 
 
@@ -158,33 +168,16 @@ timeout /t 2
 taskkill /F /IM winlogbeat.exe
 rd /q/s C:\ProgramData\winlogbeat
 
-:DLWGET
-echo %date% %time% INFO: Downloading wget via Powershell (May NOT be latest binary !)
-powershell "(New-Object Net.WebClient).DownloadFile('https://eternallybored.org/misc/wget/1.20.3/64/wget.exe', '.\wget.exe')" > %temp%/null
+
+echo [+] %date% %time% INFO: Downloading Winlogbeat...
  
-echo %date% %time% INFO: Downloading Winlogbeat...
+@powershell (new-object System.Net.WebClient).DownloadFile('https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-7.6.0-windows-x86_64.zip','%~dp0\winlogbeat.zip')
+
  
-:: DLWINLOGBEAT
+@powershell Expand-Archive -force -LiteralPath "%~dp0winlogbeat.zip" -DestinationPath '%~dp0'
+
 cd "%~dp0"
-rd /q/s WINLOGBEAT
-wget  -q -e robots=off -r  "https://www.elastic.co/downloads/beats/winlogbeat"  -l 1 -A "winlogbeat,inde*,winlogbeat*x86_64.zip" -H --exclude-domains "ir.elastic.co"   -U "rmccurdy.com"  -P WINLOGBEAT
-
-
-echo %date% %time% INFO: Extracting winlogbeat.zip
-
-move "%~dp0WINLOGBEAT\artifacts.elastic.co\downloads\beats\winlogbeat\*.zip"  "%~dp0WINLOGBEAT\winlogbeat.zip" > %temp%\null
-
-mkdir %~dp0WINLOGBEAT\EXTRACTED
-
-
-@powershell "Expand-Archive  "%~dp0\WINLOGBEAT\winlogbeat.zip" -DestinationPath %~dp0WINLOGBEAT\EXTRACTED" > %temp%/null
-
-move "%~dp0WINLOGBEAT\EXTRACTED\winlogbea*" "%~dp0WINLOGBEAT\EXTRACTED\winlogbeat"
-
-
-
- 
-cd "%~dp0WINLOGBEAT\EXTRACTED\winlogbeat"
+cd winlogbeat*
 mkdir "C:\ProgramData\winlogbeat"
 xcopy /q/y/s . C:\ProgramData\winlogbeat\
 
@@ -234,7 +227,7 @@ echo   - add_docker_metadata: ~
 powershell   -file  "C:\ProgramData\winlogbeat\install-service-winlogbeat.ps1"
 
 
-echo [+] About to test Winlogbeat for 15 seconds!!
+echo [+] %date% %time% INFO: About to test Winlogbeat for 15 seconds!!
 timeout /t 3
 
 start cmd /c C:\ProgramData\winlogbeat\winlogbeat.exe -c C:\ProgramData\winlogbeat\winlogbeat.yml   -e  &
@@ -251,13 +244,9 @@ taskkill /F /IM winlogbeat.exe
 timeout /t 2
 sc start winlogbeat
 
-echo [+] Exiting in 20 seconds...
+echo [+] %date% %time% INFO: Exiting in 20 seconds...
 timeout /t 20
 
-
-
-
-echo [+] Exiting in 20 seconds...
-timeout /t 20
+ 
 
 exit
