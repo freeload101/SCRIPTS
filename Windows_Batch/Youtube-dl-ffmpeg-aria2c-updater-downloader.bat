@@ -53,8 +53,6 @@ REM  time to wait for file to start (keep this high .. as max connectoins per se
 set /a WAITTIME = 10
 REM   -s Download a file using N connections
 set /a MAX_THREADS = 4
-REM  -x, --max-connection-per-server
-set /a MAX_TOTAL_CONNECTIONS = 4
 
 
 taskkill /F /IM "youtube-dl.exe" 2> %temp%/null
@@ -139,16 +137,16 @@ EXIT /B %ERRORLEVEL%
 	mkdir .\downloads\
 	)
 
-	rem SUBS:  youtube-dl --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x %MAX_TOTAL_CONNECTIONS% -s %MAX_THREADS% -k 1M"   
-	REM LOW QUALITY: youtube-dl -f "bestvideo[height<=360]+worstaudio/worst[height<=360]"  --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x %MAX_TOTAL_CONNECTIONS% -s %MAX_THREADS% -k 1M"   
-	REM LINUX ... youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location /usr/bin/ -o "%(uploader)s - %(title)s - %(id)s.%(ext)s"  -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x %MAX_TOTAL_CONNECTIONS% -s %MAX_THREADS% -k 1M
+	rem SUBS:  youtube-dl --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args " -s %MAX_THREADS% -k 1M"   
+	REM LOW QUALITY: youtube-dl -f "bestvideo[height<=360]+worstaudio/worst[height<=360]"  --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args " -s %MAX_THREADS% -k 1M"   
+	REM LINUX ... youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location /usr/bin/ -o "%(uploader)s - %(title)s - %(id)s.%(ext)s"  -i -a list.txt  --external-downloader aria2c --external-downloader-args "-s %MAX_THREADS% -k 1M
 	REM try with proxy too	
 
 	for /F "tokens=*" %%A IN (list.txt) DO (
 		set /a UUID = !RANDOM!
 
 		echo %date% %time% INFO: "%%A" Downloading with aria2c 	
-		start "aria2c %%A"	 cmd /c youtube-dl -w --no-continue --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args " -x %MAX_TOTAL_CONNECTIONS% -s %MAX_THREADS% -k 1M" "%%A" ^& pause
+		start "aria2c %%A"	 cmd /c youtube-dl -w --no-continue --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "  -s %MAX_THREADS% -k 1M" "%%A" ^& pause
 		echo %date% %time% INFO: "%%A" Waiting %WAITTIME% seconds to retry legacy if no file exist
 		CHOICE /T %WAITTIME% /C y /CS /D y > %temp%/null
 
