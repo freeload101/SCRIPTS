@@ -49,11 +49,11 @@ EXIT /B %ERRORLEVEL%
 :INIT
 cd "%~dp0"
 
-# time to wait for file to start (keep this high .. as max connectoins per server can make getting initail metadata SLOW ... )
+REM  time to wait for file to start (keep this high .. as max connectoins per server can make getting initail metadata SLOW ... )
 set /a WAITTIME = 10
-#  -s Download a file using N connections
-set /a MAX_THREADS = 16
-#-x, --max-connection-per-server
+REM   -s Download a file using N connections
+set /a MAX_THREADS = 4
+REM  -x, --max-connection-per-server
 set /a MAX_TOTAL_CONNECTIONS = 4
 
 
