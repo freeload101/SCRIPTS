@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 echo '-----------------------------------------------------------------------------------------'
 echo 'rmccurdy.com ( total hack job but just got sick of youtube-dl needing to be updated all the time )'
 echo 'Proxy support for localhost:8080'
-echo 'ver 1.0a'
+echo 'ver 1.02'
 echo '-----------------------------------------------------------------------------------------'
 
 REM 04/26/2021:  * added fallback to legacy if no file is output in 3 seconds .. ( can't really catch errors on start command without wonky scripting or writing to error files) Reference: https://stackoverflow.com/questions/29740883/how-to-redirect-error-stream-to-variable/38928461#38928461
@@ -52,7 +52,7 @@ cd "%~dp0"
 REM  time to wait for file to start (keep this high .. as max connectoins per server can make getting initail metadata SLOW ... )
 set /a WAITTIME = 10
 REM   -s Download a file using N connections
-set /a MAX_THREADS = 4
+set /a MAX_THREADS = 16
 
 
 taskkill /F /IM "youtube-dl.exe" 2> %temp%/null
@@ -146,7 +146,7 @@ EXIT /B %ERRORLEVEL%
 		set /a UUID = !RANDOM!
 
 		echo %date% %time% INFO: "%%A" Downloading with aria2c 	
-		start "aria2c %%A"	 cmd /c youtube-dl -w --no-continue --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "  -s %MAX_THREADS% -k 1M" "%%A" ^& pause
+		start "aria2c %%A"	 cmd /c youtube-dl -w --no-continue --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "  -s %MAX_THREADS% -x %MAX_THREADS%  -k 1M" "%%A" ^& pause
 		echo %date% %time% INFO: "%%A" Waiting %WAITTIME% seconds to retry legacy if no file exist
 		CHOICE /T %WAITTIME% /C y /CS /D y > %temp%/null
 
