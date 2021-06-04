@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 echo '-----------------------------------------------------------------------------------------'
 echo 'rmccurdy.com ( total hack job but just got sick of youtube-dl needing to be updated all the time )'
 echo 'Proxy support for localhost:8080'
-echo 'ver 1.02'
+echo 'ver 2.05'
 echo '-----------------------------------------------------------------------------------------'
 
 REM 04/26/2021:  * added fallback to legacy if no file is output in 3 seconds .. ( can't really catch errors on start command without wonky scripting or writing to error files) Reference: https://stackoverflow.com/questions/29740883/how-to-redirect-error-stream-to-variable/38928461#38928461
@@ -29,7 +29,10 @@ CALL :DLYTDL
 CALL :CATCH
 
 )
- 
+
+CALL :CHECKDLL
+CALL :CATCH
+
 CALL :YTUPDATE
 CALL :CATCH
 
@@ -38,6 +41,18 @@ CALL :RIP
 CALL :CATCH
 
 CALL :THEEND
+
+:CHECKDLL
+echo %date% %time% INFO: Checking for msvcr100.dll
+	(
+	if not exist "%SYSTEMROOT%\SysWOW64\msvcr100.dll" (
+	echo %date% %time% INFO: msvcr100.dll missing downloading from "https://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x86.exe"
+
+	powershell "(New-Object Net.WebClient).DownloadFile('https://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x86.exe', '.\vcredist_x86.exe')" > %temp%/null
+	echo %date% %time% INFO: Installing vcredist_x86.exe 
+	vcredist_x86.exe /q
+	)
+EXIT /B %ERRORLEVEL%
 
 :CATCH
 IF %ERRORLEVEL% NEQ 0 (
