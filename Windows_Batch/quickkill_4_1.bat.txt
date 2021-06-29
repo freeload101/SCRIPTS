@@ -7,8 +7,9 @@ net stop audiosrv /Y
 net start audiosrv
 
 echo Run this as administrator! WARNING: This program violently  kills all tasks not in the Exclusions= you may need to add others tested Windows 10
-echo 10:08 PM 6/28/2020: added lsaiso.exe to whitelist for windows 10
-echo 10:42 AM 11/8/2018: added TrustedInstaller hack to taskkill
+echo 06/29/2021: added CS and Windows Defender to whitelist and task kill as normal admin and trusted installer also wipes chrome policies
+echo 06/28/2020: added lsaiso.exe to whitelist for windows 10
+echo 11/8/2018: added TrustedInstaller hack to taskkill
 echo RMcCurdy.com
 echo ==========================================================================
  
