@@ -11,14 +11,28 @@ mv *.nmap "${foldername}"
 mv *.txt  "${foldername}"
 
 
-sleep 10
-# this dos not apper to work at scale and or over time ... so feeding network list of known subnets and running nmap for each /24 range ... putting 3k ip ranges in a single nmap instance may be the issue ...
-for i in `cat SCOPE_ALL`
-do
-export varout=`echo $i|sed 's/.0\/24//g'`
+export varNMAPFlags=" -v -T5  -sV -p 21-23,25,53,80-81,88,3283,110-111,113,135,139,143,179,199,389,443,445,465,514,548,554,587,993,995,1025-1026,1720,1723,2000,3306,3389,5060,5900,6001,8000,8080,8443,8888,10000,32768,7001  --open --randomize-hosts --defeat-rst-ratelimit "
 
-nmap -v -T5 -oA ${varout}_NETWORKS  -sV  -p 21-23,25,53,80-81,88,3283,110-111,113,135,139,143,179,199,443,445,465,514,548,554,587,993,995,1025-1026,1720,1723,2000,3306,3389,5060,5900,6001,8000,8080,8443,8888,10000,32768 --open --randomize-hosts --defeat-rst-ratelimit $i
-done
+sleep 10
+
+echo `date` INFO: Performing smart 192,172 and 10. scans this takes about 5-7 days
+
+echo `date` INFO: Starting 192.
+nmap ${varNMAPFlags} -oA 192 192.168.0.0/16
+
+# scan 10 and 172 just  1,2,3,10,20,30,100,254
+echo `date` INFO: Starting 172.
+nmap ${varNMAPFlags} -oA 172_GUESS 172.16-31.0-255.1,2,3,10,20,30,100,254
+grep open 172_GUESS.gnmap | awk '{print $2}'  | sed -r  's/(.*\..*\..*\.).*/\10\/24/'g | sort -u > 172_NETWORKS
+nmap ${varNMAPFlags} -oA 172_NETWORKS -iL 172_NETWORKS
+
+echo `date` INFO: Starting 10.
+nmap nmap ${varNMAPFlags}  -oA 10_GUESS 10.0-255.0-255.1,2,3,10,20,30,100,254
+grep open 10_GUESS.gnmap | awk '{print $2}'  | sed -r  's/(.*\..*\..*\.).*/\10\/24/'g | sort -u > 10_NETWORKS
+nmap ${varNMAPFlags} -oA 10_NETWORKS -iL 10_NETWORKS
+
+
+
 
 
 echo `date` INFO: Compleated Nmap
