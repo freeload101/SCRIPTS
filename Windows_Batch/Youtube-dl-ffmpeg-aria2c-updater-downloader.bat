@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 echo '-----------------------------------------------------------------------------------------'
 echo 'rmccurdy.com ( total hack job but just got sick of youtube-dl needing to be updated all the time )'
 echo 'Proxy support for localhost:8080'
-echo 'ver 2.05'
+echo 'ver 1.0a'
 echo '-----------------------------------------------------------------------------------------'
 
 REM 04/26/2021:  * added fallback to legacy if no file is output in 3 seconds .. ( can't really catch errors on start command without wonky scripting or writing to error files) Reference: https://stackoverflow.com/questions/29740883/how-to-redirect-error-stream-to-variable/38928461#38928461
@@ -29,10 +29,7 @@ CALL :DLYTDL
 CALL :CATCH
 
 )
-
-CALL :CHECKDLL
-CALL :CATCH
-
+ 
 CALL :YTUPDATE
 CALL :CATCH
 
@@ -41,18 +38,6 @@ CALL :RIP
 CALL :CATCH
 
 CALL :THEEND
-
-:CHECKDLL
-echo %date% %time% INFO: Checking for msvcr100.dll
-	(
-	if not exist "%SYSTEMROOT%\SysWOW64\msvcr100.dll" (
-	echo %date% %time% INFO: msvcr100.dll missing downloading from "https://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x86.exe"
-
-	powershell "(New-Object Net.WebClient).DownloadFile('https://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x86.exe', '.\vcredist_x86.exe')" > %temp%/null
-	echo %date% %time% INFO: Installing vcredist_x86.exe 
-	vcredist_x86.exe /q
-	)
-EXIT /B %ERRORLEVEL%
 
 :CATCH
 IF %ERRORLEVEL% NEQ 0 (
@@ -64,11 +49,7 @@ EXIT /B %ERRORLEVEL%
 :INIT
 cd "%~dp0"
 
-REM  time to wait for file to start (keep this high .. as max connectoins per server can make getting initail metadata SLOW ... )
-set /a WAITTIME = 10
-REM   -s Download a file using N connections
-set /a MAX_THREADS = 16
-
+set /a WAITTIME = 15
 
 taskkill /F /IM "youtube-dl.exe" 2> %temp%/null
 CHOICE /C YN /N /T 5 /D Y /M "Update ALL binaries Y/N?"
@@ -97,7 +78,7 @@ EXIT /B %ERRORLEVEL%
 
 :OPENLIST
 cls
-echo %date% %time% INFO: Opening list.txt save/close notepad with the list of URLs you want downloaded!
+echo %date% %time% INFO: Opening list.txt save/close notepad with the list of URLs you want downloaded! Use Chrome plugin "Bulk Media Downloader" to get video URLS if needed
 CHOICE /T 1 /C y /CS /D y > %temp%/null
 notepad list.txt
 EXIT /B %ERRORLEVEL%
@@ -152,22 +133,24 @@ EXIT /B %ERRORLEVEL%
 	mkdir .\downloads\
 	)
 
-	rem SUBS:  youtube-dl --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args " -s %MAX_THREADS% -k 1M"   
-	REM LOW QUALITY: youtube-dl -f "bestvideo[height<=360]+worstaudio/worst[height<=360]"  --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args " -s %MAX_THREADS% -k 1M"   
-	REM LINUX ... youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location /usr/bin/ -o "%(uploader)s - %(title)s - %(id)s.%(ext)s"  -i -a list.txt  --external-downloader aria2c --external-downloader-args "-s %MAX_THREADS% -k 1M
+	rem SUBS:  youtube-dl --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M"   
+	REM LOW QUALITY: youtube-dl -f "bestvideo[height<=360]+worstaudio/worst[height<=360]"  --embed-thumbnail --download-archive ytdl-archive.txt --all-subs --embed-subs --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s.%%(ext)s" -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M"   
+	REM LINUX ... youtube-dl --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location /usr/bin/ -o "%(uploader)s - %(title)s - %(id)s.%(ext)s"  -i -a list.txt  --external-downloader aria2c --external-downloader-args "-x 4 -s 16 -k 1M
 	REM try with proxy too	
 
 	for /F "tokens=*" %%A IN (list.txt) DO (
 		set /a UUID = !RANDOM!
 
 		echo %date% %time% INFO: "%%A" Downloading with aria2c 	
-		start "aria2c %%A"	 cmd /c youtube-dl -w --no-continue --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args "  -s %MAX_THREADS% -x %MAX_THREADS%  -k 1M" "%%A" ^& pause
+		start "aria2c !UUID!"	 cmd /c youtube-dl -w --no-continue  --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args " -x 16 -s 16 -k 1M" "%%A"  ^& pause
 		echo %date% %time% INFO: "%%A" Waiting %WAITTIME% seconds to retry legacy if no file exist
 		CHOICE /T %WAITTIME% /C y /CS /D y > %temp%/null
 
 			if not exist ".\downloads\*!UUID!*.part*" (
-				echo %date% %time% ERROR: "%%A" No part files found trying legacy mode
-				start "LEGACY %%A"	 cmd /c youtube-dl -w --no-continue --download-archive ytdl-archive.txt --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s"    "%%A" ^& pause
+				if not exist ".\downloads\*!UUID!*.mp4" (
+					echo %date% %time% ERROR: "%%A" No part files found trying legacy mode
+					start "LEGACY !UUID!"	 cmd /c youtube-dl -w --no-continue --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s"    "%%A"    ^& pause
+					)
 				)
 		)
 )
