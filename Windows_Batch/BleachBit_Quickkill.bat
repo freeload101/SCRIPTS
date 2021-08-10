@@ -17,10 +17,18 @@ CALL :CATCH
 CALL :DLBB
 CALL :CATCH
 
+IF "%SECURE%" == "YES" (
 CALL :RUNBB
+CALL :CATCH
+CALL :THEEND
+}
+
+CALL :RUNBB_QUICK
 CALL :CATCH
 
 CALL :THEEND
+
+
 
 :CATCH
 IF %ERRORLEVEL% NEQ 0 (
@@ -32,6 +40,12 @@ EXIT /B %ERRORLEVEL%
 :INIT
 cd "%~dp0"
 taskkill /F /IM "bleachbit_console.exe" 2> %temp%/null
+
+CHOICE /C YN /N /T 5 /D Y /M "Securly Delete Files and free space on disk(This will take much longer to perform clean)  Y/N?"
+IF ERRORLEVEL 1 SET UPDATE=YES
+IF ERRORLEVEL 2 SET UPDATE=NO
+SET ERRORLEVEL=0
+
 EXIT /B %ERRORLEVEL%
   
 :DLWGET
@@ -53,6 +67,15 @@ BleachBit_console.exe  --update-winapp2
 powershell "($BBList = cmd /c BleachBit_console.exe -l);$BBListShort = $BBList  -replace '\..*','.*'| select -Unique;cmd /c BleachBit_console.exe  -o --no-uac -c $BBListShort"
 EXIT /B %ERRORLEVEL%
 
+
+
+:RUNBB_QUICK
+echo %date% %time% INFO: Running BleachBit/Updating INI file
+cd .\BleachBit-Portable
+echo %date% %time% INFO: Running BleachBit
+BleachBit_console.exe  --update-winapp2
+powershell "($BBList = cmd /c BleachBit_console.exe -l);$BBListShort = $BBList  -replace '\..*','.*'| select -Unique;cmd /c BleachBit_console.exe --no-uac -c $BBListShort"
+EXIT /B %ERRORLEVEL%
 
 
 :QUICKKILL
