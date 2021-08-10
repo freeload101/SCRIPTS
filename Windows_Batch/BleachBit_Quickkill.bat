@@ -6,14 +6,17 @@ echo 'rmccurdy.com ( BleachBit Downloader)'
 echo 'ver 1.0a'
 echo '-----------------------------------------------------------------------------------------'
 
+
+
+
 CALL :INIT
 
 CALL :QUICKKILL
- 
- 
+CALL :CATCH
+
 CALL :DLWGET
 CALL :CATCH
- 
+
 CALL :DLBB
 CALL :CATCH
 
@@ -21,9 +24,9 @@ IF "%SECURE%" == "YES" (
 CALL :RUNBB
 CALL :CATCH
 CALL :THEEND
-}
+)
 
-CALL :RUNBB_QUICK
+CALL :RUNBBQUICK
 CALL :CATCH
 
 CALL :THEEND
@@ -41,9 +44,9 @@ EXIT /B %ERRORLEVEL%
 cd "%~dp0"
 taskkill /F /IM "bleachbit_console.exe" 2> %temp%/null
 
-CHOICE /C YN /N /T 5 /D Y /M "Securly Delete Files and free space on disk(This will take much longer to perform clean)  Y/N?"
-IF ERRORLEVEL 1 SET UPDATE=YES
-IF ERRORLEVEL 2 SET UPDATE=NO
+CHOICE /C YN /N /T 5 /D Y /M "Securly Delete Files and free space on disk. This will take much longer to perform clean! (Y/N) ?"
+IF ERRORLEVEL 1 SET SECURE=YES
+IF ERRORLEVEL 2 SET SECURE=NO
 SET ERRORLEVEL=0
 
 EXIT /B %ERRORLEVEL%
@@ -60,7 +63,7 @@ powershell "(Expand-Archive .\BleachBit-4.4.0-portable.zip -DestinationPath . -F
 EXIT /B %ERRORLEVEL%
 
 :RUNBB
-echo %date% %time% INFO: Running BleachBit/Updating INI file
+echo %date% %time% INFO: Running Secure BleachBit/Updating INI file
 cd .\BleachBit-Portable
 echo %date% %time% INFO: Running BleachBit
 BleachBit_console.exe  --update-winapp2
@@ -69,8 +72,8 @@ EXIT /B %ERRORLEVEL%
 
 
 
-:RUNBB_QUICK
-echo %date% %time% INFO: Running BleachBit/Updating INI file
+:RUNBBQUICK
+echo %date% %time% INFO: Running Quick BleachBit/Updating INI file
 cd .\BleachBit-Portable
 echo %date% %time% INFO: Running BleachBit
 BleachBit_console.exe  --update-winapp2
@@ -122,3 +125,4 @@ EXIT /B %ERRORLEVEL%
 echo %date% %time% INFO: All done!
 pause
 exit
+
