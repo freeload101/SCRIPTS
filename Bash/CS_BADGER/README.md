@@ -67,9 +67,7 @@ bash CS_BADGER.py -q 'search
 
 * Rewrite in Python with secure coding practices!
  
-
-Badgers are known as the gruff and grumpy residents of hillsides and prairies. These striped-faced mustelids are expert excavators, skilled at plucking out earthworms, grubs, insects and all sorts of other critters. Badgers often are portrayed in movies and popular literature as wise and practical.
-
+ 
 
 
 *get CS_BADGER working in python ( reference working python code I was given from linkedin ) https://github.com/freeload101/SCRIPTS/tree/master/Bash/CS_BADGER
@@ -99,4 +97,22 @@ Future state:
 * scores come back to weight the alert so for example if a IP hit happens on a host and a new IOC is found in that search it's searched back against ES and CS Splunk and maybe it finds 4 other host that have the same security events in CS Splunk that we missed some how etc ....
 
 * Start to  automate Threat hunting searches in CS be sent to ES  based off of https://github.com/freeload101/SCRIPTS/tree/master/CrowdStrike%20Threat%20Hunting
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*Badgers are known as the gruff and grumpy residents of hillsides and prairies. These striped-faced mustelids are expert excavators, skilled at plucking out earthworms, grubs, insects and all sorts of other critters. Badgers often are portrayed in movies and popular literature as wise and practical.*
+
 
