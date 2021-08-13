@@ -70,3 +70,20 @@ bash CS_BADGER.py -q 'search
 
 Badgers are known as the gruff and grumpy residents of hillsides and prairies. These striped-faced mustelids are expert excavators, skilled at plucking out earthworms, grubs, insects and all sorts of other critters. Badgers often are portrayed in movies and popular literature as wise and practical.
 
+
+
+*get CS_BADGER working in python ( reference working python code I was given from linkedin ) https://github.com/freeload101/SCRIPTS/tree/master/Bash/CS_BADGER
+*get SAML working in PING SSO with python  ( https://sso.COMPANY.com/XXXXXXXXXXXXXX/XXXXXXXXXXXXX.ping?PartnerSpId=https%3A%2F%2Ffalcon.crowdstrike.com%2Fsaml%2Fmetadata )
+*combine SAML and CS_BADGER python into a single script
+*work out the logic / design of how the script could be used as a splunk app
+-provide verbose output for debugging
+-allow any input into the script from ES example "give me ES SrcIP from an alert and make it a input to badger Splunk app so that ES alerts have CS Threat hunting results in them based on IOA;s like SRC,DEST,PORT,USERNAME etc )
+-sort out howto properly add data to a index and/or get suggestions from Andy on howto get the data in Splunk besides maybe just a |outputlookup/append
+*get requirements for input of the Splunk app (username:password,hash,SSO URL,security ?)
+*Convert the python script to Splunk app
+*Publish APP to internet and Splunk app store for free and sit-back and enjoy the vendors hating on your for making it easy to get data into Splunk from Croudstrike
+
+Future state:
+* scores come back to weight the alert so for example if a IP hit happens on a host and a new IOC is found in that search it's searched back against ES and CS Splunk and maybe it finds 4 other host that have the same security events in CS Splunk that we missed some how etc ....
+* Start to  automate Threat hunting searches in CS be sent to ES  based off of https://github.com/freeload101/SCRIPTS/tree/master/CrowdStrike%20Threat%20Hunting
+
