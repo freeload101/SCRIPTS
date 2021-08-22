@@ -1,0 +1,35 @@
+$ErrorActionPreference="silentlycontinue"
+$rule = New-Object System.Security.AccessControl.RegistryAccessRule (([System.Security.Principal.SecurityIdentifier]("S-1-1-0")).Translate([System.Security.Principal.NTAccount]).Value,"SetValue, CreateSubKey","Deny")
+$keys = @(
+"HKCU:\Software\Microsoft\Windows\Shell\Bags",
+"HKCU:\Software\Microsoft\Windows\Shell\BagMRU",
+"HKCU:\Software\Microsoft\Windows\ShellNoRoam\Bags",
+"HKCU:\Software\Microsoft\Windows\ShellNoRoam\BagMRU",
+"HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags",
+"HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\BagMRU",
+"HKCU:\Software\Classes\Wow6432Node\Local Settings\Software\Microsoft\Windows\Shell\Bags",
+"HKCU:\Software\Classes\Wow6432Node\Local Settings\Software\Microsoft\Windows\Shell\BagMRU",
+"HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache",
+"HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\CIDSizeMRU",
+"HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\FirstFolder",
+"HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\LastVisitedPidlMRU",
+"HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\LastVisitedPidlMRULegacy",
+"HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU")
+foreach ($i in $keys)
+{
+Remove-Item -Path $i -Recurse -Force
+New-Item -Path $i -Force
+$acl = Get-Acl $i
+$acl.SetAccessRule($rule)
+$acl | Set-Acl -Path $i
+}
+
+
+reg add "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell"  /v "BagMRU Size" /t REG_DWORD /d 1 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"  /v "DisableThumbnailCache" /t REG_DWORD /d 1 /f
+
+ 
+taskkill /im explorer.exe /f 
+reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify" /v IconStreams /f 
+reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify" /v PastIconsStream /f start "Shell Restarter" /d "%systemroot%" /i /normal explorer.exe
+
