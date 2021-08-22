@@ -67,7 +67,7 @@ echo %date% %time% INFO: Running Secure BleachBit/Updating INI file
 cd .\BleachBit-Portable
 echo %date% %time% INFO: Running BleachBit
 BleachBit_console.exe  --update-winapp2
-powershell "($BBList = cmd /c BleachBit_console.exe -l);$BBListShort = $BBList  -replace '\..*','.*'| select -Unique;cmd /c BleachBit_console.exe  -o --no-uac -c $BBListShort"
+powershell "($BBList = cmd /c BleachBit_console.exe -l| find /v "system.free_disk_space");$BBListShort = $BBList  -replace '\..*','.*'| select -Unique;cmd /c BleachBit_console.exe  -o --no-uac -c $BBListShort"
 EXIT /B %ERRORLEVEL%
 
 
