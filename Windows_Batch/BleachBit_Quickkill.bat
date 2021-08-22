@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 echo '-----------------------------------------------------------------------------------------'
 echo 'rmccurdy.com ( BleachBit Downloader)'
-echo 'ver 1.0a'
+echo 'ver 2.0a'
 echo '-----------------------------------------------------------------------------------------'
 
 
@@ -43,6 +43,17 @@ EXIT /B %ERRORLEVEL%
 :INIT
 cd "%~dp0"
 taskkill /F /IM "bleachbit_console.exe" 2> %temp%/null
+
+
+reg add "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell"  /v "BagMRU Size" /t REG_DWORD /d 1 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"  /v "DisableThumbnailCache" /t REG_DWORD /d 1 /f
+
+ 
+taskkill /im explorer.exe /f 
+reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify" /v IconStreams /f 
+reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify" /v PastIconsStream /f start "Shell Restarter" /d "%systemroot%" /i /normal explorer.exe
+
+
 
 CHOICE /C YN /N /T 5 /D Y /M "Securly Delete Files and free space on disk. This will take much longer to perform clean Y/N"
 IF ERRORLEVEL 1 SET SECURE=YES
