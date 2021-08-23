@@ -66,12 +66,13 @@ wget -q -U "rmccurdy.com"    -e robots=off  -nd -r  "https://download.bleachbit.
 powershell "(Expand-Archive .\BleachBit-4.4.0-portable.zip -DestinationPath . -Force)"
 EXIT /B %ERRORLEVEL%
 
+
 :RUNBB
 echo %date% %time% INFO: Running Secure BleachBit/Updating INI file
 cd .\BleachBit-Portable
 echo %date% %time% INFO: Running BleachBit
 BleachBit_console.exe  --update-winapp2 >>  1>> output.log 2>&1
-powershell  -command "& {$BBList = cmd /c BleachBit_console.exe -l ; $BBcmd = "C:\DELETE\BleachBit-Portable\BleachBit_console.exe -o --no-uac -c $BBList" }"
+powershell  -command "& {$BBList = cmd /c BleachBit_console.exe -l ; $BBcmd = ".\BleachBit_console.exe -o --no-uac -c $BBList" }"
 EXIT /B %ERRORLEVEL%
 
 
@@ -81,8 +82,9 @@ echo %date% %time% INFO: Running Quick BleachBit/Updating INI file
 cd .\BleachBit-Portable
 echo %date% %time% INFO: Running BleachBit
 BleachBit_console.exe  --update-winapp2 1>> output.log 2>&1
-powershell  -command "& {$BBList = cmd /c BleachBit_console.exe -l ; $BBList -replace 'system.free_disk_space','' ; $BBcmd = "C:\DELETE\BleachBit-Portable\BleachBit_console.exe --no-uac -c $BBList" }"
+powershell  -command "& {$BBList = cmd /c BleachBit_console.exe -l ; $BBList -replace 'system.free_disk_space','' ;  $BBcmd = ".\BleachBit_console.exe --no-uac -c $BBList" }"
 EXIT /B %ERRORLEVEL%
+
 
 
 :QUICKKILL
