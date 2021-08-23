@@ -45,14 +45,6 @@ cd "%~dp0"
 taskkill /F /IM "bleachbit_console.exe" 2> %temp%/null
 
 
-reg add "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell"  /v "BagMRU Size" /t REG_DWORD /d 1 /f
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"  /v "DisableThumbnailCache" /t REG_DWORD /d 1 /f
-
- 
-taskkill /im explorer.exe /f 
-reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify" /v IconStreams /f 
-reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify" /v PastIconsStream /f 
-start "Shell Restarter" /d "%systemroot%" /i /normal explorer.exe
 
 
 
@@ -78,8 +70,8 @@ EXIT /B %ERRORLEVEL%
 echo %date% %time% INFO: Running Secure BleachBit/Updating INI file
 cd .\BleachBit-Portable
 echo %date% %time% INFO: Running BleachBit
-BleachBit_console.exe  --update-winapp2
-powershell "($BBList = cmd /c BleachBit_console.exe -l| find /v "system.free_disk_space");$BBListShort = $BBList  -replace '\..*','.*'| select -Unique;cmd /c BleachBit_console.exe  -o --no-uac -c $BBListShort"
+BleachBit_console.exe  --update-winapp2 >>  1>> output.log 2>&1
+powershell  -command "& {$BBList = cmd /c BleachBit_console.exe -l ; $BBcmd = "C:\DELETE\BleachBit-Portable\BleachBit_console.exe -o --no-uac -c $BBList" }"
 EXIT /B %ERRORLEVEL%
 
 
@@ -88,8 +80,8 @@ EXIT /B %ERRORLEVEL%
 echo %date% %time% INFO: Running Quick BleachBit/Updating INI file
 cd .\BleachBit-Portable
 echo %date% %time% INFO: Running BleachBit
-BleachBit_console.exe  --update-winapp2
-powershell "($BBList = cmd /c BleachBit_console.exe -l);$BBListShort = $BBList  -replace '\..*','.*'| select -Unique;cmd /c BleachBit_console.exe --no-uac -c $BBListShort"
+BleachBit_console.exe  --update-winapp2 1>> output.log 2>&1
+powershell  -command "& {$BBList = cmd /c BleachBit_console.exe -l ; $BBList -replace 'system.free_disk_space','' ; $BBcmd = "C:\DELETE\BleachBit-Portable\BleachBit_console.exe --no-uac -c $BBList" }"
 EXIT /B %ERRORLEVEL%
 
 
@@ -129,11 +121,21 @@ REM dont remove this or things will go wrong...it will fix the service back
 sc config TrustedInstaller binPath= "C:\Windows\servicing\TrustedInstaller.exe"   1>> output.log 2>&1
 sc config TrustedInstaller binPath= "C:\Windows\servicing\TrustedInstaller.exe"  1>> output.log 2>&1
 )
-DEL /F /Q "%tmpfl%"
-echo All clean!
+DEL /F /Q "%tmpfl%"c
 EXIT /B %ERRORLEVEL%
 
 :THEEND
 echo %date% %time% INFO: All done!
+
+reg add "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell"  /v "BagMRU Size" /t REG_DWORD /d 1 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"  /v "DisableThumbnailCache" /t REG_DWORD /d 1 /f
+
+ 
+taskkill /im explorer.exe /f 
+reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify" /v IconStreams /f 
+reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify" /v PastIconsStream /f 
+start "Shell Restarter" /d "%systemroot%" /i /normal explorer.exe
+
+
 pause
 exit
