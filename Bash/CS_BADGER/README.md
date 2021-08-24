@@ -57,6 +57,8 @@ bash CS_BADGER.py -k
 
 * Add cookie valid checks
 
+* Add config yaml file and rewrite in Python
+
 * Test/Add Support ?/Document single quote and doubble quote support within single quote example:
 
 bash CS_BADGER.py -q 'search  
