@@ -48,7 +48,7 @@ taskkill /F /IM "bleachbit_console.exe" 2> %temp%/null
 
 
 
-CHOICE /C YN /N /T 5 /D Y /M "Securly Delete Files and free space on disk. This will take much longer to perform clean Y/N"
+CHOICE /C YN /N /T 5 /D N /M "Securly Delete Files and free space on disk. This will take much longer to perform clean Y/N"
 IF ERRORLEVEL 1 SET SECURE=YES
 IF ERRORLEVEL 2 SET SECURE=NO
 SET ERRORLEVEL=0
