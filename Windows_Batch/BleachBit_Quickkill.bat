@@ -14,6 +14,9 @@ CALL :INIT
 CALL :QUICKKILL
 CALL :CATCH
 
+CALL :RUNCLEANMGR
+CALL :CATCH
+
 CALL :DLWGET
 CALL :CATCH
 
@@ -54,7 +57,17 @@ IF ERRORLEVEL 2 SET SECURE=NO
 SET ERRORLEVEL=0
 
 EXIT /B %ERRORLEVEL%
-  
+
+
+:RUNCLEANMGR
+echo %date% %time% INFO: Running windows cleanmgr first
+FOR /F "tokens=* delims=" %%A in ('reg QUERY "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches"') do (
+REG ADD "%%A"  /v StateFlags0777 /t REG_DWORD /d 00000002 /f
+)
+cleanmgr /sagerun:777
+EXIT /B %ERRORLEVEL%
+
+
 :DLWGET
 echo %date% %time% INFO: Downloading wget via Powershell https://eternallybored.org/misc/wget/1.20.3/64/wget.exe (Warning: May NOT be latest binary !)
 powershell "(New-Object Net.WebClient).DownloadFile('https://eternallybored.org/misc/wget/1.20.3/64/wget.exe', '.\wget.exe')" > %temp%/null
