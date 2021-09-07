@@ -101,42 +101,14 @@ EXIT /B %ERRORLEVEL%
 
 
 :QUICKKILL
-echo %date% %time% INFO: Killing all tasks not in whitelist
-CD /D "%~DP0"
-SET Exclusions=CSFalconContainer.exe CSFalconService.exe SecurityHealthService.exe SecurityHealthSystray.exe cmd.exe explorer.exe taskmgr.exe svchost.exe conhost.exe find.exe lsass.exe dwm.exe  sihost.exe fontdrvhost.exe ctfmon.exe  tasklist.exe dllhost.exe lsaiso.exe
+# Quickkill
+echo Downloading Quickkill"  
+powershell "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/freeload101/SCRIPTS/master/Windows_Batch/quickkill.bat.txt', '.\quickkill.bat')" 
 
-SET tmpfl=%~n0tmp.dat
-IF EXIST "%tmpfl%" DEL /F /Q "%tmpfl%"
-IF EXIST "output.log" DEL /F /Q "output.log"
-SET Exclusions=%Exclusions% taskkill.exe tasklist.exe
-
-SETLOCAL ENABLEDELAYEDEXPANSION
-FOR /F "DELIMS=: TOKENS=2" %%A IN ('TASKLIST    /FO LIST ^| FIND /I "Image name:"') DO (
-    SET var=%%~A
-    SET var=!var: =!
-    ECHO !var! | FINDSTR /I /V "%Exclusions%">>"%tmpfl%"
-)
-FOR /F "USEBACKQ TOKENS=*" %%A IN ("%tmpfl%") DO (
-	rem DEBUG ECHO KILLING %%~A	
-	rem DEBUG ping -n 1 -w 1 123.123.123.123 > %temp%\null
-sc stop "TrustedInstaller"    1>> output.log 2>&1
-
-sc config TrustedInstaller binPath= "cmd /c TASKKILL /F  /IM %%~A"    1>> output.log 2>&1
-
-echo killing %%~A  1>> output.log 2>&1
-
-echo killing %%~A  as Trustedinstaller 
-sc start "TrustedInstaller"   1>> output.log 2>&1
-
-echo killing %%~A  as current user
-TASKKILL /F  /IM %%~A 1>> output.log 2>&1
+echo Running Quickkill 
+cmd /c .\quickkill.bat
 
 
-REM dont remove this or things will go wrong...it will fix the service back
-sc config TrustedInstaller binPath= "C:\Windows\servicing\TrustedInstaller.exe"   1>> output.log 2>&1
-sc config TrustedInstaller binPath= "C:\Windows\servicing\TrustedInstaller.exe"  1>> output.log 2>&1
-)
-DEL /F /Q "%tmpfl%"c
 EXIT /B %ERRORLEVEL%
 
 :THEEND
