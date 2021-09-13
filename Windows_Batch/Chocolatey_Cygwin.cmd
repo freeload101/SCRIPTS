@@ -49,6 +49,14 @@ echo [+] Disabling PowerShell Executionpolicy
 ::
 
 
+
+
+echo [+] Disableing Windows Media Player
+DISM /online /disable-feature /featurename:WindowsMediaPlayer
+%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Disable-WindowsOptionalFeature -Online -FeatureName WindowsMediaPlayer"
+%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Disable-WindowsOptionalFeature –FeatureName WindowsMediaPlayer -Online"
+
+
 echo [+] Downloading/Installing RemoveW10Bloat.bat
 ::download install.ps1
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://rmccurdy.com/.scripts/Windowd_10_Debloat_security/RemoveW10Bloat.bat','%DIR%RemoveW10Bloat.bat'))"
@@ -67,8 +75,6 @@ echo [+] Downloading/Installing chocolatey
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://chocolatey.org/install.ps1','%DIR%install.ps1'))"
 ::run installer
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%DIR%install.ps1' %*"
-
-
 
 
 
