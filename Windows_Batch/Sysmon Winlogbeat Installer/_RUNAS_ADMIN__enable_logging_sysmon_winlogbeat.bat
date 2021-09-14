@@ -171,7 +171,7 @@ rd /q/s C:\ProgramData\winlogbeat
 
 echo [+] %date% %time% INFO: Downloading Winlogbeat...
  
-@powershell (new-object System.Net.WebClient).DownloadFile('https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-7.6.0-windows-x86_64.zip','%~dp0\winlogbeat.zip')
+@powershell (new-object System.Net.WebClient).DownloadFile('https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-7.14.1-windows-x86_64.zip','%~dp0\winlogbeat.zip')
 
  
 @powershell Expand-Archive -force -LiteralPath "%~dp0winlogbeat.zip" -DestinationPath '%~dp0'
