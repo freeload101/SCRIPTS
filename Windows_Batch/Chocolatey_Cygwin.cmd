@@ -57,19 +57,12 @@ DISM /online /disable-feature /featurename:WindowsMediaPlayer
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Disable-WindowsOptionalFeature –FeatureName WindowsMediaPlayer -Online"
 
 
-echo [+] Downloading/Installing RemoveW10Bloat.bat
+echo [+] Downloading/Installing Win10Hardening_Debloat.ps1
 ::download install.ps1
-%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://rmccurdy.com/.scripts/Windowd_10_Debloat_security/RemoveW10Bloat.bat','%DIR%RemoveW10Bloat.bat'))"
+%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/freeload101/SCRIPTS/master/Windows_Batch/Win10Hardening_Debloat.ps1','%DIR%Win10Hardening_Debloat.ps1'))"
 ::run installer
-%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%DIR%RemoveW10Bloat.bat' %*"
-
-
-echo [+] Downloading/Installing remove-default-apps.ps1
-::download install.ps1
-%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/freeload101/SCRIPTS/master/Windows_Batch/remove-default-apps.ps1','%DIR%remove-default-apps.ps1'))"
-::run installer
-%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%DIR%remove-default-apps.ps1' %*"
-
+%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%DIR%Win10Hardening_Debloat.ps1' %*"
+ 
 echo [+] Downloading/Installing chocolatey
 ::download install.ps1
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://chocolatey.org/install.ps1','%DIR%install.ps1'))"
