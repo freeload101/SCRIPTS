@@ -2796,7 +2796,6 @@ schtasks /Change /TN "Microsoft\Windows\WindowsUpdate\Automatic App Update" /Dis
 # We will have to rename the Cortana App folder (add ".bak" to its name), but this can be done only if Cortana is not running.
 # The issue is that when Cortana process (SearchUI) is killed, it respawns very quickly
 # So the following code needs to be quick (and it is) so we can manage to rename the folder
-REM
 # Disabling Cortana this way on Version 1703 (RS2) will render all items in the Start Menu unavailable.
 # So this is commented out for now until a better solution is found.
 # taskkill /F /IM SearchUI.exe
