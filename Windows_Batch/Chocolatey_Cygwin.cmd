@@ -66,7 +66,7 @@ echo [+] Downloading/Installing RemoveW10Bloat.bat
 
 echo [+] Downloading/Installing remove-default-apps.ps1
 ::download install.ps1
-%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://rmccurdy.com/.scripts/Windowd_10_Debloat_security/remove-default-apps.ps1','%DIR%remove-default-apps.ps1'))"
+%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/freeload101/SCRIPTS/master/Windows_Batch/remove-default-apps.ps1','%DIR%remove-default-apps.ps1'))"
 ::run installer
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%DIR%remove-default-apps.ps1' %*"
 
