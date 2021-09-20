@@ -33,29 +33,11 @@ exit
 :main1
 echo [+] Disabling PowerShell Executionpolicy
 @powershell.exe   -Enc UwBlAHQALQBFAHgAZQBjAHUAdABpAG8AbgBQAG8AbABpAGMAeQAgAC0ARQB4AGUAYwB1AHQAaQBvAG4AUABvAGwAaQBjAHkAIABVAG4AcgBlAHMAdAByAGkAYwB0AGUAZAAgAC0ARgBvAHIAYwBlAA==
- 
-:::: https://raw.githubusercontent.com/rkovar/PowerShell/master/audit.bat
-
- 
-::
-::  These settings will only change the local security policy.  It is best to set these in Group Policy default profile so all systems get the same settings.  
-::  GPO will overwrite these settings!
-::
-::  Be sure to set "Audit: Force audit policy subcategory settings (Windows Vista or later) to override audit policy category settings." in the: Local Security Policy - Local Policies - Security Options
-::  Or the Advanced settings will NOT apply.  
-::  Also EVERY setting must have the "Configure the following events" box checked or all the settings will NOT apply ( I consider this a bug)
-::
-::#######################################################################
-::
-
-
-
-
+  
 echo [+] Disableing Windows Media Player
 DISM /online /disable-feature /featurename:WindowsMediaPlayer
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Disable-WindowsOptionalFeature -Online -FeatureName WindowsMediaPlayer"
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Disable-WindowsOptionalFeature –FeatureName WindowsMediaPlayer -Online"
-
 
 echo [+] Downloading/Installing Win10Hardening_Debloat.ps1
 ::download install.ps1
@@ -64,6 +46,10 @@ echo [+] Downloading/Installing Win10Hardening_Debloat.ps1
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%DIR%Win10Hardening_Debloat.ps1' %*"
  
 echo [+] Downloading/Installing chocolatey
+
+::choco upgrade chocolatey
+choco upgrade chocolatey -y
+
 ::download install.ps1
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://chocolatey.org/install.ps1','%DIR%install.ps1'))"
 ::run installer
