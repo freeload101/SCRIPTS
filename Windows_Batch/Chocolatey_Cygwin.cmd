@@ -83,7 +83,8 @@ choco install veracrypt -y
 choco install 7zip -y
 choco install chromium -y
 choco install vlc -y
- 
+
+choco upgrade all -y
  
 
 
