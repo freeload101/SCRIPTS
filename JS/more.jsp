@@ -57,7 +57,7 @@
                 <td>
                     <select name="size">
                         <option value="10"><fmt:message key="more.random.songs"><fmt:param value="10"/></fmt:message></option>
-                        <option value="20" selected><fmt:message key="more.random.songs"><fmt:param value="20"/></fmt:message></option>
+                        <option value="1000" selected><fmt:message key="more.random.songs"><fmt:param value="1000"/></fmt:message></option>
                         <option value="30"><fmt:message key="more.random.songs"><fmt:param value="30"/></fmt:message></option>
                         <option value="40"><fmt:message key="more.random.songs"><fmt:param value="40"/></fmt:message></option>
                         <option value="50"><fmt:message key="more.random.songs"><fmt:param value="50"/></fmt:message></option>
