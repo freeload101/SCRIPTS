@@ -9,6 +9,16 @@
 // @grant        none
 // ==/UserScript==
 
+
+// more smiple examples
+// https://greasyfork.org/en/scripts/5644-wish-show-seller
+// https://greasyfork.org/en/scripts/5627-du%C5%BCe-zdj%C4%99cia-wish-com
+// https://greasyfork.org/en/scripts/5008-wish-com-tweaks
+// https://greasyfork.org/en/scripts/368540-wish-com-price-filter-more-edited
+// https://greasyfork.org/en/scripts/393000-wish-com-leave-only-limited-quantity-deals
+// https://greasyfork.org/en/scripts/38097-wish-com-price-filter-more
+
+
 (function() {
     'use strict';
 
