@@ -23,7 +23,7 @@ find . -iname "*.vtt" -exec python vtt2text.py '{}' \;
 
 rm *.vtt
 
-echo `date` 'DEBUG: Extract 100 "keyword extraction" using yake' this may take a while on a lot of videos 
+echo `date` 'DEBUG: Extract 100 "keyword extraction" using yake this may take a while on a lot of videos'
 find . -name '*\.en\.txt'  -type f ! -iregex '.*(vosk|yake|vtt2text)\.txt$' -exec sh -c 'yake -t 100 -i  "$0" >"$0_yake.txt"' {} \;
 find . -iname '*\.en\.txt' -exec mv '{}' '{}'.vtt2text.txt \;
 
