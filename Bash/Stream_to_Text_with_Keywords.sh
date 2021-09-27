@@ -1,3 +1,4 @@
+# yake is broken as it has not output options 
 IFS=$'\n';
 
 echo `date` "DEBUG: Only supports (en) English with youtube URLs"
@@ -22,8 +23,8 @@ find . -iname "*.vtt" -exec python vtt2text.py '{}' \;
 
 rm *.vtt
 
-echo `date` 'DEBUG: Extract 100 "keyword extraction" using yake' this may take a while on a lot of videos
-find  . -iname '*\.en\.txt' -regextype egrep -type f ! -iregex '.*(vosk|yake|vtt2text)\.txt$' -exec sh -c "yake -i '{}' -t 100 > '{}'_yake.txt" \;
+echo `date` 'DEBUG: Extract 100 "keyword extraction" using yake' this may take a while on a lot of videos 
+find . -name '*\.en\.txt'  -type f ! -iregex '.*(vosk|yake|vtt2text)\.txt$' -exec sh -c 'yake -t 100 -i  "$0" >"$0_yake.txt"' {} \;
 find . -iname '*\.en\.txt' -exec mv '{}' '{}'.vtt2text.txt \;
 
 
