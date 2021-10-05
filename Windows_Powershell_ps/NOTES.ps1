@@ -12,21 +12,25 @@ $output | -replace '.*username=\"(.*)" email=\"(.*)" recommend.*','$1,$2
 
 ------------
 
-
 function Enumerate-ObjectProperties {
 
-$script:Level = 1
-
-param (
+  <#
+    .SYNOPSIS
+        Enumerate Powershell Object Properties
+    .PARAMETER TYPE
+        Object or String .. hell I have no idea .. GD powershell
+    #>
+    [CmdletBinding()]
+    param (
 
 [psobject] $Object,
 
 [int32] $Depth = 10,
 
 [string] $Root
-
-)
-
+        )
+ 
+ 
 
 
 Write-Output $($Object.PSObject.Properties | Format-Table @{ Label = 'Type'; Expression = { "[$($($_.TypeNameOfValue).Split('.')[-1])]" } }, Name, Value -AutoSize -Wrap | Out-String)
@@ -55,6 +59,7 @@ $Level--
 
 }
 
+ 
 
 -----------
 
