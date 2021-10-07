@@ -56,3 +56,4 @@ echo All clean!
  
 ping -n 1  123.123.123.123 > %temp%/derp 
 :: removed to support Bleachbit/quickkill   taskkill /F /IM cmd.exe
+exit
