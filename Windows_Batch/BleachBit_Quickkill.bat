@@ -66,12 +66,12 @@ EXIT /B %ERRORLEVEL%
 
 :DELALLUSERS
 echo %date% %time% INFO: Removing All users temp files
-FOR /F "delims==" %%A IN ('DIR/B "C:\Users"') DO rd /s/q "C:\Users\%%A\AppData\Local\Microsoft\Windows\Temporary Internet Files\Content.IE5\"
-FOR /F "delims==" %%A IN ('DIR/B "C:\Users"') DO rd /s/q "C:\Users\%%A\AppData\Local\History\"
-FOR /F "delims==" %%A IN ('DIR/B "C:\Users"') DO rd /s/q "C:\Users\%%A\AppData\Local\Temp\"
-FOR /F "delims==" %%A IN ('DIR/B "C:\Users"') DO rd /s/q "C:\Users\%%A\AppData\Roaming\Microsoft\Windows\Cookies\"
-FOR /F "delims==" %%A IN ('DIR/B "C:\Users"') DO rd /s/q "C:\Users\%%A\AppData\Roaming\Microsoft\Windows\Recent\"
-FOR /F "delims==" %%A IN ('DIR/B "C:\Users"') DO rd /s/q "C:\Users\%%A\Local Settings\Temporary Internet Files\"
+FOR /F "delims==" %%A IN ('DIR/B "C:\Users"') DO rd /s/q "C:\Users\%%A\AppData\Local\Microsoft\Windows\Temporary Internet Files\Content.IE5\" 1>> output.log 2>&1
+FOR /F "delims==" %%A IN ('DIR/B "C:\Users"') DO rd /s/q "C:\Users\%%A\AppData\Local\History\" 1>> output.log 2>&1
+FOR /F "delims==" %%A IN ('DIR/B "C:\Users"') DO rd /s/q "C:\Users\%%A\AppData\Local\Temp\" 1>> output.log 2>&1
+FOR /F "delims==" %%A IN ('DIR/B "C:\Users"') DO rd /s/q "C:\Users\%%A\AppData\Roaming\Microsoft\Windows\Cookies\" 1>> output.log 2>&1
+FOR /F "delims==" %%A IN ('DIR/B "C:\Users"') DO rd /s/q "C:\Users\%%A\AppData\Roaming\Microsoft\Windows\Recent\" 1>> output.log 2>&1
+FOR /F "delims==" %%A IN ('DIR/B "C:\Users"') DO rd /s/q "C:\Users\%%A\Local Settings\Temporary Internet Files\" 1>> output.log 2>&1
 EXIT /B %ERRORLEVEL%
 
 
