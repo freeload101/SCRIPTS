@@ -33,12 +33,7 @@ exit
 :main1
 echo [+] Disabling PowerShell Executionpolicy
 @powershell.exe   -Enc UwBlAHQALQBFAHgAZQBjAHUAdABpAG8AbgBQAG8AbABpAGMAeQAgAC0ARQB4AGUAYwB1AHQAaQBvAG4AUABvAGwAaQBjAHkAIABVAG4AcgBlAHMAdAByAGkAYwB0AGUAZAAgAC0ARgBvAHIAYwBlAA==
-  
-echo [+] Disableing Windows Media Player
-DISM /online /disable-feature /featurename:WindowsMediaPlayer
-%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Disable-WindowsOptionalFeature -Online -FeatureName WindowsMediaPlayer"
-%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Disable-WindowsOptionalFeature –FeatureName WindowsMediaPlayer -Online"
-
+   
 echo [+] Downloading/Installing Win10Hardening_Debloat.ps1
 ::download install.ps1
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/freeload101/SCRIPTS/master/Windows_Batch/Win10Hardening_Debloat.ps1','%DIR%Win10Hardening_Debloat.ps1'))"
