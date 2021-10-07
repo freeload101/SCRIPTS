@@ -3,11 +3,7 @@ setlocal enabledelayedexpansion
 
 echo '-----------------------------------------------------------------------------------------'
 echo 'rmccurdy.com ( BleachBit Downloader)'
-echo 'ver 2.1'
 echo '-----------------------------------------------------------------------------------------'
-
-
-
 
 CALL :INIT
 
@@ -19,10 +15,7 @@ CALL :CATCH
 
 CALL :RUNCLEANMGR
 CALL :CATCH
-
-CALL :DLWGET
-CALL :CATCH
-
+ 
 CALL :DLBB
 CALL :CATCH
 
@@ -82,14 +75,9 @@ FOR /F "delims==" %%A IN ('DIR/B "C:\Users"') DO rd /s/q "C:\Users\%%A\Local Set
 EXIT /B %ERRORLEVEL%
 
 
-:DLWGET
-echo %date% %time% INFO: Downloading wget via Powershell https://eternallybored.org/misc/wget/1.20.3/64/wget.exe (Warning: May NOT be latest binary !)
-powershell "(New-Object Net.WebClient).DownloadFile('https://eternallybored.org/misc/wget/1.20.3/64/wget.exe', '.\wget.exe')" > %temp%/null
-EXIT /B %ERRORLEVEL%
-
 :DLBB
 echo %date% %time% INFO: Downloading BleachBit
-wget -q -U "rmccurdy.com"    -e robots=off  -nd -r  "https://download.bleachbit.org/BleachBit-4.4.0-portable.zip" --max-redirect 1 -l 1 -A "*.zip" -R '*.gz,release*.*' --regex-type pcre --accept-regex ".*.zip"
+powershell "(New-Object Net.WebClient).DownloadFile('https://download.bleachbit.org/BleachBit-4.4.0-portable.zip', '.\BleachBit-4.4.0-portable.zip')" 
 powershell "(Expand-Archive .\BleachBit-4.4.0-portable.zip -DestinationPath . -Force)"
 EXIT /B %ERRORLEVEL%
 
@@ -98,7 +86,7 @@ EXIT /B %ERRORLEVEL%
 echo %date% %time% INFO: Running Secure BleachBit/Updating INI file
 cd .\BleachBit-Portable
 echo %date% %time% INFO: Running BleachBit
-BleachBit_console.exe  --update-winapp2 >>  1>> output.log 2>&1
+BleachBit_console.exe  --update-winapp2 1>> output.log 2>&1
 powershell  -command "& {$BBList = cmd /c BleachBit_console.exe -l ; $BBcmd = ".\BleachBit_console.exe -o --no-uac -c $BBList" }"
 EXIT /B %ERRORLEVEL%
 
@@ -115,14 +103,9 @@ EXIT /B %ERRORLEVEL%
 
 
 :QUICKKILL
-# Quickkill
-echo Downloading Quickkill"  
+echo %date% %time% INFO: Downloading/Running Quickkill.bat
 powershell "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/freeload101/SCRIPTS/master/Windows_Batch/quickkill.bat.txt', '.\quickkill.bat')" 
-
-echo Running Quickkill 
-cmd /c .\quickkill.bat
-
-
+start /W "quickkill" CALL .\quickkill.bat
 EXIT /B %ERRORLEVEL%
 
 :THEEND
@@ -137,6 +120,4 @@ reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Curr
 reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify" /v PastIconsStream /f 
 start "Shell Restarter" /d "%systemroot%" /i /normal explorer.exe
 
-
-pause
 exit
