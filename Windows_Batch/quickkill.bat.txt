@@ -39,7 +39,7 @@ echo killing %%~A  1>> output.log 2>&1
 echo killing %%~A  as Trustedinstaller 
 sc start "TrustedInstaller"   1>> output.log 2>&1
 
-echo killing %%~A  as current user
+echo killing %%~A  as Current Use: "%USERPROFILE%"
 TASKKILL /F  /IM %%~A 1>> output.log 2>&1
 
 
