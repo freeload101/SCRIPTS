@@ -58,7 +58,7 @@ choco install notepadplusplus -y
 choco install irfanview -y
 choco install irfanview-shellextension -y
 choco install irfanviewplugins -y 
-:: TO LARGE choco install libreoffice-fresh -y
+choco install libreoffice-fresh -y
 
 choco install veracrypt -y
 choco install 7zip -y
