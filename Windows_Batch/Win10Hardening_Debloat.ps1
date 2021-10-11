@@ -5,6 +5,14 @@
 # some dupes here but whatever
 #########
 
+
+## NEW STUFF 2021 BECAUSE.... WINDOWS UPDATES LIKES TO RE ENABLE STUFF YOU DISABLED AND ADD EVEN MORE CRAP YOU DON'T WANT
+# Disable "News and Interests" ... the weather BS in the start menu ..
+Reg Add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Feeds" /T REG_DWORD /V "ShellFeedsTaskbarViewMode" /D 2 /F
+
+# Disable "Meet Now" because it's not nuff to disable Skype ...
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "HideSCAMeetNow" -Value 1
+
 # Default preset
 $tweaks = @(
 	### Require administrator privileges ###
