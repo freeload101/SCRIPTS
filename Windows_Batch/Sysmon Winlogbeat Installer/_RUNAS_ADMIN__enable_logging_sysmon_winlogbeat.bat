@@ -211,7 +211,7 @@ echo   index.number_of_shards: 1
 
 echo setup.kibana:
 echo output.logstash:
-echo   hosts: ["192.168.5.183:5044"]
+echo   hosts: ["192.168.56.1:5044"]
 
 echo processors:
 echo   - add_host_metadata: ~
