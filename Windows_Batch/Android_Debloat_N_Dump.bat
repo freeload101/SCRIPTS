@@ -51,11 +51,6 @@ echo %date% %time% INFO: Killing any existing adb server
 .\adb.exe kill-server 
 .\adb.exe kill-server
 
-CHOICE /C YN /N /T 5 /D Y /M "Enable adguard global adblock (private dns setting) Y/N?"
-IF ERRORLEVEL 1 SET adguard=YES
-IF ERRORLEVEL 2 SET adguard=NO
-SET ERRORLEVEL=0
-
 
 EXIT /B %ERRORLEVEL%
  
@@ -73,6 +68,11 @@ EXIT /B %ERRORLEVEL%
 
 
 :ADGUARD
+CHOICE /C YN /N /T 5 /D Y /M "Enable adguard global adblock (private dns setting) Y/N?"
+IF ERRORLEVEL 1 SET adguard=YES
+IF ERRORLEVEL 2 SET adguard=NO
+SET ERRORLEVEL=0
+
 IF "%adguard%" == "YES" (
 adb shell settings put global private_dns_mode hostname
 adb shell settings put global private_dns_specifier dns.adguard.com
@@ -1580,7 +1580,7 @@ us.com.dt.iq.appsource.tmobile
 		echo Trying to Uninstall:		%%x
         .\adb.exe shell "pm uninstall -k --user 0 %%x"
 		echo Trying to Disable:		%%x
-		.\adb.exe shell "pm disable-user --user 0 %%x"
+		.\adb.exe shell "pm disable --user 0 %%x" 2> null
        )
 
 EXIT /B %ERRORLEVEL%
