@@ -13,7 +13,11 @@ CALL :INIT
 
 :: THIS IS NOT WORKING ON MY S10E CALL :ADGUARD
 
+
+CALL :GETINFO
+
 CALL :UNINSTALL
+
 
 CALL :DUMPAPKINFO
 
@@ -43,7 +47,7 @@ echo %date% %time% INFO: Downloading aapt2 from "https://github.com/JonForShort/
 echo %date% %time% "Please make sure you click allow on your device when prompted.  Plug in your phone and disable/re-enable USB Debuging and press any key."
 pause
 
-echo %date% %time% INFO: Pushing aapt2 to /data/local/tmp/ you may need to change the path to a read write path
+
 cd "%~dp0platform-tools"
 
 echo %date% %time% INFO: Killing any existing adb server
@@ -56,6 +60,8 @@ EXIT /B %ERRORLEVEL%
  
 
 :DUMPAPKINFO
+echo %date% %time% INFO: Pushing aapt2 to /data/local/tmp/ you may need to change the path to a read write path
+
 echo %date% %time% INFO: Dumping all package information to DUMPAPKINFO.txt this will take upto 10 minutes or more
 .\adb.exe push ..\aapt2 /data/local/tmp/
 .\adb.exe shell "chmod 777  /data/local/tmp/aapt2"
@@ -66,6 +72,15 @@ powershell  -command "& { $ErrorActionPreference= 'silentlycontinue';$BBList = c
 start DUMPAPKINFO.txt
 EXIT /B %ERRORLEVEL%
 
+:GETINFO
+echo %date% %time% INFO: Listing users on device
+.\adb.exe shell "pm list users" > GETINFO.txt
+
+echo %date% %time% INFO: Please wait running top to show possible high CPU processes...
+.\adb.exe shell "top -b -n 5 -m 10 -o  PID,USER,PR,NI,VIRT,RES,SHR,S,%CPU,%MEM,TIME+,CMDLINE" >> GETINFO.txt
+
+start DUMPAPKINFO.txt
+EXIT /B %ERRORLEVEL%
 
 :ADGUARD
 CHOICE /C YN /N /T 5 /D Y /M "Enable adguard global adblock (private dns setting) Y/N?"
