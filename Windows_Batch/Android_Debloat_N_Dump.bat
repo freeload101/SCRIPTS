@@ -13,11 +13,9 @@ CALL :INIT
 
 :: THIS IS NOT WORKING ON MY S10E CALL :ADGUARD
 
-
 CALL :GETINFO
 
 CALL :UNINSTALL
-
 
 CALL :DUMPAPKINFO
 
@@ -104,6 +102,10 @@ EXIT /B %ERRORLEVEL%
 
 
 :UNINSTALL
+
+echo %date% %time% INFO: Disabling wake on tap and lift to save battery  
+.\adb.exe shell "settings put system lift_to_wake 0"
+.\adb.exe shell "adb shell settings put secure wake_gesture_enabled 0"
 
 echo %date% %time% INFO: Running mass uninstall/disable 
 ::Credit: 
