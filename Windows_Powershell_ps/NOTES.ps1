@@ -108,3 +108,11 @@ foreach($object_properties in $data.PsObject.Properties)
 
 
 
+
+# dump AD Active Directry emails with admin tools:
+Get-ADUser -Filter * -Properties EmailAddress,DisplayName, samaccountname| select EmailAddress, DisplayName | Export-Csv -Path .\emails.csv
+start .\emails.csv
+
+
+
+
