@@ -77,9 +77,9 @@ echo %date% %time% INFO: Listing users on device
 .\adb.exe shell "pm list users" > GETINFO.txt
 
 echo %date% %time% INFO: Please wait running top to show possible high CPU processes...
-.\adb.exe shell "top -b -n 5 -m 10 -o  PID,USER,PR,NI,VIRT,RES,SHR,S,%CPU,%MEM,TIME+,CMDLINE" >> GETINFO.txt
+.\adb.exe shell "top -b -n 5 -m 10 -o  PID,USER,PR,NI,VIRT,RES,SHR,S,%%CPU,%%MEM,TIME+,CMDLINE" >> GETINFO.txt
 
-start DUMPAPKINFO.txt
+start GETINFO.txt
 EXIT /B %ERRORLEVEL%
 
 :ADGUARD
