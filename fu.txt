@@ -1282,7 +1282,7 @@ apt-get update
 apt-get install unattended-upgrades -y
 dpkg-reconfigure --priority=low unattended-upgrades
 # set Reboot to true
-vi /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i.bak 's/\/\/Unattended-Upgrade::Automatic-Reboot "false";/Unattended-Upgrade::Automatic-Reboot "true";/g'  /etc/apt/apt.conf.d/50unattended-upgrades
 unattended-upgrades
 
 
