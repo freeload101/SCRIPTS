@@ -2,9 +2,8 @@
 setlocal enabledelayedexpansion
 
 echo '-----------------------------------------------------------------------------------------'
-echo 'rmccurdy.com ( total hack job but just got sick of youtube-dl needing to be updated all the time )'
+echo 'rmccurdy.com Updated using yt-dlp'
 echo 'Proxy support for localhost:8080'
-echo 'ver 1.0a'
 echo '-----------------------------------------------------------------------------------------'
 
 REM 04/26/2021:  * added fallback to legacy if no file is output in 3 seconds .. ( can't really catch errors on start command without wonky scripting or writing to error files) Reference: https://stackoverflow.com/questions/29740883/how-to-redirect-error-stream-to-variable/38928461#38928461
@@ -52,9 +51,9 @@ EXIT /B %ERRORLEVEL%
 :INIT
 cd "%~dp0"
 
-set /a WAITTIME = 15
+set /a WAITTIME = 30
 
-taskkill /F /IM "youtube-dl.exe" 2> %temp%/null
+taskkill /F /IM "yt-dlp.exe" 2> %temp%/null
 CHOICE /C YN /N /T 5 /D Y /M "Update ALL binaries Y/N?"
 IF ERRORLEVEL 1 SET UPDATE=YES
 IF ERRORLEVEL 2 SET UPDATE=NO
@@ -66,8 +65,8 @@ del .\downloads\*.part
 del .\downloads\*.aria2
 )
 
-if exist ".\youtube-dl.exe.new" (
-del "youtube-dl.exe.new" > %temp%\null
+if exist ".\yt-dlp.exe.new" (
+del "yt-dlp.exe.new" > %temp%\null
 )
 
 if exist ".\aria2" (
@@ -121,18 +120,19 @@ rd /q/s .\ffmpeg
 EXIT /B %ERRORLEVEL%
 
 :DLYTDL
-echo %date% %time% INFO: Downloading latest youtube-dl.exe
-wget -e robots=off  -nd -q -U "rmccurdy.com" -q "http://yt-dl.org/downloads/latest/youtube-dl.exe" -O youtube-dl.exe
+echo %date% %time% INFO: Downloading latest yt-dlp.exe
+# youtube DL not working anymore wget -e robots=off  -nd -q -U "rmccurdy.com" -q "http://yt-dl.org/downloads/latest/youtube-dl.exe" -O youtube-dl.exe
+wget  -U "rmccurdy.com"   -e robots=off  -nd -r  "https://github.com/yt-dlp/yt-dlp/releases/latest" --max-redirect 1 -l 1 -A "latest,yt-dlp.exe" --regex-type pcre --accept-regex "yt-dlp.exe"
 CHOICE /T 1 /C y /CS /D y > %temp%/null
 EXIT /B %ERRORLEVEL%
 
 :YTUPDATE
 (
-echo %date% %time% INFO: Updateing youtube-dl
-youtube-dl -U
+echo %date% %time% INFO: Updateing yt-dlp.exe
+yt-dlp.exe -U
 
 	:LOOPSAUSE
-	if exist "youtube-dl.exe.new" (
+	if exist "yt-dlp.exe.new" (
 	echo %date% %time% INFO: Sleeping for update process
 	CHOICE /T 1 /C y /CS /D y > %temp%/null
 	SET ERRORLEVEL=0
@@ -156,14 +156,14 @@ EXIT /B %ERRORLEVEL%
 		set /a UUID = !RANDOM!
 
 		echo %date% %time% INFO: "%%A" Downloading with aria2c 	
-		start "aria2c !UUID!"	 cmd /c youtube-dl -w --no-continue  --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args " -x 16 -s 16 -k 1M" "%%A"  ^& pause
+		start "aria2c !UUID!"	 cmd /c yt-dlp.exe -w --no-continue  --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args " -x 16 -s 16 -k 1M" "%%A"  ^& pause
 		echo %date% %time% INFO: "%%A" Waiting %WAITTIME% seconds to retry legacy if no file exist
 		CHOICE /T %WAITTIME% /C y /CS /D y > %temp%/null
 
 			if not exist ".\downloads\*!UUID!*.part*" (
 				if not exist ".\downloads\*!UUID!*.mp4" (
 					echo %date% %time% ERROR: "%%A" No part files found trying legacy mode
-					start "LEGACY !UUID!"	 cmd /c youtube-dl -w --no-continue --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s"    "%%A"    ^& pause
+					start "LEGACY !UUID!"	 cmd /c yt-dlp.exe -w --no-continue --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s"    "%%A"    ^& pause
 					)
 				)
 		)
