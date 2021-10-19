@@ -1277,13 +1277,13 @@ tshark -nr dump.pcap    -E separator=, -R "http.request.uri " -T fields  -e fram
 # dont use ....stupid hex outputwith \r in it  dump some decoded info and the packet data in hex ascii 
 tshark -PVx -r dump.pcap -T text
 
-# Ubuntu auto updates
+# Ubuntu auto updates can't get dpkg-reconfigure to take options so just reinstall ...
 apt-get update
-apt-get install unattended-upgrades -y
-dpkg-reconfigure --priority=low unattended-upgrades
-# set Reboot to true
+apt-get remove -y unattended-upgrades
+sleep 3
+apt-get install -y unattended-upgrades  -o Dpkg::Options::="--force-confdef"
 sed -i.bak 's/\/\/Unattended-Upgrade::Automatic-Reboot "false";/Unattended-Upgrade::Automatic-Reboot "true";/g'  /etc/apt/apt.conf.d/50unattended-upgrades
-unattended-upgrades
+unattended-upgrades -v
 
 
 # ubuntu aunattended rel upgrades
