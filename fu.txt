@@ -4746,4 +4746,4 @@ md5 * | awk '{print $4,$2}' | sed 's/ (/ \*/g' | sed 's/)//g'
 
 # create Nmap fingerprint hash of NMAP service output to find like host on the network
 echo "IP,HostName,Hash,Ports" > ./IP_DNS_HASH_PORT.csv
-cat *.gnmap | sort -u | grep -v Up | sed 's/,/ /g' |sed -r 's/Host: (.*) \((.*)\).*Ports: (.*)/echo "\1","\2",`echo "\3"|base64 -w 0`",\3"/ge' > ./IP_DNS_HASH_PORT.csv
+cat *.gnmap | sort -u | grep -v Up | sed 's/,/ /g' |sed -r 's/Host: (.*) \((.*)\).*Ports: (.*)/echo "\1","\2",`echo "\3"|base64 -w 0`",\3"/ge' >> ./IP_DNS_HASH_PORT.csv
