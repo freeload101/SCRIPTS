@@ -5,7 +5,6 @@ echo '--------------------------------------------------------------------------
 echo 'rmccurdy.com ( Android_Debloat_N_Dump )'
 echo ' This script will:'
 echo ' * Uninstall and disable any apps listed online as bloat'
-echo ' * enable or disable private dns (ad blocking via adguard domain)'
 echo ' * Dump the app name example com.vzw.ecid and the friendly name "Verizon Call Filter" to easily identidfy what apps to uninstall or disable by hand'
 echo '-----------------------------------------------------------------------------------------'
 
