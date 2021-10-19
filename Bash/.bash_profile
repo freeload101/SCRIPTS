@@ -3,7 +3,7 @@
 # reload 'source ~/.bash_profile'
 
 
-# Grep out recrusive with binaries just showing the first 50 bytes forward and backward with color
+# OMG THIS IS SLOW! Grep out recrusive with binaries just showing the first 50 bytes forward and backward with color
 g ()
 {
 if [[ "${2}" == ""  ]]
@@ -11,5 +11,5 @@ if [[ "${2}" == ""  ]]
           echo Path is null
     PATH1=*
   fi
-grep --color='auto' -riaEo ".{0,50}$1.{0,50}" $PATH1
+grep --color='auto' -riaEo ".{0,200}$1.{0,200}" $PATH1
 }
