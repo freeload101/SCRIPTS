@@ -51,7 +51,7 @@ EXIT /B %ERRORLEVEL%
 :INIT
 cd "%~dp0"
 
-set /a WAITTIME = 30
+set /a WAITTIME = 20
 
 taskkill /F /IM "yt-dlp.exe" 2> %temp%/null
 CHOICE /C YN /N /T 5 /D Y /M "Update ALL binaries Y/N?"
@@ -160,12 +160,10 @@ EXIT /B %ERRORLEVEL%
 		echo %date% %time% INFO: "%%A" Waiting %WAITTIME% seconds to retry legacy if no file exist
 		CHOICE /T %WAITTIME% /C y /CS /D y > %temp%/null
 
-			if not exist ".\downloads\*!UUID!*.part*" (
-				if not exist ".\downloads\*!UUID!*.mp4" (
+			if not exist ".\downloads\*!UUID!*" (
 					echo %date% %time% ERROR: "%%A" No part files found trying legacy mode
 					start "LEGACY !UUID!"	 cmd /c yt-dlp.exe -w --no-continue --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s"    "%%A"    ^& pause
 					)
-				)
 		)
 )
 EXIT /B %ERRORLEVEL%
