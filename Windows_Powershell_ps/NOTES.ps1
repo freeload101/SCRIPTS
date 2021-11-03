@@ -138,3 +138,21 @@ manage-bde -forcerecovery C:
 # force Reboot system to trigger recovery prompt 
 Restart-Computer -Force
 
+#########################-
+## ubuntu 19.10 enhanced session hyper v
+
+
+# AFTER Set-VM -VMName <your_vm_name>  -EnhancedSessionTransportType HvSocket 
+https://unix.stackexchange.com/questions/571645/hyper-v-enhanced-session-mode-ubuntu-19-10
+
+As a privileged administrator user use your text editor to perform the following changes of the GDM3 custom configuration file /etc/gdm3/custom.conf.
+FROM:
+
+#WaylandEnable=false
+TO:
+
+WaylandEnable=false
+By uncommenting the above line your system will use the Xorg display manager instead of Wayland next time it boots.
+
+Reboot
+
