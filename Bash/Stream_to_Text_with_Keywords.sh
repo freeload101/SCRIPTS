@@ -8,7 +8,7 @@ while read -r i
 do
 
 
-echo `date` "DEBUG: Downloading "${i}" with youtube-dl and convert to wav"
+echo `date` "DEBUG: Downloading "${i}" with yt-dlp and convert to wav"
 
 
 
@@ -16,8 +16,8 @@ echo `date` "DEBUG: Downloading "${i}" with youtube-dl and convert to wav"
 if [[ "${i}"  == *youtube*  ]]
 then
 echo `date` "DEBUG: URL detected Youtube ripping subtitles from youtube direct"
-#export filename=`youtube-dl  --write-auto-sub --convert-subs=srt --skip-download  --get-filename -o "%(title)s" "${i}"`
-youtube-dl  --write-auto-sub --convert-subs=srt --skip-download  -o  "%(title)s" "${i}"
+#export filename=`yt-dlp  --write-auto-sub --convert-subs=srt --skip-download  --get-filename -o "%(title)s" "${i}"`
+yt-dlp  --write-auto-sub --convert-subs=srt --skip-download  -o  "%(title)s" "${i}"
 
 find . -iname "*.vtt" -exec python vtt2text.py '{}' \;
 
@@ -33,8 +33,8 @@ else
 
 
 echo `date` "DEBUG: URL NOT Youtube ripping audio"
-export filename=`youtube-dl  --get-filename -o "%(title)s.wav" "${i}"`
-youtube-dl --extract-audio --audio-format wav  --postprocessor-args "-ac 1"  -o "%(title)s.wav" "${i}"
+export filename=`yt-dlp  --get-filename -o "%(title)s.wav" "${i}"`
+yt-dlp --extract-audio --audio-format wav  --postprocessor-args "-ac 1"  -o "%(title)s.wav" "${i}"
 
 echo `date` "DEBUG: Convert wav to text with vosk"
 python3 /media/moredata/docker/vosk-api/python/example/test_simple.py "${filename}" > "${filename}_vosk_out.txt"
