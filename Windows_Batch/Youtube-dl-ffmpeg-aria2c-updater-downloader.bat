@@ -157,7 +157,7 @@ EXIT /B %ERRORLEVEL%
 
 		echo %date% %time% INFO: "%%A" Downloading with aria2c 	
 		start "aria2c !UUID!"	 cmd /c yt-dlp.exe -w --no-continue  --merge-output-format mkv --ffmpeg-location .\ -o ".\downloads\%%(uploader)s - %%(title)s - %%(id)s_!UUID!.%%(ext)s" -i   --external-downloader aria2c --external-downloader-args " -x 16 -s 16 -k 1M" "%%A"  ^& pause
-		echo %date% %time% INFO: "%%A" Waiting %WAITTIME% seconds to retry legacy if no file exist
+		echo %date% %time% INFO: "%%A" Press Y to skip %WAITTIME% second wait
 		CHOICE /T %WAITTIME% /C y /CS /D y > %temp%/null
 
 			if not exist ".\downloads\*!UUID!*" (
