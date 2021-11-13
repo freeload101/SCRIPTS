@@ -1,0 +1,3 @@
+Place this SFX foldre in the same path as 7zip bin...
+
+Name your script install.bat and place all the files in the FILESFOHERE folder and run the make_sfx.bat or use the 7z SFX Builder

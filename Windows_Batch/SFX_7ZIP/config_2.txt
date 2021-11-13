@@ -1,0 +1,4 @@
+;!@Install@!UTF-8!
+ExecuteFile="install.bat"
+RunProgram="install.bat"
+;!@InstallEnd@!
