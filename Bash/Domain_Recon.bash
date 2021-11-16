@@ -1,11 +1,5 @@
 #!/bin/bash
 
-
-# 2020/10/14: fixed copyright and MX
-# 2020/11/04: Fixed some formatting and added BRAND! using BRANDS
-# BRAND format is like domain_single_string_no_spaces brand_discription_no_spaces
-# xponent UNKNOWN
-
 apt install dos2unix -y
 
 IFS=$'\n'
@@ -22,7 +16,7 @@ rm -f tmp* tmp_cookie *DOMAIN* 2> /dev/null
 
 for i in `cat $1`
 do
-echo `date` INFO: "${i}"
+echo "${i}"
 echo URL:"${i}" >> tmp_out
 
 # is the entry a URL or DOMAIN ?
@@ -37,8 +31,6 @@ export VAR_CURL_GREPFILE=tmp_curl_DOMAIN_"${VARURLFILE}"
 export VARFILEARRAY+=(tmp_curl_DOMAIN_"${VARURLFILE}")
 
 echo BASECONTENT:SAME >> tmp_out
-# download the webpage
-#curl -A 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36'   -s -m2 -kL "${VAR_DOMAIN}"  >tmp_curl_DOMAIN_"${VARURLFILE}" 2>&1
 
 
 else
@@ -80,15 +72,12 @@ fi
 
 
 
-#export VARDIG=`dig  "${VAR_DOMAIN}" ANY`
-export VARDIG=`dig  "${VAR_DOMAIN}" MX`
+export VARDIG=`dig  "${VAR_DOMAIN}" ANY`
 
 
 export varIP=`nmap -PN -sP ${i} | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' | head -n 1`
 echo IP:`nmap -PN -sP ${i} | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' | sort -u` >> tmp_out
-#echo MX:`echo "${VARDIG}"  | grep "\bMX\b" | head -n 1 | awk '{print $6}' |sed 's/\.$//g'` >> tmp_out
-echo MX:`echo "${VARDIG}"  | grep "\bMX\b" | awk '{print $6}' | sort -u` >> tmp_out
-echo MX:`echo "${VARDIG}"  | grep "\bMX\b" | awk '{print $6}' | sort -u` > tmp_SINGLE
+echo MX:`echo "${VARDIG}"  | grep "\bMX\b" | head -n 1 | awk '{print $6}' |sed 's/\.$//g'` >> tmp_out
 
 # whois domain
 
@@ -101,7 +90,6 @@ then
 echo WHOIS_DOMAIN:CSC >> tmp_out
 else
 echo  "${VARWHOIS,,}" |grep -A 1  --no-group-separator -iaE "(CIDR|Organization|OrgName|Address|\bcorporate domains|Registrant|registrar|\bcsc|@csc)" | grep -vE "(date|phone|email)"| tr -d '\n'  | xargs -0 echo WHOIS_DOMAIN:  >> tmp_out
-echo  "${VARWHOIS,,}" |grep -A 1  --no-group-separator -iaE "(CIDR|Organization|OrgName|Address|\bcorporate domains|Registrant|registrar|\bcsc|@csc)" | grep -vE "(date|phone|email)"| tr -d '\n'  | xargs -0 echo WHOIS_DOMAIN:  >> tmp_SINGLE
 fi
 
 # WHOIS IP
@@ -114,7 +102,6 @@ then
 echo WHOIS_IP:CSC >> tmp_out
 else
 echo  "${VARWHOIS,,}" |grep -A 1  --no-group-separator -iaE "(CIDR|Organization|OrgName|Address|\bcorporate domains|Registrant|registrar|\bcsc|@csc)" | grep -vE "(date|phone|email)"| tr -d '\n'  | xargs -0 echo WHOIS_IP:  >> tmp_out
-echo  "${VARWHOIS,,}" |grep -A 1  --no-group-separator -iaE "(CIDR|Organization|OrgName|Address|\bcorporate domains|Registrant|registrar|\bcsc|@csc)" | grep -vE "(date|phone|email)"| tr -d '\n'  | xargs -0 echo WHOIS_IP:  >> tmp_SINGLE
 fi
 
 
@@ -123,10 +110,11 @@ fi
 # nmap check
 # nmap -T5 --open --top-ports 20 -sV -oA "${i}" "${i}" > /dev/null
 
-# run curl again because we need header info this time ...
 
 curl  -b tmp_cookie -c tmp_cookie   -A 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36'  -v -i -s -m2 -ikL "${i}"  >"${VAR_CURL_GREPFILE}" 2>&1
 
+# START ALL HEADERS
+echo `grep -ia cloudflare "${VAR_CURL_GREPFILE}" | tail -n 1 | xargs -0 echo CLOUDFLARE:` >> tmp_out
 echo `grep Location: "${VAR_CURL_GREPFILE}" | tail -n 1 | sed 's/Location: //g'| xargs -0 echo REDIRECT:` >> tmp_out
 echo `grep "subject:" "${VAR_CURL_GREPFILE}" |xargs -0 echo CERT:` >> tmp_out
 echo `grep -ia -A 1 "<title>" "${VAR_CURL_GREPFILE}"  |tr -d '\n' | sed -r 's/.*<title>(.*)<\/title>.*/\1/gI' | xargs -0 echo TITLE:` >> tmp_out
@@ -135,8 +123,15 @@ echo `grep -ia login "${VAR_CURL_GREPFILE}" |grep -via "(facebook)"|wc -l|xargs 
 echo `grep -iaE "(\bcart\b|add to cart|check out|login|my account|\bprofile\b)" "${VAR_CURL_GREPFILE}" |grep -viaE "(facebook)"|wc -l|xargs -0 echo CART:` >> tmp_out
 # NMAP .... echo `grep '\/open' "${i}.gnmap" | tr -d '\n'  | xargs -0 echo NMAP_T20:` >> tmp_out
 
+curl -m2 -sikL "${i}" | grep -iaE "(\&copy;|©)" | grep -Eoia "[0-9]{4,4}"|sort -u |  xargs -0 echo COPYRIGHT:  >> tmp_out
+
+
+
+# END ALL HEADERS
+
 # START ALL HEADERS CHECK
-echo `grep Location: "${VAR_CURL_GREPFILE}" | tail -n 1 | sed 's/Location: //g'| xargs -0 echo REDIRECT:` >> tmp_SINGLE
+echo `grep -ia cloudflare "${VAR_CURL_GREPFILE}" | tail -n 1 | xargs -0 echo CLOUDFLARE:` >> tmp_SINGLE
+echo `grep Location: "${VAR_CURL_GREPFILE}" | tail -n 1 | sed 's/Location: //g'| xargs -0 echo REDIRECT:` > tmp_SINGLE
 echo `grep "subject:" "${VAR_CURL_GREPFILE}" |xargs -0 echo CERT:` >> tmp_SINGLE
 echo `grep -ia -A 1 "<title>" "${VAR_CURL_GREPFILE}"  |tr -d '\n' | sed -r 's/.*<title>(.*)<\/title>.*/\1/gI' | xargs -0 echo TITLE:` >> tmp_SINGLE
 echo `grep "meta property=" "${VAR_CURL_GREPFILE}"  | sed -r 's/.*property=(.*)/\1/g'|sed 's/\"//g'|sed 's/^ //g'|xargs -0 echo  META:`  >> tmp_SINGLE
@@ -144,24 +139,21 @@ echo `grep -ia login "${VAR_CURL_GREPFILE}" |grep -via "(facebook)"|wc -l|xargs 
 echo `grep -iaE "(\bcart\b|add to cart|check out|login|my account|\bprofile\b)" "${VAR_CURL_GREPFILE}" |grep -viaE "(facebook)"|wc -l|xargs -0 echo CART:` >> tmp_SINGLE
 curl -m2 -sikL "${i}" | grep -iaE "(\&copy;|©)" | grep -Eoia "[0-9]{4,4}"|sort -u |  xargs -0 echo COPYRIGHT: >> tmp_SINGLE
 
-# reset brand var
-export VARBRANDS=""
-export VARBRANDS_TRIM=""
 
 IFS=$'\n'
-for k in `cat BRANDS`
+for i in `cat BRANDS`
         do
-        for j in `echo $k|sed -r 's/(^.*)\t(.*)/\1/g'`
+        for j in `echo $i|sed -r 's/(^.*)\t(.*)/\1/g'`
                 do
-                        export VARISIN=`cat tmp_SINGLE |grep -iaE "(${j})"`
+                        export VARISIN=`cat tmp_SINGLE |grep -ia "${j}"`
                                 if [[ "${VARISIN}" == ""  ]]
                                 then
                                         echo VARISIN is Null > /dev/null
                                 else
-                                        #DEBUGecho Domain $i matches $k
-
-                                        export VARBRANDS="${VARBRANDS},`grep -iaE "(${j})" BRANDS | sed -r 's/(^.*)\t(.*)/\1_\2,/g'|sed 's/ /_/g'`"
-                                        export VARBRANDS_TRIM=`echo "${VARBRANDS}"| tr -d '\n'`
+                                        #DEBUGecho VARISIN is "${VARISIN}"
+                                        grep -ia "${j}" BRANDS | sed -r 's/(^.*)\t(.*)/\1_\2/g'|sed 's/ /_/g'
+                                        echo '####################################'
+                                        sleep 10
                                 fi
         done
 done
@@ -169,9 +161,7 @@ done
 # END ALL HEADERS CHECK
 
 
-curl -m2 -sikL  "${i}"  | awk '{gsub("<","\n<"); print}' | grep -iaE "(\&copy;|©)" | grep -Eoia "[0-9]{4,4}" | sort -u | xargs -0 echo COPYRIGHT:  >> tmp_out
 
-echo BRAND: "${VARBRANDS_TRIM}" >>tmp_out
 tail -n 12 tmp_out
 echo 'Sleeping for dig throttling'
 sleep 1
@@ -190,7 +180,7 @@ for j in `ls -s tmp_*|grep "${i}" -A 10 -B 10|awk '{print $2}'|grep -v "${i}"`
 do
 
 # copare files by lines
-NUMLINSDIFF=`sdiff -a -B -b -s "${i}" "${j}" | wc|awk '{print $2}' 2> /dev/null`
+NUMLINSDIFF=`sdiff -a -B -b -s "$i" "$j" | wc|awk '{print $2}' 2> /dev/null`
 
 # delete > 3 lines differernt
 
@@ -208,7 +198,7 @@ done
 
 done
 
-echo URL,BASECONTENT,IP,MX,WHOIS_DOMAIN,WHOIS_IP,REDIRECT,CERT,TITLE,META,LOGIN,CART,COPYRIGHT,BRAND,DUPLICATE > $1.csv
+echo URL,BASECONTENT,IP,MX,WHOIS_DOMAIN,WHOIS_IP,CLOUDFLARE,REDIRECT,CERT,TITLE,META,LOGIN,CART,COPYRIGHT,DUPLICATE > $1.csv
 echo Duplicate count report on the bottom of this table >> $1.csv
 
 
@@ -216,6 +206,6 @@ echo Duplicate count report on the bottom of this table >> $1.csv
 
 dos2unix tmp_out
 
-cat tmp_out| sed -e 's/,/ /g' -e 's/\x0D//g'   | sed 's/\"//g' | sed -e 's/^URL:/,URL:/g'  -e 's/^BASECONTENT:/,/g'  -e 's/^IP:/,/g'  -e 's/^MX:/,/g' -e 's/^WHOIS_DOMAIN:/,/g'  -e 's/^WHOIS_IP:/,/g'   -e 's/^REDIRECT:/,/g' -e 's/^CERT:/,/g' -e 's/^TITLE:/,/g' -e 's/^META:/,/g' -e 's/^LOGIN:/,/g' -e 's/^CART:/,/g' -e 's/^DUPLICATE:/,/g' -e 's/^COPYRIGHT:/,/g'  -e 's/^BRAND:/,/g'| tr -d '\n' | awk '{gsub(",URL:","\n"); print}' >> $1.csv
+cat tmp_out| sed -e 's/,/ /g' -e 's/\x0D//g'   | sed 's/\"//g' | sed -e 's/^URL:/,URL:/g'  -e 's/^BASECONTENT:/,/g'  -e 's/^IP:/,/g'  -e 's/^MX:/,/g' -e 's/^WHOIS_DOMAIN:/,/g'  -e 's/^WHOIS_IP:/,/g'  -e 's/^CLOUDFLARE:/,/g'  -e 's/^REDIRECT:/,/g' -e 's/^CERT:/,/g' -e 's/^TITLE:/,/g' -e 's/^META:/,/g' -e 's/^LOGIN:/,/g' -e 's/^CART:/,/g' -e 's/^DUPLICATE:/,/g' -e 's/^COPYRIGHT:/,/g'  | tr -d '\n' | awk '{gsub(",URL:","\n"); print}' >> $1.csv
 
 cp "${1}.csv" /tmp/
