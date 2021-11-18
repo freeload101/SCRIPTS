@@ -1,3 +1,5 @@
+Set-Variable -Name ErrorActionPreference -Value SilentlyContinue
+
 while($true)
 {
 
