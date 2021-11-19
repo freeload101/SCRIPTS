@@ -10,7 +10,7 @@ grep open 172_GUESS.gnmap | awk '{print $2}'  | sed -r  's/(.*\..*\..*\.).*/\10\
 nmap -v -T5 -oA 172_NETWORKS -sV  --top-ports 40 --open --randomize-hosts --defeat-rst-ratelimit -iL 172_NETWORKS
 
 echo `date` INFO: Starting 10.
-nmap --max-retries 1 --min-parallelism 100 -oA 10_GUESS --top-ports 20 -T5 --open --randomize-hosts --defeat-rst-ratelimit 10.0-255.0-255.1,2,3,10,20,30,100,254
+nmap --max-retries 1 --min-parallelism 100 -oA 10_GUESS --top-ports 20 -T5 --open --randomize-hosts --defeat-rst-ratelimit 10.0-255.0-255.1,2,254
 grep open 10_GUESS.gnmap | awk '{print $2}'  | sed -r  's/(.*\..*\..*\.).*/\10\/24/'g | sort -u > 10_NETWORKS
 nmap -v -T5 -oA 10_NETWORKS -sV  --top-ports 40 --open --randomize-hosts --defeat-rst-ratelimit  -iL 10_NETWORKS 
 
