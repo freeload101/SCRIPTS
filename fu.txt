@@ -3141,6 +3141,9 @@ Control keymgr.dll
 ffmpeg -i file.amr -vn -acodec libmp3lame -ac 2 -ab 96k file.mp3
 FOR /F "delims==" %%A IN ('DIR/B "*.amr"') DO ffmpeg -i %%A -vn -acodec libmp3lame -ac 2 -ab 96k %%A.mp3
 
+# 720 at 15fps
+ffmpeg.exe  -i 20211118_185936.mp4  -vf "fps=15,scale=1280:720"  PROJECT_365_WLED_ENC.mp4
+
 
 #windows saved passwords
 rundll32.exe keymgr.dll, KRShowKeyMgr
