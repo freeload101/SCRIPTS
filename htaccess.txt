@@ -1,0 +1,44 @@
+Options +FollowSymlinks
+
+#RewriteCond %{HTTPS} off
+#RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !public_images/.*$ [NC]
+RewriteCond %{REQUEST_URI} !sig/.*$ [NC]
+RewriteCond %{REQUEST_URI} !swf.*$ [NC]
+RewriteCond %{REQUEST_URI} !exe.*$ [NC]
+RewriteCond %{HTTP_REFERER} .
+RewriteCond %{HTTP_REFERER} !^htt(p|ps)://(rmccurdy\.)?no-ip\.(net|com) [NC]
+RewriteCond %{HTTP_REFERER} !^htt(p|ps)://(bitchincamaro\.)?no-ip\.(net|com) [NC]
+RewriteCond %{HTTP_REFERER} !^htt(p|ps)://(www\.)?rmccurdy\.(net|com) [NC]
+RewriteCond %{HTTP_REFERER} !^htt(p|ps)://rmccurdy\.(net|com) [NC]
+RewriteCond %{HTTP_REFERER} !^htt(p|ps)://192.168.1.* [NC]
+RewriteRule \.(zip|JPG|jpg|GIF|rar|gif|jpe?g)$ /public_images/gank.gif [NC,L]
+
+
+
+RewriteEngine On
+RewriteCond %{HTTP_USER_AGENT} !googlebot [NC]
+RewriteCond %{HTTP_USER_AGENT} curl [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} bot [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} spider [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} wget [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} ruby [NC,OR]
+# block blank agent tags ..
+# can't block blank user agents for payloads etc .. powershell ... RewriteCond %{HTTP_USER_AGENT}  ^$ [NC,OR]
+#RewriteCond %{HTTP_USER_AGENT}  ^$ [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} "Windows\ 98" [NC]
+
+RewriteCond %{REQUEST_URI} !/robots.txt [NC]
+#RewriteRule ^/?.*$ http://rmccurdy.com/scripts/enum.html [R=301,L]
+RewriteRule ^/?.*$ http://%{REMOTE_ADDR}/$1 [R=301,L]
+
+#RewriteRule ^.*$ - [F]
+#RewriteRule (.*) http://%{REMOTE_ADDR}/$1 [R=301,L]
+
+
+
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule ^/?.*$ http://%{REMOTE_ADDR}/$1 [R=301,L]
