@@ -46,3 +46,11 @@ Note: Caret Browsing is still not available in-development versions of Chrome.
 
 Filed Under: Google Chrome, Microsoft Edge, News
 Tagged With: Chromium, Microsoft
+
+
+
+--------------
+* get powershell to return browser path then add this: 
+
+--flag-switches-begin --enable-features=ForcedColors --flag-switches-end 
+
