@@ -1,6 +1,6 @@
 ## Disclamer
 
-Personaly I found a few apps and sites just straight up ignore or don't support "high contrast" settings. ( not a deal breaker with the toggle ) Example regexr.com and Microsoft Teams. Teams has a "Dark Mode" or "High Contrast" mode but it does not follow your high contrast theme...
+Personaly I found a few apps and sites just straight up ignore or don't support "high contrast" settings. ( not a deal breaker with the switch ) Example regexr.com and Microsoft Teams. Teams has a "Dark Mode" or "High Contrast" mode but it does not follow your high contrast theme...
 
 
 ## Apply .theme file for windows to enable High Contast (Easy Method)
