@@ -1,4 +1,4 @@
-## Applpy .theme file for windows to enable High Contast (Easy Method)
+## Apply .theme file for windows to enable High Contast (Easy Method)
 
 https://github.com/freeload101/SCRIPTS/raw/master/AutoHotkey/HC4.theme
 
