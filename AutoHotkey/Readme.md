@@ -2,7 +2,7 @@
 
 https://github.com/freeload101/SCRIPTS/blob/master/AutoHotkey/HC4.theme
 
-## To easily switch (F12) use the authotkey script or download this exe
+## Easily switch (F12) use the authotkey script or download this exe
 https://github.com/freeload101/SCRIPTS/blob/master/AutoHotkey/High_Contrast_Toggle_AutoHotkey.exe
 
 ## To enable High Contrast feature for Chrome and Chromium Edge on Windows 10
