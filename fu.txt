@@ -588,8 +588,9 @@ egrep "(report for |: VULNERABLE)" -A 2   out.txt
 # grep for ip addres and pull it out
 grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}'
 
-#grep ip address
-grep -iaE "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" 
+ 
+# grep out  IP address AND CIDR
+grep -Eo "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.([0-9]{1,3}|[0-9]{1,3}\/[0-9]{1,3})"
 
 #nmap search for null sessions
 nmap -v -p445 --script=smb-os-discovery -iL in1 -oA in1_smb-os-discovery -d2 -T2 -n -vv | tee -a debug.txt
