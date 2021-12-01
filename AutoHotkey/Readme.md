@@ -57,6 +57,7 @@ Tagged With: Chromium, Microsoft
 
 
 Not needed: 
+
     @echo off
     cd "%~dp0"
     reg query    "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes" -v "CurrentTheme" 
