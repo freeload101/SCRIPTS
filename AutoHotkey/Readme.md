@@ -56,4 +56,14 @@ Tagged With: Chromium, Microsoft
 
 
 
+Not needed: 
+    @echo off
+    cd "%~dp0"
+    reg query    "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes" -v "CurrentTheme" 
+    copy /y "./HC4.theme" "%USERPROFILE%\AppData\Local\Microsoft\Windows\Themes\HC4.theme"
+    reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes" /v "CurrentTheme" /d "%USERPROFILE%\AppData\Local\Microsoft\Windows\Themes\HC4.theme" /f  
+    start "THEME" "%USERPROFILE%\AppData\Local\Microsoft\Windows\Themes\HC4.theme"
+    pause
+
+
 
