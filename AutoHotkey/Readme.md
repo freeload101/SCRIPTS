@@ -1,18 +1,23 @@
-## Disclamer
 
-Personaly I found a few apps and sites just straight up ignore or don't support "high contrast" settings. ( not a deal breaker with the switch ) Example regexr.com and Microsoft Teams. Teams has a "Dark Mode" or "High Contrast" mode but it does not follow your high contrast theme...
+# Disclamer
 
+Personaly I found a few apps and sites just straight up ignore or don't support "high contrast" settings. ( not a deal breaker with the F12 switch ) Example regexr.com and Splunk fail to show selected text at all and Microsoft Teams has a "Dark Mode" or "High Contrast" mode but it does not follow your high contrast theme...
+
+![image](https://user-images.githubusercontent.com/4307863/140933612-314f920d-801f-4975-a3bb-50eec14dda5a.png)
+
+
+# Usage
 
 ## Apply .theme file for windows to enable High Contast (Easy Method)
-
 https://github.com/freeload101/SCRIPTS/blob/master/AutoHotkey/HC4.theme
 
-## Easily switch (F12) use the authotkey script or download this exe
+## Easily switch between high contrast (F12) use the authotkey .ahk script or download this exe
 https://github.com/freeload101/SCRIPTS/blob/master/AutoHotkey/High_Contrast_Toggle_AutoHotkey.exe
+
 
 ## To enable High Contrast feature for Chrome and Chromium Edge on Windows 10
 
-1. Ensure both browsers are using the latest Canary version, visit about:flags page separately
+1. Ensure both browsers are using the latest Canary version, type about:flags in your browser
 
 2. Search for “forced” and for highlighted “Forced Colors “flags, which provides a description of turns on “forced colors mode for web content”, select “Enabled”
 
@@ -35,28 +40,27 @@ Filed Under: Google Chrome, Microsoft Edge, News
 Tagged With: Chromium, Microsoft
 
 
-
 --------------
-## Set get high contrast mode ForcedColors in Chrome command line 
+# Set get high contrast mode ForcedColors in Chrome command line 
 
 --flag-switches-begin --enable-features=ForcedColors --flag-switches-end 
 
 
 
-## High Contrast Toggle Manual ( Old Method )
+# High Contrast Seetup ( if you don't use the .theme file or want to setup your own )
 
 - Turn high contrast on
 - Tweek your settings so there is no "black" it will help with websites that don't follow High Contrast mode
 ![image](https://user-images.githubusercontent.com/4307863/143724714-23b1f69c-b0e0-416e-bc93-ca7f3ce1913b.png)
 
- - Make sure to change all 'black' to a shade of grey or whatever
+ - Make sure to change all 'black' to different shades of grey
  - use this script for some sites/apps that don't follow with high
-   contrast mode/rules to easily switch back and forth.
-![image](https://user-images.githubusercontent.com/4307863/140933612-314f920d-801f-4975-a3bb-50eec14dda5a.png)
+  
+   
 
 
 
-Not needed: 
+## Not needed: 
 
     @echo off
     cd "%~dp0"
