@@ -27,7 +27,7 @@ CALL :END
 echo %date% %time% INFO: Downloading latest Jitsi client
 wget -U "rmccurdy.com"  -P jitsi  -e robots=off  -nd -r  "https://github.com/jitsi/jitsi-meet-electron/releases/latest" --max-redirect 1 -l 1 -A "latest,jitsi-meet.exe" -R '*.gz,release*.*' --regex-type pcre --accept-regex "jitsi-meet.exe"
 .\jitsi\jitsi-meet.exe
-powershell "start-Process '%USERPROFILE%\AppData\Local\Programs\jitsi-meet-electron\Jitsi Meet.exe'  -ArgumentList "jitsi-meet://jitsi.rmccurdy.com/JIT2021""
+powershell "start-Process '%USERPROFILE%\AppData\Local\Programs\jitsi-meet-electron\Jitsi Meet.exe'  -ArgumentList "jitsi-meet://jitsi.rmccurdy.com/RFL_LIVE""
 CALL :END
 )
 EXIT /B %ERRORLEVEL%
