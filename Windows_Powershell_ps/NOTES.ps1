@@ -156,3 +156,18 @@ By uncommenting the above line your system will use the Xorg display manager ins
 
 Reboot
 
+
+
+#################
+# Powershell to search all of registry
+
+# Dump registry. Faster than Get-ChildItem/Get-ItemProperty and you can do other searches after
+start-Process "regedit"  -ArgumentList "/e c:\output.txt" -Wait
+
+# example regex ( forgot regex hates .*string.* )
+Select-String -Path c:\output.txt -Pattern 'MobaXterm.*' -AllMatches  -Context 1, 1
+
+# Search for URLS and IPs 
+#Select-String -Path c:\output.txt -Pattern '"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b"','\b(ht|f)tp(s?)[^ ]*\.[^ ]*(\/[^ ]*)*\b' -AllMatches 
+
+
