@@ -39,6 +39,7 @@ echo '==================================================='
 echo "Destroy All Software" @garybernhardt ....rmccurdy.com
 echo \* If cookie hash is not changing then your login is invalid CS has 5min session timeout
 echo Usage:
+echo Update script with VAR_USERNAME VAR_PASSWORD
 echo $0 -t 2FA_TOKEN -q \'QUERY\'
 echo $0 -q \'QUERY\' if you already have active cookie session
 echo $0 -k kill all jobs
