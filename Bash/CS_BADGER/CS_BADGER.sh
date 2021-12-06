@@ -147,8 +147,15 @@ curl -kLs -b cookie -c cookie --compressed  -H $'User-Agent: Mozilla/5.0 (Window
 
 
 # check runDuration and scanCount dispatchState eventCount
-curl -kLs -b cookie -c cookie --compressed  -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' "https://falcon.crowdstrike.com/eam/en-US/splunkd/__raw/servicesNS/nobody/eam2/search/jobs/${var_sid}" -H $'Content-Type: application/x-www-form-urlencoded' -H $'X-Requested-With: XMLHttpRequest'|egrep -Eia "(runDuration|scanCount|dispatchState|eventCount|final)"
+export var_Status1=`curl -kLs -b cookie -c cookie --compressed  -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' "https://falcon.crowdstrike.com/eam/en-US/splunkd/__raw/servicesNS/nobody/eam2/search/jobs/${var_sid}" -H $'Content-Type: application/x-www-form-urlencoded' -H $'X-Requested-With: XMLHttpRequest'|egrep -Eia "(runDuration|scanCount|dispatchState|eventCount|final)"`
 
+if [[ (${var_Status1} = *FAILED* )  ]]
+then
+echo "dispatchState is FAILED Bad Query ?"
+break
+else 
+echo "dispatchState: ${var_Status1}"
+fi
 
 echo ''
 sleep .1
