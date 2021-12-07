@@ -4774,3 +4774,9 @@ Select-String -Path c:\output.txt -Pattern 'MobaXterm.*' -AllMatches  -Context 1
 
 # CS prevention policy count to CSV
 grep --no-group-separator -iaE "(applied|Expand row)" GO -A 1 | grep -v applied | sed -r 's/Expand row (.*)/Policy: \1,/g'  | sed -r 's/(Precedence|Default policy)//g' | tr -d '\n' |  awk '{gsub("Policy: ","\n"); print}'
+
+
+# Sharphound Bloodhound Notes
+ping AD.COMPANY.COM
+cd "C:\ROBERT\BloodHound_Poratable"
+SharpH0und_Robert_McCurdy.exe --CollectionMethod All  --prettyjson --domain AD.COMPANY.COM
