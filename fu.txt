@@ -367,7 +367,7 @@ done
 changeme.py $i  --protocols ssh_key,ftp,memcached,mongodb,mssql,postgres,redis,telnet,http,ssh
 
 # nmap vuln scanner WIP
-nmap -vv -d1 -sV  --script-args=unsafe=1 --script-args=unsafe  --script "(auth or brute or discovery or exploit or external or fuzzer or intrusive or malware or safe or version or vuln) and not (smb-brute or http-slowloris or http-brute or http-enum or http-form-fuzzer or broadcast-avahi-dos or smb-flood or dns-fuzz or http-form-brute or http-iis-short-name-brute or http-fileupload-exploiter or http-fileupload-exploiter or dos or http-unsafe-output-escaping)" 
+nmap -vv -d1 -sV  --script-args=unsafe=1 --script-args=unsafe  --script "(auth or brute or discovery or exploit or external or fuzzer or intrusive or malware or safe or version or vuln) and not (tls-alpn or smb-brute or http-slowloris or http-brute or http-enum or http-form-fuzzer or broadcast-avahi-dos or smb-flood or dns-fuzz or http-form-brute or http-iis-short-name-brute or http-fileupload-exploiter or http-fileupload-exploiter or dos or http-unsafe-output-escaping)" 
  
 
 # smb-check-vulns is dead long live smb-check-vulns
