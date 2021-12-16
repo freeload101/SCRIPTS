@@ -4784,3 +4784,7 @@ grep --no-group-separator -iaE "(applied|Expand row)" GO -A 1 | grep -v applied 
 ping AD.COMPANY.COM
 cd "C:\ROBERT\BloodHound_Poratable"
 SharpH0und_Robert_McCurdy.exe --CollectionMethod All  --prettyjson --domain AD.COMPANY.COM
+
+# grep bytes in a single line etc 
+grep -oih -P '.{0,10}(java).{0,10}' in.xml
+
