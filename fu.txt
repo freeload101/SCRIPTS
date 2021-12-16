@@ -4788,3 +4788,14 @@ SharpH0und_Robert_McCurdy.exe --CollectionMethod All  --prettyjson --domain AD.C
 # grep bytes in a single line etc 
 grep -oih -P '.{0,10}(java).{0,10}' in.xml
 
+#!/bin/bash
+locate "log4j*.jar"
+lsof -w| grep -ia log4j
+
+# VERY SLOW:
+# find / -iname  "log4j*.jar"
+
+# look at open files and there paths / ALL subfolders for log4j !
+for i in `lsof -F n | grep ^n/ | cut -c2- | sort -u | grep -vE "(\.so$)" | xargs dirname|grep -iavE "(\bdev\b|proc|^\/$)"|sort -u`;do echo Path: "${i}" ;grep -iRl log4j "${i}"  ;done   2> /dev/null
+
+echo "ALL DONE $HOST"
