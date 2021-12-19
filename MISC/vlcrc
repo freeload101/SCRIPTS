@@ -1,5 +1,16 @@
 # my Kodi vlcrc
 # cat /home/plex/.config/vlc/vlcrc | grep -E "^key|^global"
+#
+
+#
+# Set Center channel to +6 
+#
+
+# Thanks/Greets
+
+# https://www.avsforum.com/members/magnumx.7688266/
+# https://www.avsforum.com/members/greg9x2.9522740/
+
 
 # VLC Compression settings for Movie TV "NIGIT MODE" AKA "Dynamic Range Compression" AKA "Dolby Volume"
 
