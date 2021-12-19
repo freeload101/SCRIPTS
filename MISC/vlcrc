@@ -1,0 +1,21 @@
+# my Kodi vlcrc
+# cat /home/plex/.config/vlc/vlcrc | grep -E "^key|^global"
+
+# VLC Compression settings for Movie TV "NIGIT MODE" AKA "Dynamic Range Compression" AKA "Dolby Volume"
+
+# RMS/peak: 0
+# Attack: 1.4
+# Release: 1.9
+# Threshold: 35.5 ( or higher ... )
+# Ratio: 20.0:1
+# Knee: 1.0
+# Makeup Gain: 12 ( I think this is what really makes it shine ...)
+
+global-key-play-pause=Enter
+global-key-jump-medium=Left
+global-key-jump+medium=Right
+global-key-jump-long=Down
+global-key-jump+long=Up
+global-key-quit=Browser Back
+global-key-subtitle-track=Browser Search
+global-key-subtitle-toggle=Menu
