@@ -1,11 +1,21 @@
 # my Kodi vlcrc
-# cat /home/plex/.config/vlc/vlcrc | grep -E "^key|^global"
+
+# /home/plex/.kodi/userdata/playercorefactory.xml
+
+#<playercorefactory>
+#  <players>
+#    <player name="VLC" type="ExternalPlayer" audio="false" video="true">
+#      <filename>/usr/bin/vlc</filename>
+#      <args>--extraintf=http --http-host 0.0.0.0 --http-port 6969 --http-password password --fullscreen "{1}"</args>
+#      <hidexbmc>false</hidexbmc>
+#    </player>
+#  </players>
+#</playercorefactory>
+
+# cat /home/plex/.config/vlc/vlcrc
+
 #
-
-
-
-#
-# Set Center channel to +6 
+# Set Center channel to +6 because dialog goes over center channel
 #
 
 # Thanks/Greets
@@ -17,15 +27,28 @@
 # https://wiki.videolan.org/VLC_HTTP_requests/
 
 # VLC Compression settings for Movie TV "NIGIT MODE" AKA "Dynamic Range Compression" AKA "Dolby Volume"
+[compressor] # Dynamic range compressor
+compressor-rms-peak=0.000000
+compressor-attack=1.500000
+compressor-release=2.000000
+compressor-threshold=-27.189999
+compressor-ratio=20.000000
+compressor-knee=1.000000
+compressor-makeup-gain=12.179999
 
-# RMS/peak: 0
-# Attack: 1.4
-# Release: 1.9
-# Threshold: 35.5 ( or higher ... )
-# Ratio: 20.0:1
-# Knee: 1.0
-# Makeup Gain: 12 ( I think this is what really makes it shine ...)
+[qt] # Qt interface
+qt-privacy-ask=0
 
+[core] # core program
+audio-filter=compressor
+
+# Example Test
+# curl "http://25.0.0.151:6969/requests/status.xml?command=pl_pause" -u :password
+
+http-host=25.0.0.151
+http-port=6969
+vod-server=any
+extraintf=6969
 global-key-play-pause=Enter
 global-key-jump-medium=Left
 global-key-jump+medium=Right
