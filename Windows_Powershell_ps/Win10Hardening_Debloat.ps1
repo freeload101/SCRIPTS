@@ -2907,6 +2907,8 @@ echo OneDrive has been removed. Windows Explorer needs to be restarted.
 
 
 :: https://gist.github.com/Carm01/3b83d78a0d99cc78ff1d46385ba68a13
+
+:: https://gist.github.com/Carm01/3b83d78a0d99cc78ff1d46385ba68a13
 :: remove OneDrive icon from quick access file explorer
 REG ADD "HKEY_CLASSES_ROOT\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" /v "System.IsPinnedToNameSpaceTree" /d 0 /t REG_DWORD /f
 :: set time zone to eastern
@@ -2940,73 +2942,75 @@ REG ADD "HKLM\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main" /v "PreventFirstRu
 REG ADD "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v "EnableFirstLogonAnimation" /d 0 /t REG_DWORD /f
 
 :: Remove People icon from system tray
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" /v "PeopleBand" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" /v "PeopleBand" /d 0 /t REG_DWORD /f
 :: Disallow WebSearch in search bar
 :: https://www.addictivetips.com/windows-tips/disable-web-search-windows-10-april-update/
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Search" /v "BingSearchEnabled" /d 0 /t REG_DWORD /f
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Search" /v "AllowSearchToUseLocation" /d 0 /t REG_DWORD /f
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Search" /v "CortanaConsent" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Search" /v "BingSearchEnabled" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Search" /v "AllowSearchToUseLocation" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Search" /v "CortanaConsent" /d 0 /t REG_DWORD /f
 :: additional disable cortana
-REG ADD "HKU\DefaultUser\SOFTWARE\Microsoft\Personalization\Settings" /v "AcceptedPrivacyPolicy" /d 0 /t REG_DWORD /f
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Search" /v "RestrictImplicitTextCollection" /d 1 /t REG_DWORD /f
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Search" /v "RestrictImplicitInkCollection" /d 1 /t REG_DWORD /f
-REG ADD "HKU\DefaultUser\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" /v "HarvestContacts" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\SOFTWARE\Microsoft\Personalization\Settings" /v "AcceptedPrivacyPolicy" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Search" /v "RestrictImplicitTextCollection" /d 1 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Search" /v "RestrictImplicitInkCollection" /d 1 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" /v "HarvestContacts" /d 0 /t REG_DWORD /f
 :: Show hidden files
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "Hidden" /d 1 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "Hidden" /d 1 /t REG_DWORD /f
 :: Show Show File extensions
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "HideFileExt" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "HideFileExt" /d 0 /t REG_DWORD /f
 :: Show Protected Operating System Files and folders
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ShowSuperHidden" /d 1 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ShowSuperHidden" /d 1 /t REG_DWORD /f
 
 
 
 ::  Set IE HomePage
-REG ADD "HKU\DefaultUser\Software\Microsoft\Internet Explorer\Main" /v "Start Page" /d "https://eu.startpage.com/do/mypage.pl?prfe=36c84513558a2d34bf0d89ea505333ad92934a7f254bccb70c1c89932309a9bc818f1bb4bea737976c85d1fa017f7a45" /t REG_SZ /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Internet Explorer\Main" /v "Start Page" /d "https://eu.startpage.com/do/mypage.pl?prfe=36c84513558a2d34bf0d89ea505333ad92934a7f254bccb70c1c89932309a9bc818f1bb4bea737976c85d1fa017f7a45" /t REG_SZ /f
 :: Disable Sync Provider Notifications
-REG ADD "HKU\DefaultUser\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ShowSyncProviderNotifications" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ShowSyncProviderNotifications" /d 0 /t REG_DWORD /f
 :: Turn Off App Suggestions on Start in Windows 10 aka Disable Start Menu App Suggestions
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SystemPaneSuggestionsEnabled" /d 0 /t REG_DWORD /f
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SubscribedContent-338388Enabled" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SystemPaneSuggestionsEnabled" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SubscribedContent-338388Enabled" /d 0 /t REG_DWORD /f
 :: Disable Silent App Installation
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SilentInstalledAppsEnabled" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SilentInstalledAppsEnabled" /d 0 /t REG_DWORD /f
 :: Turn off "Get tips, tricks and suggestions as you use Windows"
 :: WARNING! THIS WILL BREAK WINDOWS SPOTLIGHT LEAVE SET TO 1 IF YOU WANT SPOTLIGHT TO WORK. setting Disabled by default
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SoftLandingEnabled" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SoftLandingEnabled" /d 0 /t REG_DWORD /f
 :: Prevent “welcome to the best windows ever”
-REG ADD "HKU\DefaultUser\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SubscribedContent-310093Enabled" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SubscribedContent-310093Enabled" /d 0 /t REG_DWORD /f
 :: Disable “This App is Preventing Shutdown or Restart” Screen
-REG ADD "HKU\DefaultUser\Control Panel\Desktop" /v "WaitToKillAppTimeout" /d "4000" /t REG_SZ /f
-REG ADD "HKU\DefaultUser\Control Panel\Desktop" /v "HungAppTimeout" /d "5000" /t REG_SZ /f
-REG ADD "HKU\DefaultUser\Control Panel\Desktop" /v "AutoEndTasks" /d "1" /t REG_SZ /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Control Panel\Desktop" /v "WaitToKillAppTimeout" /d "4000" /t REG_SZ /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Control Panel\Desktop" /v "HungAppTimeout" /d "5000" /t REG_SZ /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Control Panel\Desktop" /v "AutoEndTasks" /d "1" /t REG_SZ /f
 
 
 
 :: Disable Gamebar per user basis
 :: https://www.top-password.com/blog/disable-game-bar-and-game-dvr-in-windows-10/
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\GameDVR" /v "AppCaptureEnabled"  /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\GameDVR" /v "AppCaptureEnabled"  /d 0 /t REG_DWORD /f
 :: Gaming Disable background recording
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\GameDVR" /v "HistoricalCaptureEnabled"  /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\GameDVR" /v "HistoricalCaptureEnabled"  /d 0 /t REG_DWORD /f
 :: https://www.tenforums.com/tutorials/76094-turn-off-game-bar-tips-windows-10-a.html
-REG ADD "HKU\DefaultUser\Software\Microsoft\GameBar" /v "ShowStartupPanel"  /d 0 /t REG_SZ /f
-REG ADD "HKU\DefaultUser\Software\Microsoft\GameBar" /v "AutoGameModeEnabled"  /d 0 /t REG_SZ /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\GameBar" /v "ShowStartupPanel"  /d 0 /t REG_SZ /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\GameBar" /v "AutoGameModeEnabled"  /d 0 /t REG_SZ /f
 :: https://www.windowscentral.com/how-disable-and-remove-game-bar-windows-10-creators-update
-REG ADD "HKU\DefaultUser\SYSTEM\CurrentControlSet\Services\xbgm" /v "Start" /d 4 /t REG_SZ /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\SYSTEM\CurrentControlSet\Services\xbgm" /v "Start" /d 4 /t REG_SZ /f
 :: Show More Details in File Transfer Dialog
-REG ADD "HKU\DefaultUser\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" /v "EnthusiastMode" /d 1 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" /v "EnthusiastMode" /d 1 /t REG_DWORD /f
 :: Enable/USE Dark Theme 
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "AppsUseLightTheme" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "AppsUseLightTheme" /d 0 /t REG_DWORD /f
 
 
 :: June 6 2019 - Disable "Restore previous folder windows at logon" 
 :: NOTE THIS REGEDIT NORMALLY DOES NOT EXIST. THIS SHOULD NOT HARM ANYTHING IF IT DOES NOT.
-REG delete "HKU\DefaultUser\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "PersistBrowsers" /f
+REG delete "HKEY_CURRENT_USER\DefaultUser\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "PersistBrowsers" /f
 
 
 :: Turn Off Automatically Restart Apps After Sign-In
 :: May 28th 2020 https://winaero.com/blog/turn-off-automatically-restart-apps-after-sign-in-windows-10/
-REG ADD "HKU\DefaultUser\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v "RestartApps" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v "RestartApps" /d 0 /t REG_DWORD /f
 :: disable 'Get even more out of Windows' reg value does not normally exist so deleting it is default
-REG ADD "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" /v "ScoobeSystemSettingEnabled" /d 0 /t REG_DWORD /f
+REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" /v "ScoobeSystemSettingEnabled" /d 0 /t REG_DWORD /f
+
+
 
 
 
