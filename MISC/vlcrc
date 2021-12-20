@@ -2,6 +2,8 @@
 # cat /home/plex/.config/vlc/vlcrc | grep -E "^key|^global"
 #
 
+
+
 #
 # Set Center channel to +6 
 #
@@ -11,6 +13,8 @@
 # https://www.avsforum.com/members/magnumx.7688266/
 # https://www.avsforum.com/members/greg9x2.9522740/
 
+# EXAMPLES FOR YATSE CUSTOM REMOTE BUTTONS TO VLC RC HTTP
+# https://wiki.videolan.org/VLC_HTTP_requests/
 
 # VLC Compression settings for Movie TV "NIGIT MODE" AKA "Dynamic Range Compression" AKA "Dolby Volume"
 
