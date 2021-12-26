@@ -2976,12 +2976,11 @@ REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion
 REG ADD "HKEY_CURRENT_USER\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SoftLandingEnabled" /d 0 /t REG_DWORD /f
 :: Prevent “welcome to the best windows ever”
 REG ADD "HKEY_CURRENT_USER\DefaultUser\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SubscribedContent-310093Enabled" /d 0 /t REG_DWORD /f
-:: Disable “This App is Preventing Shutdown or Restart” Screen
-REG ADD "HKEY_CURRENT_USER\DefaultUser\Control Panel\Desktop" /v "WaitToKillAppTimeout" /d "4000" /t REG_SZ /f
-REG ADD "HKEY_CURRENT_USER\DefaultUser\Control Panel\Desktop" /v "HungAppTimeout" /d "5000" /t REG_SZ /f
-REG ADD "HKEY_CURRENT_USER\DefaultUser\Control Panel\Desktop" /v "AutoEndTasks" /d "1" /t REG_SZ /f
-
-
+:: Disable “This App is Preventing Shutdown or Restart” Screen 
+reg add "HKCU\Control Panel\Desktop" /v "AutoEndTasks" /t REG_SZ /d "1" /f
+reg add "HKCU\Control Panel\Desktop" /v "HungAppTimeout" /t REG_SZ /d "1000" /f
+reg add "HKCU\Control Panel\Desktop" /v "WaitToKillAppTimeout" /t REG_SZ /d "1000" /f
+reg add "HKLM\System\CurrentControlSet\Control" /v "WaitToKillServiceTimeout" /t REG_SZ /d "1000" /f
 
 :: Disable Gamebar per user basis
 :: https://www.top-password.com/blog/disable-game-bar-and-game-dvr-in-windows-10/
