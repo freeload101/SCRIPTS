@@ -1594,9 +1594,9 @@ tv.pluto.android
 us.com.dt.iq.appsource.tmobile
        ) do (
 		echo Trying to Uninstall:		%%x
-        .\adb.exe shell "pm uninstall -k --user 0 %%x"
+       REMOVETHIS .\adb.exe shell "pm uninstall -k --user 0 %%x"
 		echo Trying to Disable:		%%x
-		.\adb.exe shell "pm disable --user 0 %%x" 2> null
+		REMOVETHIS .\adb.exe shell "pm disable --user 0 %%x" 2> null
        )
 
 EXIT /B %ERRORLEVEL%
