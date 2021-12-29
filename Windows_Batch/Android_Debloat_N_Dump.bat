@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 echo '-----------------------------------------------------------------------------------------'
 echo 'rmccurdy.com ( Android_Debloat_N_Dump )'
 echo ' This script will:'
-echo ' * Uninstall and disable any apps listed online as bloat'
+echo ' * DISABLED!!!!: Uninstall and disable any apps listed online as bloat'
 echo ' * Dump the app name example com.vzw.ecid and the friendly name "Verizon Call Filter" to easily identidfy what apps to uninstall or disable by hand'
 echo '-----------------------------------------------------------------------------------------'
 
@@ -12,9 +12,11 @@ CALL :INIT
 
 :: THIS IS NOT WORKING ON MY S10E CALL :ADGUARD
 
+CALL :TWEAKS
+
 CALL :GETINFO
 
-CALL :UNINSTALL
+:: This basicly brinks your phone ... CALL :UNINSTALL
 
 CALL :DUMPAPKINFO
 
@@ -54,7 +56,16 @@ echo %date% %time% INFO: Killing any existing adb server
 
 
 EXIT /B %ERRORLEVEL%
- 
+
+
+:TWEAKS
+echo %date% %time% INFO: Disabling wake on tap and lift to save battery  
+.\adb.exe shell "settings put system lift_to_wake 0"
+.\adb.exe shell "adb shell settings put secure wake_gesture_enabled 0"
+EXIT /B %ERRORLEVEL%
+
+
+
 
 :DUMPAPKINFO
 echo %date% %time% INFO: Pushing aapt2 to /data/local/tmp/ you may need to change the path to a read write path
@@ -102,9 +113,6 @@ EXIT /B %ERRORLEVEL%
 
 :UNINSTALL
 
-echo %date% %time% INFO: Disabling wake on tap and lift to save battery  
-.\adb.exe shell "settings put system lift_to_wake 0"
-.\adb.exe shell "adb shell settings put secure wake_gesture_enabled 0"
 
 echo %date% %time% INFO: Running mass uninstall/disable 
 ::Credit: 
@@ -1594,9 +1602,9 @@ tv.pluto.android
 us.com.dt.iq.appsource.tmobile
        ) do (
 		echo Trying to Uninstall:		%%x
-       REMOVETHIS .\adb.exe shell "pm uninstall -k --user 0 %%x"
+       .\adb.exe shell "pm uninstall -k --user 0 %%x"
 		echo Trying to Disable:		%%x
-		REMOVETHIS .\adb.exe shell "pm disable --user 0 %%x" 2> null
+		.\adb.exe shell "pm disable --user 0 %%x" 2> null
        )
 
 EXIT /B %ERRORLEVEL%
