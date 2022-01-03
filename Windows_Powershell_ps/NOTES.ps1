@@ -171,3 +171,15 @@ Select-String -Path c:\output.txt -Pattern 'MobaXterm.*' -AllMatches  -Context 1
 #Select-String -Path c:\output.txt -Pattern '"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b"','\b(ht|f)tp(s?)[^ ]*\.[^ ]*(\/[^ ]*)*\b' -AllMatches 
 
 
+
+# Mass powershell unlock script
+# install AD Mod
+Add-WindowsCapability -Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0 -Online
+Install-WindowsFeature -Name “RSAT-AD-PowerShell” -IncludeAllSubFeature
+Get-Module -Name ActiveDirectory -ListAvailable
+
+# import mod and unlock all 
+Import-Module ActiveDirectory
+Search-ADAccount –SearchBase ‘OU=YOUROUNAMEHERE,DC=YOURDOMAINHERE,DC=com’ –LockedOut | Unlock-ADAccount -Passthru
+
+
