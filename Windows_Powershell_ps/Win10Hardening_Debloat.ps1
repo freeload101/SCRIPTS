@@ -5,6 +5,10 @@
 # some dupes here but whatever
 #########
 
+## start/run history
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "Start_TrackProgs" /t REG_DWORD /d 0x1 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "Start_TrackDocs"  /t REG_DWORD /d 0x1 /f
+
 
 ## NEW STUFF 2021 BECAUSE.... WINDOWS UPDATES LIKES TO RE ENABLE STUFF YOU DISABLED AND ADD EVEN MORE CRAP YOU DON'T WANT
 # Disable "News and Interests" ... the weather BS in the start menu ..
