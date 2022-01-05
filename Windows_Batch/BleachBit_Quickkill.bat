@@ -41,7 +41,7 @@ EXIT /B %ERRORLEVEL%
 
 :INIT
 cd "%~dp0"
-taskkill /F /IM "bleachbit_console.exe" 2> %temp%/null
+taskkill /F /IM "bleachbit_console.exe"  1>> output.log 2>&1
 
 
 
@@ -77,7 +77,7 @@ EXIT /B %ERRORLEVEL%
 
 :DLBB
 echo %date% %time% INFO: Downloading BleachBit
-powershell "(New-Object Net.WebClient).DownloadFile('https://download.bleachbit.org/BleachBit-4.4.0-portable.zip', '.\BleachBit-4.4.0-portable.zip')" 
+powershell "(New-Object Net.WebClient).DownloadFile('https://download.bleachbit.org/BleachBit-4.4.2-portable.zip', '.\BleachBit-4.4.2-portable.zip')"  1>> output.log 2>&1
 powershell "(Expand-Archive .\BleachBit-4.4.0-portable.zip -DestinationPath . -Force)"
 EXIT /B %ERRORLEVEL%
 
@@ -104,7 +104,7 @@ EXIT /B %ERRORLEVEL%
 
 :QUICKKILL
 echo %date% %time% INFO: Downloading/Running Quickkill.bat
-powershell "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/freeload101/SCRIPTS/master/Windows_Batch/quickkill.bat.txt', '.\quickkill.bat')" 
+powershell "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/freeload101/SCRIPTS/master/Windows_Batch/quickkill.bat.txt', '.\quickkill.bat')"  1>> output.log 2>&1
 start /W "quickkill" CALL .\quickkill.bat
 EXIT /B %ERRORLEVEL%
 
