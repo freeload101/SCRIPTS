@@ -120,4 +120,4 @@ reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Curr
 reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify" /v PastIconsStream /f 
 start "Shell Restarter" /d "%systemroot%" /i /normal explorer.exe
 
-exit
+ exit
