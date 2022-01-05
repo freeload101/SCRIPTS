@@ -1,6 +1,6 @@
 echo `date` INFO: RUN THIS AS PLEX NOT AS ROOT
 
-sleep 5
+sleep 10
 
 
 
@@ -9,33 +9,33 @@ killall Ombi
 sleep 3
 killall -9 Ombi
 
-echo `date` INFO: Backing up OMBI to "/home/plex/OMBI_COPY_$(date '+%y_%m_%d')"
-rsync -Par /home/plex/OMBI /home/plex/OMBI_AUTO_$(date '+%y_%m_%d')
+echo `date` INFO: Backing up OMBI
+rsync -Par /home/plex/OMBI/ /home/plex/OMBI_AUTO_$(date '+%y_%m_%d')/
 
-echo `date` INFO: Downloading latest linux-arm64.tar.gz from "https://github.com/Ombi-app/Ombi/releases/latest"
+echo `date` INFO: Downloading latest linux-x64.tar.gz  from "https://github.com/Ombi-app/Ombi/releases/latest"
 cd /home/plex/
-wget -q -U "rmccurdy.com" -q   -e robots=off  -nd -r  "https://github.com/Ombi-app/Ombi/releases/latest" --max-redirect 1 -l 1 -A "linux-arm64.tar.gz" -R '*.zip,release*.*' --regex-type pcre --accept-regex "linux-arm64\.tar\.gz"
+rm -Rf linux-*
+# not /latest and added no clobber to get latest wget -U "rmccurdy.com"  -e robots=off  -nd -r  "https://github.com/Ombi-app/Ombi/releases/latest" --max-redirect 1 -l 1 -A "linux-x64.tar.gz" -R '*.zip,release*.*' --regex-type pcre --accept-regex "linux-x64\.tar\.gz"
+wget -nc -U "rmccurdy.com"  -e robots=off  -nd -r  "https://github.com/Ombi-app/Ombi/releases/" --max-redirect 1 -l 1 -A "linux-x64.tar.gz" -R '*.zip,release*.*' --regex-type pcre --accept-regex "linux-x64\.tar\.gz"
 
-echo `date` INFO: Moving /home/plex/OMBI to "/home/plex/OMBI_WORKING_$(date '+%y_%m_%d')"
-mv /home/plex/OMBI/ /home/plex/OMBI "/home/plex/OMBI_WORKING_$(date '+%y_%m_%d')"
 
 echo `date` INFO: Setting up OMBI folder ...
 cd /home/plex/
 mkdir OMBI
 cd /home/plex/OMBI
-mv ../linux-arm64.tar.gz /home/plex/OMBI
- 
-cp /home/plex/OMBI_WORKING_$(date '+%y_%m_%d')/OmbiExternal.db /home/plex/OMBI
-cp /home/plex/OMBI_WORKING_$(date '+%y_%m_%d')/OmbiSettings.db /home/plex/OMBI
-cp /home/plex/OMBI_WORKING_$(date '+%y_%m_%d')/Ombi.db /home/plex/OMBI
+mv ../linux-x64.tar.gz /home/plex/OMBI
+
+tar -xvf ./linux-x64.tar.gz
+cp /home/plex/OMBI_AUTO_$(date '+%y_%m_%d')/OmbiExternal.db /home/plex/OMBI
+cp /home/plex/OMBI_AUTO_$(date '+%y_%m_%d')/OmbiSettings.db /home/plex/OMBI
+cp /home/plex/OMBI_AUTO_$(date '+%y_%m_%d')/Ombi.db /home/plex/OMBI
 
 
- 
+
 echo `date` INFO: Restarting OMBI
 systemctl restart OMBI
 systemctl status OMBI | grep .
 
 echo `date` INFO: COMPLETE Tailing logs exit at any time
+sleep 5
 tail -f /home/plex/OMBI/Logs/* &
-
-
