@@ -58,7 +58,7 @@ EXIT /B %ERRORLEVEL%
 :RUNCLEANMGR
 echo %date% %time% INFO: Running windows cleanmgr first
 FOR /F "tokens=* delims=" %%A in ('reg QUERY "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches"') do (
-REG ADD "%%A"  /v StateFlags0777 /t REG_DWORD /d 00000002 /f > %temp%/null
+REG ADD "%%A"  /v StateFlags0777 /t REG_DWORD /d 00000002 /f  1>> output.log 2>&1
 )
 cleanmgr /sagerun:777
 EXIT /B %ERRORLEVEL%
@@ -78,7 +78,7 @@ EXIT /B %ERRORLEVEL%
 :DLBB
 echo %date% %time% INFO: Downloading BleachBit
 powershell "(New-Object Net.WebClient).DownloadFile('https://download.bleachbit.org/BleachBit-4.4.2-portable.zip', '.\BleachBit-4.4.2-portable.zip')"  1>> output.log 2>&1
-powershell "(Expand-Archive .\BleachBit-4.4.0-portable.zip -DestinationPath . -Force)"
+powershell "(Expand-Archive .\BleachBit-4.4.2-portable.zip -DestinationPath . -Force)"
 EXIT /B %ERRORLEVEL%
 
 
