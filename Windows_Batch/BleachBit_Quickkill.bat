@@ -58,7 +58,7 @@ EXIT /B %ERRORLEVEL%
 :RUNCLEANMGR
 echo %date% %time% INFO: Running windows cleanmgr first
 FOR /F "tokens=* delims=" %%A in ('reg QUERY "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches"') do (
-REG ADD "%%A"  /v StateFlags0777 /t REG_DWORD /d 00000002 /f
+REG ADD "%%A"  /v StateFlags0777 /t REG_DWORD /d 00000002 /f > %temp%/null
 )
 cleanmgr /sagerun:777
 EXIT /B %ERRORLEVEL%
