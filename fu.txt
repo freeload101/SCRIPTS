@@ -1463,6 +1463,11 @@ FOR /F "tokens=* delims=" %%A in ('dir /b /s *.zip') do (C:\usb\media\7zip\7z.ex
 #VeraCrypt mount command line
 "C:\Program Files\VeraCrypt\VeraCrypt.exe"  /letter H /v "D:\VMWARE_DONOTDELETE\VC" /auto
 
+# create image Linux
+veracrypt -t -c --size= 60G  --volume-type=normal /PATHtofile --encryption=aes  --hash=sha-512 --filesystem=exfat -p password --pim=0 -k "" --random-source=/dev/urandom
+
+
+
 # set null password for sudo root and allow null login
 
 usermod -p "" administrator
