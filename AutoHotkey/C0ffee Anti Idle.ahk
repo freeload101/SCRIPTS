@@ -50,7 +50,7 @@ Send,{F22}
 
 
 
-// Toggle High Contrast
+; Toggle High Contrast
 F12::
 Toggle := !Toggle
 loop
