@@ -46,6 +46,7 @@ Hotkey, NumpadEnter, On
 
 Send,{F22}
 }
+return
 
 
 
