@@ -66,7 +66,6 @@ cd %~dp07ZIP_BASE
 echo %date% %time% INFO: Installing 7zip
 set __COMPAT_LAYER=RUNASINVOKER 
 "%~dp07ZIP_BASE\7zip.exe /S /D="%~dp07ZIP"
-
 )
 
 
