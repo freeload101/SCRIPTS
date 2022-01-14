@@ -21,7 +21,7 @@ CALL :END
 if exist "%~dp0wget.exe" (
  	set "WGETPATH=%~dp0wget.exe"
  	)
-if exist "Ac:\windows\system32\wget.exe" (
+if exist "c:\windows\system32\wget.exe" (
 	set "WGETPATH=c:\windows\system32\wget.exe"
 	)	
 
