@@ -1,5 +1,6 @@
 #InstallKeybdHook
 #Persistent
+#MaxThreadsPerHotkey 2
 SetTimer, Check, 9000
 
 
@@ -8,12 +9,6 @@ SetTimer, Check, 9000
 ; copy
 F9::send ^c
 
-; use clipboard history
-;%windir%\System32\cmd.exe /c "echo off | clip"
-;wmic service where "name like '%%cbdhsvc_%%'" call stopservice
-;wmic service where "name like '%%cbdhsvc_%%'" call startservice
-
-
 F10::
 {
 send,#v
@@ -21,7 +16,7 @@ send,#v
 return
 
 ;Alt Tab
-F12:: Send ^!{Tab}	; brings up the Alt-Tab menu
+F8:: Send ^!{Tab}	; brings up the Alt-Tab menu
 return
 
 
@@ -41,7 +36,6 @@ IfGreater, A_TimeIdle, 240000,{
 SendF22()
 Enter::tooltip,"Press F1 Key to Stop"
 NumpadEnter::tooltip,"Press F1 Key to Stop"
-
 }
 
 ;disableds enter and sends F22 to anti idle
@@ -54,6 +48,39 @@ Send,{F22}
 }
 
 
+
+
+// Toggle High Contrast
+F12::
+Toggle := !Toggle
+loop
+{
+    If(toggle)
+		vFlags := 0x1 ;on
+		VarSetCapacity(HIGHCONTRAST, vSize, 0)
+		NumPut(vSize, &HIGHCONTRAST, 0, "UInt") ;cbSize
+		;HCF_HIGHCONTRASTON := 0x1
+		NumPut(vFlags, &HIGHCONTRAST, 4, "UInt") ;dwFlags
+		;SPI_SETHIGHCONTRAST := 0x43
+		DllCall("user32\SystemParametersInfo", UInt,0x43, UInt,vSize, Ptr,&HIGHCONTRAST, UInt,0)
+	If (!toggle)
+		vFlags := 0x0 ;off
+		vSize := A_PtrSize=8?16:12
+		VarSetCapacity(HIGHCONTRAST, vSize, 0)
+		NumPut(vSize, &HIGHCONTRAST, 0, "UInt") ;cbSize
+		;HCF_HIGHCONTRASTON := 0x1
+		NumPut(vFlags, &HIGHCONTRAST, 4, "UInt") ;dwFlags
+		;SPI_SETHIGHCONTRAST := 0x43
+
+		DllCall("user32\SystemParametersInfo", UInt,0x43, UInt,vSize, Ptr,&HIGHCONTRAST, UInt,0)
+	 break
+}
+return
+
+; FUNCTIONS 
+
+
+; FUNCTIONS UNUSED
 
 ; Focus all windows and press F5 to stay logged in.. does not really work but intresting to keep if needed for other stuff
 ClickyClick()
@@ -76,3 +103,9 @@ WinGet windows, List
 	}
 }
 return
+
+
+; use clipboard history
+;%windir%\System32\cmd.exe /c "echo off | clip"
+;wmic service where "name like '%%cbdhsvc_%%'" call stopservice
+;wmic service where "name like '%%cbdhsvc_%%'" call startservice
