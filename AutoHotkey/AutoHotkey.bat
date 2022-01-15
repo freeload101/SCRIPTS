@@ -111,5 +111,5 @@ EXIT /B 0
 
 :END
 echo %date% %time% INFO: All done
-ping 4.2.2.2 -w 1 -n 3 > %temp%\null
+timeout /t 2
 exit 
