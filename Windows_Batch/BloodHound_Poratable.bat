@@ -49,7 +49,7 @@ EXIT /B 0
 :SHARPHOUND
 CALL :INIT
 echo %date% %time% INFO: Starting Sharphound --CollectionMethod All
-%~dp0SharpH0und_Robert_McCurdy.exe  --CollectionMethod All
+%~dp0SharpH0und_Robert_McCurdy.exe  --CollectionMethod All --PrettyJson
 EXIT /B 0
 
 :: NEO
