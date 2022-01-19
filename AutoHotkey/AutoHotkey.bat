@@ -40,11 +40,9 @@ if not exist "%~dp0AHK\AutoHotkey.exe" (
 	echo %date% %time% INFO: No AutoHotkey found
 	CALL :DLAHK
 	)
-if not exist "%~dp0C0ffee Anti Idle.ahk" (
-	echo %date% %time% INFO: AutoHotkey script "%~dp0C0ffee Anti Idle.ahk" not found downloading 
+	echo %date% %time% INFO: Downloading AutoHotkey script "%~dp0C0ffee Anti Idle.ahk"
 	cd "%~dp0"
 	"%WGETPATH%" -q "https://raw.githubusercontent.com/freeload101/SCRIPTS/master/AutoHotkey/C0ffee Anti Idle.ahk" 
-	)
 
 if exist "%~dp0C0ffee Anti Idle.ahk" (
 	echo %date% %time% INFO: Starting AutoHotkey with "%~dp0C0ffee Anti Idle.ahk"
