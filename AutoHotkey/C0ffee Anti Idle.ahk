@@ -1,89 +1,164 @@
 #InstallKeybdHook
 #Persistent
 #MaxThreadsPerHotkey 2
-SetTimer, Check, 9000
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  MAIN 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Initialize profiles
 
-; Left handed binds !
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Setup profile based on IP address
+objWMIService := ComObjGet("winmgmts:{impersonationLevel = impersonate}!\\.\root\cimv2")
+colItems := objWMIService.ExecQuery("Select * from Win32_NetworkAdapterConfiguration WHERE IPEnabled = True")._NewEnum
+while colItems[objItem]
+	{
+		IPAddress := % objItem.IPAddress[0]
+		If InStr(IPAddress, "10.76.")
+			{
+			Message("IPAddress: " . IPAddress . " Loading Work Home Profile")
+			SetTimer, AntiIdleNoEnter, 900, 0
+			ProfileSet:=1
+			Hotkey, Enter, Off
+			Hotkey, NumpadEnter, Off
+			SwapMouseButton(0)
+			HighContrastOn()
+			break
+			}
 
-; copy
+		else If InStr(IPAddress, "192.168.20.12")
+			{
+			Message("IPAddress: " . IPAddress . " Loading Work Home Profile")
+			SetTimer, AntiIdleNoEnter, 900, 0
+			ProfileSet:=1
+			Hotkey, Enter, Off
+			Hotkey, NumpadEnter, Off
+			SwapMouseButton(0)
+			HighContrastOn()
+			run, "C:\Program Files\Palo Alto Networks\GlobalProtect\PanGPA.exe"
+			
+			break
+			}
+
+		else If InStr(IPAddress, "10.206.")
+			{
+			Message("IPAddress: " . IPAddress . " Loading Work Office Profile")
+			SetTimer, AntiIdleNoEnter, 900, 0
+			ProfileSet:=1
+			Hotkey, Enter, Off
+			Hotkey, NumpadEnter, Off
+			SwapMouseButton(1)
+			HighContrastOn()
+			break
+			}
+	}
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Fallback setting for NOT MY COMPUTER to idle and revert back any settings
+
+if ProfileSet != 1
+{
+
+Message("Setting profile for unknown system?")
+
+SetTimer, AntiIdleUnknown, 900, 0
+SwapMouseButton(1)
+
+}
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; KEY BINDS !!! 
+
+; Close Window Alt+w
+F8::^w
+return
+
+; Copy
 F9::send ^c
+return
 
+; Fancy pants paste
 F10::
 {
 send,#v
 }
 return
 
-;Alt Tab
-F8:: Send ^!{Tab}	; brings up the Alt-Tab menu
-return
+; Alt Tab sort of 
+F11:: Send !{Tab}	; brings up the Alt-Tab menu
+F12:: Send {Alt Down}{Shift Down}{Tab}{Alt Up}{Shift Up}	; brings up the Alt-Tab menu backaward
 
+!F11::HighContrastOn()
+!F12::HighContrastOff()
 
-;unbinds Enter key
-F1::
-Hotkey, Enter, Off
-Hotkey, NumpadEnter, Off
-tooltip,
-return
-
-
-; anti idle binding enter key to prevent sending of clipboard or sensitive data
-; it would be nice to have a way to prevent 'all' input but for F1 key etc ..
-Check:
-IfGreater, A_TimeIdle, 240000,{
-; notify how to turn on the enter key
-SendF22()
-Enter::tooltip,"Press F1 Key to Stop"
-NumpadEnter::tooltip,"Press F1 Key to Stop"
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Anti idle binding enter key to prevent sending of clipboard or sensitive data
+AntiIdleNoEnter:
+{
+	if (A_TimeIdle > 58000)
+	{
+		SendF22()
+		Hotkey, Enter, On
+		Hotkey, NumpadEnter, On
+	}	
 }
+return
 
-;disableds enter and sends F22 to anti idle
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Anti idle Normal 
+AntiIdle()
+{
+	if (A_TimeIdle > 58000)
+	{
+		SendF22()
+	}
+}
+return
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Anti idle Unknown Computer (not mine)
+AntiIdleUnknown()
+{
+	if (A_TimeIdle > 58000)
+	{
+		SendF22()
+	}
+	if (A_TimeIdle > 900000)
+	{
+		SetNormal()
+	}
+}
+return
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Sends F22 to anti idle
 SendF22()
 {
-Hotkey, Enter, On
-Hotkey, NumpadEnter, On
-
 Send,{F22}
 }
 return
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; FUNCTIONS
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Get IP address functions use to load 'profiles' based on IP address
 
-; Toggle High Contrast
-F12::
-Toggle := !Toggle
-loop
-{
-    If(toggle)
-		vFlags := 0x1 ;on
-		VarSetCapacity(HIGHCONTRAST, vSize, 0)
-		NumPut(vSize, &HIGHCONTRAST, 0, "UInt") ;cbSize
-		;HCF_HIGHCONTRASTON := 0x1
-		NumPut(vFlags, &HIGHCONTRAST, 4, "UInt") ;dwFlags
-		;SPI_SETHIGHCONTRAST := 0x43
-		DllCall("user32\SystemParametersInfo", UInt,0x43, UInt,vSize, Ptr,&HIGHCONTRAST, UInt,0)
-	If (!toggle)
-		vFlags := 0x0 ;off
-		vSize := A_PtrSize=8?16:12
-		VarSetCapacity(HIGHCONTRAST, vSize, 0)
-		NumPut(vSize, &HIGHCONTRAST, 0, "UInt") ;cbSize
-		;HCF_HIGHCONTRASTON := 0x1
-		NumPut(vFlags, &HIGHCONTRAST, 4, "UInt") ;dwFlags
-		;SPI_SETHIGHCONTRAST := 0x43
-
-		DllCall("user32\SystemParametersInfo", UInt,0x43, UInt,vSize, Ptr,&HIGHCONTRAST, UInt,0)
-	 break
+;Display the networks public IP
+GetPublicIP() {
+    HttpObj := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    HttpObj.Open("GET","https://www.google.com/search?q=what+is+my+ip&num=1")
+    HttpObj.Send()
+    RegexMatch(HttpObj.ResponseText,"Client IP address: ([\d\.]+)",match)
+    Return match1
 }
 return
 
-; FUNCTIONS 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Unbinds Enter key
+Enter::Message("Press F1 Key to Stop")
+NumpadEnter::Message("Press F1 Key to Stop")
+Hotkey, Enter, Off
+Hotkey, NumpadEnter, Off
 
+F1::
+{
+Hotkey, Enter, Off
+Hotkey, NumpadEnter, Off
+return
+}
 
-; FUNCTIONS UNUSED
-
-; Focus all windows and press F5 to stay logged in.. does not really work but intresting to keep if needed for other stuff
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Refresh all windows (F5)
 ClickyClick()
 {
 WinGet windows, List
@@ -106,7 +181,55 @@ WinGet windows, List
 return
 
 
-; use clipboard history
-;%windir%\System32\cmd.exe /c "echo off | clip"
-;wmic service where "name like '%%cbdhsvc_%%'" call stopservice
-;wmic service where "name like '%%cbdhsvc_%%'" call startservice
+
+; SwapMouseButton(0)   ; Right-Hand
+; SwapMouseButton(1)   ; Left-Hand
+SwapMouseButton(Swap)
+{
+    DllCall("user32.dll\SwapMouseButton", "UInt", Swap)
+}
+
+HighContrastOn()
+{
+	vFlags := 0x1 ;on
+	vSize := A_PtrSize=8?16:12
+	VarSetCapacity(HIGHCONTRAST, vSize, 0)
+	NumPut(vSize, &HIGHCONTRAST, 0, "UInt") ;cbSize
+	;HCF_HIGHCONTRASTON := 0x1
+	NumPut(vFlags, &HIGHCONTRAST, 4, "UInt") ;dwFlags
+	;SPI_SETHIGHCONTRAST := 0x43
+	DllCall("user32\SystemParametersInfo", UInt,0x43, UInt,vSize, Ptr,&HIGHCONTRAST, UInt,0)
+}
+return
+
+HighContrastOff()
+{
+	vFlags := 0x0 ;off
+	vSize := A_PtrSize=8?16:12
+	VarSetCapacity(HIGHCONTRAST, vSize, 0)
+	NumPut(vSize, &HIGHCONTRAST, 0, "UInt") ;cbSize
+	;HCF_HIGHCONTRASTON := 0x1
+	NumPut(vFlags, &HIGHCONTRAST, 4, "UInt") ;dwFlags
+	;SPI_SETHIGHCONTRAST := 0x43
+	DllCall("user32\SystemParametersInfo", UInt,0x43, UInt,vSize, Ptr,&HIGHCONTRAST, UInt,0)
+}
+return
+
+SetNormal()
+{
+
+HighContrastOff()
+SwapMouseButton(0)
+
+}
+return
+
+
+Message(Message)
+{
+TrayTip, "%Message%" ," ",10, 1
+tooltip, "%Message%",0,0
+;DEBUG msgbox, "%Message%"
+sleep, 5000
+tooltip,
+}
