@@ -32,9 +32,7 @@ while colItems[objItem]
 			Hotkey, Enter, Off
 			Hotkey, NumpadEnter, Off
 			SwapMouseButton(0)
-			HighContrastOn()
-			run, "C:\Program Files\Palo Alto Networks\GlobalProtect\PanGPA.exe"
-			
+			HighContrastOn()			
 			break
 			}
 
@@ -46,17 +44,6 @@ while colItems[objItem]
 			Hotkey, Enter, Off
 			Hotkey, NumpadEnter, Off
 			SwapMouseButton(1)
-			HighContrastOn()
-			break
-			}
-		else If InStr(IPAddress, "192.168.3.17")
-			{
-			Message("IPAddress: " . IPAddress . " Loading Game PC Profile")
-			SetTimer, AntiIdle, 900, 0
-			ProfileSet:=1
-			Hotkey, Enter, Off
-			Hotkey, NumpadEnter, Off
-			SwapMouseButton(0)
 			HighContrastOn()
 			break
 			}
