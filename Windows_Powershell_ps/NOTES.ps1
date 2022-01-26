@@ -109,10 +109,6 @@ foreach($object_properties in $data.PsObject.Properties)
 
 
 
-# dump AD Active Directry emails with admin tools:
-Get-ADUser -Filter * -Properties EmailAddress,DisplayName, samaccountname| select EmailAddress, DisplayName,samaccountname | Export-Csv -Path .\emails.csv
-start .\emails.csv
-
 
 
 ###################################################### 
@@ -186,5 +182,6 @@ Search-ADAccount –SearchBase ‘OU=YOUROUNAMEHERE,DC=YOURDOMAINHERE,DC=com’ 
 
 # password not required UF_PASSWD_NOTREQD
 # http://www.selfadsi.org/ads-attributes/user-userAccountControl.htm#UF_PASSWD_NOTREQD
-Get-ADUser -Filter {PasswordNotRequired -eq $true} |  Export-Csv -Path .\PasswordNotRequired.csv
-start .\PasswordNotRequired.csv
+#Get-ADUser -Filter {PasswordNotRequired -eq $true} |  Export-Csv -Path .\PasswordNotRequired.csv
+Get-ADUser -Filter * -Properties * |  Export-Csv -Path .\ADAudit.csv
+start .\ADAudit.csv
