@@ -183,3 +183,7 @@ Import-Module ActiveDirectory
 Search-ADAccount –SearchBase ‘OU=YOUROUNAMEHERE,DC=YOURDOMAINHERE,DC=com’ –LockedOut | Unlock-ADAccount -Passthru
 
 
+
+# password not required UF_PASSWD_NOTREQD
+Get-ADUser -Filter {PasswordNotRequired -eq $true} |  Export-Csv -Path .\PasswordNotRequired.csv
+start .\PasswordNotRequired.csv
