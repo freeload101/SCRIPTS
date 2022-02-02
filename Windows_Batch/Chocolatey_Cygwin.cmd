@@ -54,6 +54,7 @@ choco upgrade chocolatey -y
 
 set PATH=%PATH%;"C:\ProgramData\chocolatey\bin"
 
+choco install mobaxterm -y
 choco install chromium -y
 choco install notepadplusplus -y 
 choco install irfanview -y
