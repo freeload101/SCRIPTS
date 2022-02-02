@@ -54,16 +54,18 @@ choco upgrade chocolatey -y
 
 set PATH=%PATH%;"C:\ProgramData\chocolatey\bin"
 
+choco install chromium -y
 choco install notepadplusplus -y 
 choco install irfanview -y
 choco install irfanview-shellextension -y
 choco install irfanviewplugins -y 
-choco install libreoffice-fresh -y
 
 choco install veracrypt -y
 choco install 7zip -y
-choco install chromium -y
+
 choco install vlc -y
+
+echo to install  LibreOffice: choco install libreoffice-fresh -y
 
 choco upgrade all -y
 
