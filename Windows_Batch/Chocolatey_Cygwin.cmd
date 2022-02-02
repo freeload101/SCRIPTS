@@ -60,10 +60,11 @@ choco install irfanview -y
 choco install irfanview-shellextension -y
 choco install irfanviewplugins -y 
 
-choco install veracrypt -y
+;;choco install veracrypt -y
 choco install 7zip -y
 
 choco install vlc -y
+choco install filezilla -y
 
 echo to install  LibreOffice: choco install libreoffice-fresh -y
 
