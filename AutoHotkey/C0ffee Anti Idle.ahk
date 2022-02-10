@@ -1,7 +1,8 @@
 #InstallKeybdHook
 #Persistent
 #MaxThreadsPerHotkey 2
-	
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  MAIN 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Initialize profiles
@@ -227,7 +228,11 @@ Message(Message)
 {
 TrayTip, "%Message%" ," ",10, 1
 tooltip, "%Message%",0,0
+msgbox,0,, 	"%Message%",5
+
 ;DEBUG msgbox, "%Message%"
 sleep, 5000
 tooltip,
 }
+
+
