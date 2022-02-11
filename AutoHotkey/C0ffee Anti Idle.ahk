@@ -16,7 +16,7 @@ while colItems[objItem]
 		If InStr(IPAddress, "10.76.")
 			{
 			Message("IPAddress: " . IPAddress . " Loading Work Home Profile")
-			SetTimer, AntiIdleNoEnter, 900, 0
+			SetTimer, AntiIdleNoEnter, 900000, 0
 			ProfileSet:=1
 			Hotkey, Enter, Off
 			Hotkey, NumpadEnter, Off
@@ -28,7 +28,7 @@ while colItems[objItem]
 		else If InStr(IPAddress, "192.168.20.12")
 			{
 			Message("IPAddress: " . IPAddress . " Loading Work Home Profile")
-			SetTimer, AntiIdleNoEnter, 900, 0
+			SetTimer, AntiIdleNoEnter, 60000, 0
 			ProfileSet:=1
 			Hotkey, Enter, Off
 			Hotkey, NumpadEnter, Off
@@ -40,7 +40,7 @@ while colItems[objItem]
 		else If InStr(IPAddress, "10.206.")
 			{
 			Message("IPAddress: " . IPAddress . " Loading Work Office Profile")
-			SetTimer, AntiIdleNoEnter, 900, 0
+			SetTimer, AntiIdleNoEnter, 60000, 0
 			ProfileSet:=1
 			Hotkey, Enter, Off
 			Hotkey, NumpadEnter, Off
@@ -57,7 +57,7 @@ if ProfileSet != 1
 
 Message("Setting profile for unknown system?")
 
-SetTimer, AntiIdleUnknown, 900, 0
+SetTimer, AntiIdleUnknown, 58000, 0
 SwapMouseButton(1)
 
 }
@@ -89,7 +89,7 @@ F12:: Send {Alt Down}{Shift Down}{Tab}{Alt Up}{Shift Up}	; brings up the Alt-Tab
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Anti idle binding enter key to prevent sending of clipboard or sensitive data
 AntiIdleNoEnter:
 {
-	if (A_TimeIdle > 58000)
+	if (A_TimeIdle > 900000)
 	{
 		SendF22()
 		Hotkey, Enter, On
@@ -115,10 +115,12 @@ AntiIdleUnknown()
 	{
 		SendF22()
 	}
-	if (A_TimeIdle > 900000)
-	{
-		SetNormal()
-	}
+;this will never trigger ..
+;	if (A_TimeIdle > 900000)
+;	{
+;		SetNormal()
+;	}
+
 }
 return
 
@@ -228,7 +230,7 @@ Message(Message)
 {
 TrayTip, "%Message%" ," ",10, 1
 tooltip, "%Message%",0,0
-msgbox,0,, 	"%Message%",5
+msgbox,0,, 	"%Message%",3
 
 ;DEBUG msgbox, "%Message%"
 sleep, 5000
