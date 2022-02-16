@@ -36,36 +36,30 @@ echo '                      ░░████████████░░    
 echo '                          ████████                      '
  
 echo '==================================================='
-echo "Destroy All Software" @garybernhardt ....rmccurdy.com
-echo \* If cookie hash is not changing then your login is invalid CS has 5min session timeout
-echo Usage:
-echo Update script with VAR_USERNAME VAR_PASSWORD
-echo $0 -t 2FA_TOKEN -q \'QUERY\'
-echo $0 -q \'QUERY\' if you already have active cookie session
-echo $0 -k kill all jobs
-
 # TODO:
 # * check cookie if not valid error out
 # * catch  'Search auto-finalized' in /preview 
 
 
-
 ############################# CONFIG
-export VAR_USERNAME='XXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-export VAR_PASSWORD='XXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+export VAR_USERNAME='CS_USERNAME'
+export VAR_PASSWORD='CS_PASSWORD'
+
+# Hostname including port for HTTP Event Collector (HEC) NOT TRAILING SLASHES
+export VAR_HOST_PORT='https://localhost:8088'
+
+# Authorization key for Splunk HTTP Event Collector (HEC) Example  332dd4e5-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+export VAR_HEC_KEY='332dd4e5-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
+
 # the maxium number of jobs to have before clean all jobs is reached CS max is 10 so I set it to 8 as the threashold just in case. I am running searches in the UI or something.
 export VAR_MAXJOBS=99
- 
- 
-
-
 
 ############################## functions #######################################################################
 function GET_CSRF(){
+echo \* If cookie hash is not changing then your login is invalid CS has 5min session timeout
 export var_xsrf=`curl  -X $'POST' -ikLs -b cookie -c cookie --compressed -H $'Host: falcon.crowdstrike.com' -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' -H $'Accept: application/json' -H $'Accept-Language: en-US,en;q=0.5' -H $'Accept-Encoding: gzip, deflate' -H $'content-type: application/json' "https://falcon.crowdstrike.com/api2/auth/verify" | grep csrf_token | sed -r 's/.*\"csrf_token\": \"(.*)\",/x-csrf-token: \1/g'`
 echo `date` DEBUG: var_xsrf ${var_xsrf}
 }
-
 
 function GO_VT_HASHREPORT(){
 GET_CSRF
@@ -76,10 +70,7 @@ grep -E "(\"result\"|\"positives\")"  VT_HASHREPORT_results.json | grep -vE "(\"
 
 function LOGIN_KEEPSESSTION(){
 
- 
-
-
- 
+  
 echo `date` DEBUG: Getting xsrf token
 export var_xsrf=`curl -ikLs -b cookie -c cookie  --compressed -X $'POST' -H $'Host: falcon.crowdstrike.com' -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0' -H $'Accept: application/json' -H $'Accept-Language: en-US,en;q=0.5' -H $'Accept-Encoding: gzip, deflate' -H $'content-type: application/json' -H $'Origin: https://falcon.crowdstrike.com' -H $'Connection: close' $'https://falcon.crowdstrike.com/api2/auth/csrf'| grep csrf_token | sed 's/\"//g' |awk '{print $2}'`
 
@@ -118,7 +109,12 @@ function GO_SEARCH(){
 # check if search,|inputlookup or |lookup is in the search query. 
 if [[ (${VAR_QUERY} != search* ) && (${VAR_QUERY} != \|inputlookup* )  && (${VAR_QUERY} != \|lookup* ) ]]
 then
+echo '**********************************************************************************************'
+echo '**********************************************************************************************'
 echo `date` DEBUG: '*** WARNING SEARCH JOB DID NOT START WITH SEARCH,|INPUTLOOKUP OR |LOOKUP !!! ***'
+echo '**********************************************************************************************'
+echo '**********************************************************************************************'
+read 
 sleep 3
 fi
 
@@ -157,6 +153,7 @@ break
 else 
 echo "dispatchState: ${var_Status1}"
 fi
+
 
 echo ''
 sleep .1
@@ -212,62 +209,171 @@ exit
 }
 
 
+GO_PLUCK_SEARCH(){
+echo `date` DEBUG: Running example batch job
 
-######################## START
 
-############################# INIT
- 
-IFS=$'\n'
-while getopts h:q:t:k option
+# DNS
+while [[ VAR_EARLIEST -lt 8 ]]
 do
-case "${option}"
-in
-h) export VAR_VTHASH=${OPTARG};;
-q) export VAR_QUERY=${OPTARG};;
-t) export VAR_2FA=${OPTARG};;
-k) 
-GO_KILL_ALL_JOBS
-;;
-esac
+
+if [ -z "${VAR_LATEST}" ]
+        then
+        VAR_EARLIEST=1
+        VAR_LATEST="now"
+        VAR_LATEST_STRING="now"
+        VAR_EARLIEST_STRING="-${VAR_EARLIEST}d@d"
+fi
+
+
+##########################################
+# DNS
+
+export VAR_QUERY='search index=json AND (ExternalApiType=Event_UserActivityAuditEvent AND OperationName=detection_update) OR ExternalApiType=Event_DetectionSummaryEvent earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"'
+| stats count by ComputerName
+| dedup ComputerName
+| map maxsearches=200 search="search event_simpleName=DnsRequest ComputerName=$ComputerName$  DomainName!=localhost (FirstIP4Record!=192.168.0.0/16 AND FirstIP4Record!=10.0.0.0/8 AND FirstIP4Record!=172.16.0.0/12 AND FirstIP4Record!=127.0.0.0/8) earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"' | fillnull value=""
+|  stats count earliest("timestamp") AS "timestamp" by ComputerName DomainName FirstIP4Record| eval timestamp = substr(timestamp, 1, len(timestamp)-3)"
+'
+GO_SEARCH
+cp results.json  results_DNS_${VAR_EARLIEST}_${VAR_LATEST}.json
+echo cp results.json  results_DNS_${VAR_EARLIEST}_${VAR_LATEST}.json
+
+
+# NETWORK
+export VAR_QUERY='search index=json AND (ExternalApiType=Event_UserActivityAuditEvent AND OperationName=detection_update) OR ExternalApiType=Event_DetectionSummaryEvent earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"'
+| stats count by ComputerName
+| dedup ComputerName
+| map maxsearches=200 search="search event_simpleName=NetworkConnect*  ComputerName=$ComputerName$ RPort!=53 RPort!=0 LocalAddressIP4!=255.255.255.255 RemoteAddressIP4!=255.255.255.255 LocalAddressIP4!=127.0.0.1 RemoteAddressIP4!=127.0.0.1 earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"' |table timestamp ComputerName \"Agent IP\" MAC LocalAddressIP4 RemoteAddressIP4  RPort ContextProcessId_decimal|dedup LocalAddressIP4 RemoteAddressIP4| eval timestamp = substr(timestamp, 1, len(timestamp)-3)"
+'
+GO_SEARCH
+cp results.json  results_DNS_${VAR_EARLIEST}_${VAR_LATEST}.json
+echo cp results.json  results_DNS_${VAR_EARLIEST}_${VAR_LATEST}.json
+
+# PROCESS
+export VAR_QUERY='search index=json AND (ExternalApiType=Event_UserActivityAuditEvent AND OperationName=detection_update) OR ExternalApiType=Event_DetectionSummaryEvent earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"'
+| stats count by ComputerName
+| dedup ComputerName
+| map maxsearches=200 search="search event_simpleName="ProcessRollup2" ComputerName=$ComputerName$    earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"' |table \"Agent IP\" CommandLine ComputerName \"LocalAddressIP4\" \"MAC\" SHA256HashData ParentBaseFileName TargetProcessId_decimal WindowStation aid aip event_platform event_simpleName timestamp FileName | eval timestamp = substr(timestamp, 1, len(timestamp)-3)"
+'
+GO_SEARCH
+cp results.json  results_DNS_${VAR_EARLIEST}_${VAR_LATEST}.json
+echo cp results.json  results_DNS_${VAR_EARLIEST}_${VAR_LATEST}.json
+
+if [[ "${VAR_LATEST}" == "now"  ]]
+        then
+                let VAR_EARLIEST=2
+                let VAR_LATEST=1
+                VAR_LATEST_STRING="-${VAR_LATEST}d@d"
+                VAR_EARLIEST_STRING="-${VAR_EARLIEST}d@d"
+
+        else
+                let VAR_EARLIEST=VAR_EARLIEST+1
+                let VAR_LATEST=VAR_LATEST+1
+                VAR_LATEST_STRING="-${VAR_LATEST}d@d"
+                VAR_EARLIEST_STRING="-${VAR_EARLIEST}d@d"
+fi
+
 done
 
 
+}
+
+######################################
+# END GO_PLUCK_SEARCH
+
+######################################
 
 
+GO_UPLOAD(){
+if [[ "${VAR_JSON_FILE}" == "" ]] 
+then
+	echo ERROR: You must spisifiy a json file
+	echo Example: "${0}" -j upload "results.json"
+	exit
+fi
+
+python3 -m json.tool "${VAR_JSON_FILE}" > "${VAR_JSON_FILE}"_PRETTY.json
+
+sed -e 's/\"preview\": false,//g' -e 's/\"result\": {/\"event\": {/g' ""${VAR_JSON_FILE}"_PRETTY.json" > "${VAR_JSON_FILE}"_SED.json
+curl -Lk "${VAR_HOST_PORT}/services/collector/event" -H "Authorization: Splunk ${VAR_HEC_KEY}"   -d @"${VAR_JSON_FILE}"_SED.json
+}
+
+######################## MAIN
+
+############################# INIT
+
+if [[ "$1" == "" ]]
+then
+	echo `date` DEBUG: No options provided please use valid option
+    echo Usage:
+    echo Update \#\#\#\#\# CONFIG section of this script
+	echo $0 -t 2FA_TOKEN '(Run in screen or in the background to keep session)'
+    echo $0 -q \'QUERY\' if you already have active cookie session
+    echo $0 -h \'Virus Total Hash\' 
+	echo $0 -j kill '(Kills all sids and jobs)'
+	echo $0 -j pluck '(Runs a example batch job of 7day DNS,Network and Process for each host with detections)'
+	echo $0 -j upload '(Upload .json file to Splunk using HTTP Event Collector (HEC) Example  -j upload results.json'
+	exit
+fi
+
+
+IFS=$'\n'
+
+while getopts h:q:t:j: flag
+do
+    case "${flag}" in
+        h) VAR_VT_HASH=${OPTARG};;
+        q) VAR_QUERY=${OPTARG};;
+        t) VAR_2FA=${OPTARG};;
+        j) VAR_JOB=${OPTARG};;
+    esac
+done
 
 if [[ "${VAR_2FA}" == "" ]]
 then
 echo `date` DEBUG: 2FA not provided using existing cookie file to perform search
 
-        if [[ "${VAR_KILL_JOB}" != "" ]]
+        if [[ "${VAR_JOB}" == "kill" ]]
         then
-        echo `date` DEBUG: VAR_KILL_JOB
         GO_KILL_ALL_JOBS
         exit
         fi
 
-        if [[ "${VAR_VTHASH}" != "" ]]
+        if [[ "${VAR_JOB}" == "pluck" ]]
         then
-        echo `date` DEBUG: GET_VT_HASHREPORT 
+	GO_PLUCK_SEARCH
+        exit
+        fi
+
+        if [[ "${VAR_JOB}" == "upload" ]]
+        then
+	export VAR_JSON_FILE="${3}"
+        GO_UPLOAD
+        exit
+        fi
+
+        if [[ "${VAR_VT_HASH}" != "" ]]
+        then
         GO_VT_HASHREPORT
         exit
         fi
 
-        if [[ "${VAR_QUERY}" == "" ]]
+        if [[ "${VAR_PLUCK}" != "" ]]
         then
-        echo `date` DEBUG: No options provided please use valid option
+        GO_PLUCK_SEARCH
         exit
         fi
 
+	if [[ "${VAR_QUERY}" != "" ]]
+	then
+	GO_SEARCH
+	fi
 
-GO_SEARCH
+        exit
+
 fi
 
-if [[ "${VAR_QUERY}" != "" ]]
-then
-echo `date` DEBUG: QUERY provided running Splunk search  
-GO_SEARCH
-fi
 
 
 if [[ "${VAR_2FA}" != "" ]]
