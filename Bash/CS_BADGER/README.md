@@ -1,6 +1,6 @@
 # CS_BADGER.sh
 
-** Update 04/29/2021: Upload .json file to Splunk using HTTP Event Collector (HEC)!!!  **
+** Update 02/16/2022: Upload .json file to Splunk using HTTP Event Collector (HEC)!!!  **
 
 This script will automate Splunk searches in CrowdStrike! So you can take a search and feed the CSV or JSON output to automation LIKE A NORMAL PERSON!
 
