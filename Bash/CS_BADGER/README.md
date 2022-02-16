@@ -1,6 +1,6 @@
 # CS_BADGER.sh
 
-** Update 04/29/2021: I am working on a PING/SAML/PYTHON script to eventualy be a splunk app ;) **
+** Update 04/29/2021: XXXXXXXXXXXXXXXXXXXXXXXXXX  **
 
 This script will automate Splunk searches in CrowdStrike! So you can take a search and feed the CSV or JSON output to automation LIKE A NORMAL PERSON!
 
@@ -10,9 +10,24 @@ This script will automate Splunk searches in CrowdStrike! So you can take a sear
 # See Also CrowdStrike Threat Hunting Splunk SPL queries! 
 https://github.com/freeload101/SCRIPTS/tree/master/CrowdStrike%20Threat%20Hunting 
 
+```
+Usage:
+Update ##### CONFIG section of this script
+./CS_BADGER.sh -t 2FA_TOKEN (Run in screen or in the background to keep session)
+./CS_BADGER.sh -q ‘QUERY’ if you already have active cookie session
+./CS_BADGER.sh -h ‘Virus Total Hash’
+./CS_BADGER.sh -j kill (Kills all sids and jobs)
+./CS_BADGER.sh -j pluck (Runs a example batch job of 7day DNS,Network and Process for each host with detections)
+./CS_BADGER.sh -j upload (Upload .json file to Splunk using HTTP Event Collector (HEC) Example -j upload results.json
+```
+
+Example Output
 ![enter image description here](https://github.com/freeload101/SCRIPTS/blob/master/Bash/CS_BADGER/SCREEN_SHOTS/CS_BADGER.jpg?raw=true?raw=true)
 
-VT SHA-256 Hash Search!!
+Example CrowdStrike to Splunk running on https://localhost:8080
+![image](https://user-images.githubusercontent.com/4307863/154322725-4f326554-0093-42d9-a245-104eb1aa90ec.png)
+
+VT SHA-256 Hash Search!! 
 ![enter image description here](https://github.com/freeload101/SCRIPTS/blob/master/Bash/CS_BADGER/SCREEN_SHOTS/CS_BADGER_VT.jpg?raw=true?raw=true)
 
 
