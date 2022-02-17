@@ -183,12 +183,6 @@ unset  VAR_QUERY
         fi
 fi
 
-if [[ "${VAR_QUERY}" == "" ]]
-then
-echo `date` DEBUG: No 2FA provided exiting
-exit
-fi
-
 sleep 1
 done
 }
