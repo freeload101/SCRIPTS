@@ -18,7 +18,7 @@ Update ##### CONFIG section of this script
 ./CS_BADGER.sh -h ‘Virus Total Hash’
 ./CS_BADGER.sh -j kill (Kills all sids and jobs)
 ./CS_BADGER.sh -j pluck (Runs a example batch job of 7day DNS,Network and Process for each host with detections)
-./CS_BADGER.sh -j upload (Upload .json file to Splunk using HTTP Event Collector (HEC) Example -j upload results.json
+./CS_BADGER.sh -u file.json (Upload .json file to Splunk using HTTP Event Collector (HEC) Example -j upload results.json
 ```
 
 Example Output
