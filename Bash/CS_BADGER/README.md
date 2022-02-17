@@ -1,4 +1,4 @@
-# CS_BADGER.sh
+# CS_BADGER.sh a CrowdStrike Spunk "API"
 
 ** Update 02/16/2022: Upload .json file to Splunk using HTTP Event Collector (HEC)!!!  **
 
