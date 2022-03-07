@@ -17,7 +17,7 @@ if [[ "${i}"  == *youtube*  ]]
 then
 echo `date` "DEBUG: URL detected Youtube ripping subtitles from youtube direct"
 #export filename=`yt-dlp  --write-auto-sub --convert-subs=srt --skip-download  --get-filename -o "%(title)s" "${i}"`
-yt-dlp  --write-auto-sub --convert-subs=srt --skip-download  -o  "%(title)s" "${i}"
+yt-dlp  --write-auto-sub --convert-subs vtt --skip-download  -o  "%(title)s" "${i}"
 
 find . -iname "*.vtt" -exec python vtt2text.py '{}' \;
 
