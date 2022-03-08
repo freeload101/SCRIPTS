@@ -2,12 +2,14 @@
 #Persistent
 #MaxThreadsPerHotkey 2
 
+;;;;;;;;;;;;;;;;;;;;
+;Initialize profiles
+;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  MAIN 
+;;;;;;;;;;;;;;;;;;;;
+;Setup profile based on IP address
+;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Initialize profiles
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Setup profile based on IP address
 objWMIService := ComObjGet("winmgmts:{impersonationLevel = impersonate}!\\.\root\cimv2")
 colItems := objWMIService.ExecQuery("Select * from Win32_NetworkAdapterConfiguration WHERE IPEnabled = True")._NewEnum
 while colItems[objItem]
@@ -48,21 +50,24 @@ while colItems[objItem]
 			HighContrastOn()
 			break
 			}
+	return
 	}
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Fallback setting for NOT MY COMPUTER to idle and revert back any settings
+;;;;;;;;;;;;;;;;;;;;
+;Fallback setting for NOT MY COMPUTER to idle and revert back any settings
+;;;;;;;;;;;;;;;;;;;;
 
 if ProfileSet != 1
 {
-
 Message("Setting profile for unknown system?")
-
 SetTimer, AntiIdleUnknown, 58000, 0
 SwapMouseButton(1)
-
+return
 }
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; KEY BINDS !!! 
+;;;;;;;;;;;;;;;;;;;;
+;KEY BINDS !!! 
+;;;;;;;;;;;;;;;;;;;;
 
 ; Close Window Alt+w
 F8::^w
@@ -76,8 +81,8 @@ return
 F10::
 {
 send,#v
-}
 return
+}
 
 ; Alt Tab sort of 
 F11:: Send !{Tab}	; brings up the Alt-Tab menu
@@ -86,7 +91,18 @@ F12:: Send {Alt Down}{Shift Down}{Tab}{Alt Up}{Shift Up}	; brings up the Alt-Tab
 !F11::HighContrastOn()
 !F12::HighContrastOff()
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Anti idle binding enter key to prevent sending of clipboard or sensitive data
+; Alt F4!
+Numpad7::CloseWindow()
+return
+
+; Reload
+^!r::ReloadScript()
+
+
+;;;;;;;;;;;;;;;;;;;;
+;Anti idle binding enter key to prevent sending of clipboard or sensitive data
+;;;;;;;;;;;;;;;;;;;;
+
 AntiIdleNoEnter:
 {
 	if (A_TimeIdle > 900000)
@@ -98,7 +114,10 @@ AntiIdleNoEnter:
 }
 return
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Anti idle Normal 
+;;;;;;;;;;;;;;;;;;;;
+;Anti idle Normal 
+;;;;;;;;;;;;;;;;;;;;
+
 AntiIdle()
 {
 	if (A_TimeIdle > 58000)
@@ -108,7 +127,10 @@ AntiIdle()
 }
 return
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Anti idle Unknown Computer (not mine)
+;;;;;;;;;;;;;;;;;;;;
+;Anti idle Unknown Computer (not mine)
+;;;;;;;;;;;;;;;;;;;;
+
 AntiIdleUnknown()
 {
 	if (A_TimeIdle > 58000)
@@ -124,19 +146,28 @@ AntiIdleUnknown()
 }
 return
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Sends F22 to anti idle
+;;;;;;;;;;;;;;;;;;;;;
+;Sends F22 to anti idle
+;;;;;;;;;;;;;;;;;;;;
+
 SendF22()
 {
 Send,{F22}
 }
 return
 
+;;;;;;;;;;;;;;;;;;;;
+;FUNCTIONS
+;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; FUNCTIONS
+;;;;;;;;;;;;;;;;;;;;
+;Get IP address functions use to load 'profiles' based on IP address
+;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Get IP address functions use to load 'profiles' based on IP address
-
+;;;;;;;;;;;;;;;;;;;;
 ;Display the networks public IP
+;;;;;;;;;;;;;;;;;;;;
+
 GetPublicIP() {
     HttpObj := ComObjCreate("WinHttp.WinHttpRequest.5.1")
     HttpObj.Open("GET","https://www.google.com/search?q=what+is+my+ip&num=1")
@@ -146,7 +177,10 @@ GetPublicIP() {
 }
 return
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Unbinds Enter key
+;;;;;;;;;;;;;;;;;;;;
+;Unbinds Enter key
+;;;;;;;;;;;;;;;;;;;;
+
 Enter::Message("Press F1 Key to Stop")
 NumpadEnter::Message("Press F1 Key to Stop")
 Hotkey, Enter, Off
@@ -159,7 +193,10 @@ Hotkey, NumpadEnter, Off
 return
 }
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Refresh all windows (F5)
+;;;;;;;;;;;;;;;;;;;;
+;Refresh all windows (F5)
+;;;;;;;;;;;;;;;;;;;;
+
 ClickyClick()
 {
 WinGet windows, List
@@ -178,17 +215,24 @@ WinGet windows, List
 	}
 	CoordMode, Mouse, window
 	}
-}
 return
+}
 
 
+;;;;;;;;;;;;;;;;;;;;
+; SwapMouseButton(0) or 1
+;;;;;;;;;;;;;;;;;;;;
 
-; SwapMouseButton(0)   ; Right-Hand
-; SwapMouseButton(1)   ; Left-Hand
 SwapMouseButton(Swap)
 {
-    DllCall("user32.dll\SwapMouseButton", "UInt", Swap)
+	; SwapMouseButton(0)   ; Right-Hand
+	; SwapMouseButton(1)   ; Left-Hand
+	DllCall("user32.dll\SwapMouseButton", "UInt", Swap)
 }
+
+;;;;;;;;;;;;;;;;;;;;
+; Turn on High contrast
+;;;;;;;;;;;;;;;;;;;;
 
 HighContrastOn()
 {
@@ -203,6 +247,11 @@ HighContrastOn()
 }
 return
 
+
+;;;;;;;;;;;;;;;;;;;;
+; Turn off high contrast ( some colors are off in windows ) maybe apply theme on / off to fix
+;;;;;;;;;;;;;;;;;;;;
+
 HighContrastOff()
 {
 	vFlags := 0x0 ;off
@@ -216,6 +265,10 @@ HighContrastOff()
 }
 return
 
+;;;;;;;;;;;;;;;;;;;;
+; Sets everything back to normal
+;;;;;;;;;;;;;;;;;;;;
+
 SetNormal()
 {
 
@@ -225,16 +278,44 @@ SwapMouseButton(0)
 }
 return
 
+;;;;;;;;;;;;;;;;;;;;
+; Easy way to Send message
+;;;;;;;;;;;;;;;;;;;;
 
 Message(Message)
 {
 TrayTip, "%Message%" ," ",10, 1
-tooltip, "%Message%",0,0
-msgbox,0,, 	"%Message%",3
-
-;DEBUG msgbox, "%Message%"
+tooltip, "%Message%",300,300
+;msgbox,0,, 	"%Message%",3 ; Do not use because of it changes focus ..
 sleep, 5000
 tooltip,
 }
 
+;;;;;;;;;;;;;;;;;;;;
+; Close window Alt+F4 but says no to save notepad prompt
+;;;;;;;;;;;;;;;;;;;;
 
+CloseWindow()
+{
+send,!{f4}
+;#IfWinActive, ahk_class Notepad
+;ifWinActive Notepad ahk_class #32770
+WinActivate, Notepad ahk_class #32770
+
+	{
+		sleep,20
+		send,n
+	}
+}
+return
+
+;;;;;;;;;;;;;;;;;;;;
+; Reloads the script so you don't have to rightclick reload etc
+;;;;;;;;;;;;;;;;;;;;
+
+ReloadScript()
+{
+Reload
+Message("Reloading")
+}
+return
