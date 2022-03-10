@@ -2,113 +2,49 @@
 #Persistent
 #MaxThreadsPerHotkey 2
 
+; Todo: 
+; * make Close Tab check if the current window still exist if it does try ^m or taskkill ?
 ;;;;;;;;;;;;;;;;;;;;
 ;Initialize profiles
 ;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;
-;Setup profile based on IP address
-;;;;;;;;;;;;;;;;;;;;
+LoadProfile()
 
-objWMIService := ComObjGet("winmgmts:{impersonationLevel = impersonate}!\\.\root\cimv2")
-colItems := objWMIService.ExecQuery("Select * from Win32_NetworkAdapterConfiguration WHERE IPEnabled = True")._NewEnum
-while colItems[objItem]
-	{
-		IPAddress := % objItem.IPAddress[0]
-		If InStr(IPAddress, "10.76.")
-			{
-			Message("IPAddress: " . IPAddress . " Loading Work Home Profile")
-			SetTimer, AntiIdleNoEnter, 900000, 0
-			ProfileSet:=1
-			Hotkey, Enter, Off
-			Hotkey, NumpadEnter, Off
-			SwapMouseButton(0)
-			HighContrastOn()
-			break
-			}
-
-		else If InStr(IPAddress, "192.168.20.12")
-			{
-			Message("IPAddress: " . IPAddress . " Loading Work Home Profile")
-			SetTimer, AntiIdleNoEnter, 60000, 0
-			ProfileSet:=1
-			Hotkey, Enter, Off
-			Hotkey, NumpadEnter, Off
-			SwapMouseButton(0)
-			HighContrastOn()			
-			break
-			}
-
-		else If InStr(IPAddress, "192.168.3.17")
-			{
-			Message("IPAddress: " . IPAddress . " Loading Game Home Profile")
-			SetTimer, AntiIdleNoEnter, 60000, 0
-			ProfileSet:=1
-			Hotkey, Enter, Off
-			Hotkey, NumpadEnter, Off
-			SwapMouseButton(0)
-			HighContrastOn()			
-			break
-			}
-
-		else If InStr(IPAddress, "10.206.")
-			{
-			Message("IPAddress: " . IPAddress . " Loading Work Office Profile")
-			SetTimer, AntiIdleNoEnter, 60000, 0
-			ProfileSet:=1
-			Hotkey, Enter, Off
-			Hotkey, NumpadEnter, Off
-			SwapMouseButton(1)
-			HighContrastOn()
-			break
-			}
-	}
-
-;;;;;;;;;;;;;;;;;;;;
-;Fallback setting for NOT MY COMPUTER to idle and revert back any settings
-;;;;;;;;;;;;;;;;;;;;
-
-if ProfileSet != 1
-{
-Message("Setting profile for unknown system?")
-SetTimer, AntiIdleUnknown, 58000, 0
-SwapMouseButton(1)
-return
-}
-
-;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;KEY BINDS !!! 
-;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; Close Window Alt+w
-F8::^w
-return
+; Close Tab Alt+w
+
+Numpad7::^w
+
 
 ; Copy
-F9::send ^c
-return
+Numpad4::send ^c
+
+; Paste
+Numpad5::^v
 
 ; Fancy pants paste
-F10::
-{
-send,#v
-return
-}
+NumpadAdd::#v
 
 ; Alt Tab sort of 
-F11:: Send !{Tab}	; brings up the Alt-Tab menu
-F12:: Send {Alt Down}{Shift Down}{Tab}{Alt Up}{Shift Up}	; brings up the Alt-Tab menu backaward
+Numpad0:: Send !{Tab}	; brings up the Alt-Tab menu
+Numpad1:: Send {Alt Down}{Shift Down}{Tab}{Alt Up}{Shift Up}	; brings up the Alt-Tab menu backaward
+
+; Chrome Tabs
+NumpadDiv::^+tab
+NumpadMult::^tab
 
 !F11::HighContrastOn()
 !F12::HighContrastOff()
 
 ; Alt F4!
-Numpad7::CloseWindow()
-return
+NumpadSub::CloseWindow()
+
 
 ; Reload
 ^!r::ReloadScript()
-
 
 ;;;;;;;;;;;;;;;;;;;;
 ;Anti idle binding enter key to prevent sending of clipboard or sensitive data
@@ -116,6 +52,8 @@ return
 
 AntiIdleNoEnter:
 {
+
+
 	if (A_TimeIdle > 900000)
 	{
 		SendF22()
@@ -167,9 +105,70 @@ Send,{F22}
 }
 return
 
-;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;FUNCTIONS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;;;;;;;;;;;;;;;;;;;
+;Setup profile based on IP address
+;;;;;;;;;;;;;;;;;;;;
+
+LoadProfile()
+{
+objWMIService := ComObjGet("winmgmts:{impersonationLevel = impersonate}!\\.\root\cimv2")
+colItems := objWMIService.ExecQuery("Select * from Win32_NetworkAdapterConfiguration WHERE IPEnabled = True")._NewEnum
+while colItems[objItem]
+	{
+		IPAddress := % objItem.IPAddress[0]
+		If InStr(IPAddress, "10.76.")
+			{
+			Message("IPAddress: " . IPAddress . " Loading Work Home Profile")
+			SetTimer, AntiIdleNoEnter, 900000, 0
+			ProfileSet:=1
+			Hotkey, Enter, Off
+			Hotkey, NumpadEnter, Off
+			SwapMouseButton(0)
+			HighContrastOn()
+			break
+			}
+
+		else If InStr(IPAddress, "192.168.20.12")
+			{
+			Message("IPAddress: " . IPAddress . " Loading Work Home Profile")
+			SetTimer, AntiIdleNoEnter, 60000, 0
+			ProfileSet:=1
+			Hotkey, Enter, Off
+			Hotkey, NumpadEnter, Off
+			SwapMouseButton(0)
+			HighContrastOn()			
+			break
+			}
+
+		else If InStr(IPAddress, "10.206.")
+			{
+			Message("IPAddress: " . IPAddress . " Loading Work Office Profile")
+			SetTimer, AntiIdleNoEnter, 60000, 0
+			ProfileSet:=1
+			Hotkey, Enter, Off
+			Hotkey, NumpadEnter, Off
+			SwapMouseButton(1)
+			HighContrastOn()
+			break
+			}
+	
+	}
+
+;;;;;;;;;;;;;;;;;;;;
+;Fallback setting for NOT MY COMPUTER to idle and revert back any settings
+;;;;;;;;;;;;;;;;;;;;
+
+	if ProfileSet != 1
+	{
+	Message("Setting profile for unknown system?")
+	SetTimer, AntiIdleUnknown, 58000, 0
+	SwapMouseButton(1)
+	}
+}
 
 ;;;;;;;;;;;;;;;;;;;;
 ;Get IP address functions use to load 'profiles' based on IP address
