@@ -39,7 +39,7 @@ while colItems[objItem]
 			break
 			}
 
-		else If InStr(IPAddress, "192.168.20.17")
+		else If InStr(IPAddress, "192.168.3.17")
 			{
 			Message("IPAddress: " . IPAddress . " Loading Game Home Profile")
 			SetTimer, AntiIdleNoEnter, 60000, 0
