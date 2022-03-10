@@ -4804,3 +4804,17 @@ lsof -w| grep -ia log4j
 for i in `lsof -F n | grep ^n/ | cut -c2- | sort -u | grep -vE "(\.so$)" | xargs dirname|grep -iavE "(\bdev\b|proc|^\/$)"|sort -u`;do echo Path: "${i}" ;grep -iRl log4j "${i}"  ;done   2> /dev/null
 
 echo "ALL DONE $HOST"
+
+With sed:
+
+curl -k --silent "https://plex.tv/api/users/?X-Plex-Token=_YOURTOKEN_HERE_"| sed -rn 's/.*username=\"(.*)" email=\"(.*)" recommend.*/\1,\2/p'
+
+With grep (sort of):
+
+curl -k --silent "https://plex.tv/api/users/?X-Plex-Token=_YOURTOKEN_HERE_"| grep -iPo '(?<=username=")\w+(?=")|(?<=email=")[[:alnum:]].*(?=" recommendation)'
+
+With Powershell to CSV ( powershell is annoying with objects strings etc … I use enum function I found to figure out WTF is wrong with my varables … SCRIPTS/Enumerate-ObjectProperties.ps1 at master · freeload101/SCRIPTS · GitHub :
+
+(Invoke-RestMethod -Uri 'https://plex.tv/api/users/?X-Plex-Token=_YOURTOKEN_HERE_').MediaContainer.User|select Username, Email |ConvertTo-Csv -NoTypeInformation 
+
+-RMcCurdy.com
