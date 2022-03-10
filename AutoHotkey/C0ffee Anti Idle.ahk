@@ -50,7 +50,6 @@ while colItems[objItem]
 			HighContrastOn()
 			break
 			}
-	return
 	}
 
 ;;;;;;;;;;;;;;;;;;;;
