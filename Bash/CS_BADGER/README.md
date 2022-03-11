@@ -1,41 +1,27 @@
 # CS_BADGER.sh a CrowdStrike Spunk "API"
 
-** Update 02/16/2022: Upload .json file to Splunk using HTTP Event Collector (HEC)!!!  **
-
 This script will automate Splunk searches in CrowdStrike! So you can take a search and feed the CSV or JSON output to automation LIKE A NORMAL PERSON!
 
+*Badgers are known as the gruff and grumpy residents of hillsides and prairies. These striped-faced mustelids are expert excavators, skilled at plucking out earthworms, grubs, insects and all sorts of other critters. Badgers often are portrayed in movies and popular literature as wise and practical.*
 
- *Badgers are known as the gruff and grumpy residents of hillsides and prairies. These striped-faced mustelids are expert excavators, skilled at plucking out earthworms, grubs, insects and all sorts of other critters. Badgers often are portrayed in movies and popular literature as wise and practical.*
+## 1) Install Cygwin
+https://github.com/vegardit/cygwin-portable-installer/blob/main/cygwin-portable-installer.cmd
 
-# See Also CrowdStrike Threat Hunting Splunk SPL queries! 
-https://github.com/freeload101/SCRIPTS/tree/master/CrowdStrike%20Threat%20Hunting 
+## 2) Start a new bash shell by running "cygwin-portable.cmd" after install/setup is complete
 
-```
-Usage:
-Update ##### CONFIG section of this script
-./CS_BADGER.sh -t 2FA_TOKEN (Run in screen or in the background to keep session)
-./CS_BADGER.sh -q ‘QUERY’ if you already have active cookie session
-./CS_BADGER.sh -h ‘Virus Total Hash’
-./CS_BADGER.sh -j kill (Kills all sids and jobs)
-./CS_BADGER.sh -j pluck (Runs a example batch job of 7day DNS,Network and Process for each host with detections)
-./CS_BADGER.sh -u file.json (Upload .json file to Splunk using HTTP Event Collector (HEC) Example -j upload results.json
-```
+## 3) Download CS_BADGER.sh with wget 
+wget 'https://github.com/freeload101/SCRIPTS/raw/master/Bash/CS_BADGER/CS_BADGER.sh'
 
-Example Output
-![enter image description here](https://github.com/freeload101/SCRIPTS/blob/master/Bash/CS_BADGER/SCREEN_SHOTS/CS_BADGER.jpg?raw=true?raw=true)
+## 4) Edit the the config section to the username and password you want to use in CS in CS_BADGER.sh file
 
-Example CrowdStrike to Splunk running on https://localhost:8080
-![image](https://user-images.githubusercontent.com/4307863/154322725-4f326554-0093-42d9-a245-104eb1aa90ec.png)
+## 5) Create a sesstion in CS_BADGER using your MFA token for CS
+./CS_BADGER.sh -t ######
 
-VT SHA-256 Hash Search!! 
-![enter image description here](https://github.com/freeload101/SCRIPTS/blob/master/Bash/CS_BADGER/SCREEN_SHOTS/CS_BADGER_VT.jpg?raw=true?raw=true)
+## 5) Open a new tab in cygwin by pressing the green '+' sign
 
+## 6) Perform any splunk search you like! Results will be in file called results.json
+./CS_BADGER.sh -q 'search index=* | head 1'
 
-## Create a session using your 2FA token ( or add -q 'query' to search and then exit for single usage )
-bash CS_BADGER.sh -t 555666
-
-## Open new shell to use cookies from your session. Searches must start with search and be escaped by single quotes example:
-bash CS_BADGER.sh -q 'search index=\* |head 1'
 
 ## You can also use multi line search like so
 
@@ -62,10 +48,37 @@ When you get error message like:
 
 The maximum number of concurrent historical searches on this instance has been reached. concurrency_limit=10"
 
-
 bash CS_BADGER.py -k
 
 ![enter image description here](https://github.com/freeload101/SCRIPTS/blob/master/Bash/CS_BADGER/SCREEN_SHOTS/SC_BADGER_KILLALL.jpg?raw=true)
+
+# See Also CrowdStrike Threat Hunting Splunk SPL queries! 
+https://github.com/freeload101/SCRIPTS/tree/master/CrowdStrike%20Threat%20Hunting 
+
+```
+Usage:
+Update ##### CONFIG section of this script
+./CS_BADGER.sh -t 2FA_TOKEN (Run in screen or in the background to keep session)
+./CS_BADGER.sh -q ‘QUERY’ if you already have active cookie session
+./CS_BADGER.sh -h ‘Virus Total Hash’
+./CS_BADGER.sh -j kill (Kills all sids and jobs)
+./CS_BADGER.sh -j pluck (Runs a example batch job of 7day DNS,Network and Process for each host with detections)
+./CS_BADGER.sh -u file.json (Upload .json file to Splunk using HTTP Event Collector (HEC) Example -j upload results.json
+```
+
+Example Output
+![enter image description here](https://github.com/freeload101/SCRIPTS/blob/master/Bash/CS_BADGER/SCREEN_SHOTS/CS_BADGER.jpg?raw=true?raw=true)
+
+Example CrowdStrike to Splunk running on https://localhost:8080
+![image](https://user-images.githubusercontent.com/4307863/154322725-4f326554-0093-42d9-a245-104eb1aa90ec.png)
+
+VT SHA-256 Hash Search!! 
+![enter image description here](https://github.com/freeload101/SCRIPTS/blob/master/Bash/CS_BADGER/SCREEN_SHOTS/CS_BADGER_VT.jpg?raw=true?raw=true)
+
+
+## Updates:
+** 02/16/2022: Upload .json file to Splunk using HTTP Event Collector (HEC)!!!  **
+
 
 ## TODO:
 * detect 'maximum searches' and auto kill ?
