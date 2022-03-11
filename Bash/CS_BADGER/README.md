@@ -19,7 +19,7 @@ wget 'https://github.com/freeload101/SCRIPTS/raw/master/Bash/CS_BADGER/CS_BADGER
 
 ## 5) Open a new tab in cygwin by pressing the green '+' sign
 
-## 6) Perform any splunk search you like! Results will be in file called results.json
+## 6) Perform any CS splunk search you like! Results will be in file called results.json
 ./CS_BADGER.sh -q 'search index=* | head 1'
 
 
