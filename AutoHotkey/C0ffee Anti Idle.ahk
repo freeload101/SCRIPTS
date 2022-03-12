@@ -155,7 +155,17 @@ while colItems[objItem]
 			HighContrastOn()
 			break
 			}
-	
+		else If InStr(IPAddress, "192.168.3.17")
+			{
+			Message("IPAddress: " . IPAddress . " Loading Game Home Profile")
+			SetTimer, AntiIdleNoEnter, 60000, 0
+			ProfileSet:=1
+			Hotkey, Enter, Off
+			Hotkey, NumpadEnter, Off
+			SwapMouseButton(0)
+			HighContrastOn()			
+			break
+			}	
 	}
 
 ;;;;;;;;;;;;;;;;;;;;
