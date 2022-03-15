@@ -14,7 +14,7 @@ wget 'https://github.com/freeload101/SCRIPTS/raw/master/Bash/CS_BADGER/CS_BADGER
 
 ## 4) Edit the the config section to the username and password you want to use in CS in CS_BADGER.sh file
 
-## 5) Create a sesstion in CS_BADGER using your MFA token for CS
+## 5) Create a session in CS_BADGER using your MFA token for CS
 ./CS_BADGER.sh -t ######
 
 ## 5) Open a new tab in cygwin by pressing the green '+' sign
