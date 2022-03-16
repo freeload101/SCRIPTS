@@ -18,22 +18,27 @@ export VAR_MAXJOBS=99
 
 ############################## functions #######################################################################
 function GET_CSRF(){
-	echo \* If cookie hash is not changing then your login is invalid CS has 5min session timeout
-	export var_xsrf=`curl  -X $'POST' -ikLs -b cookie -c cookie --compressed -H $'Host: falcon.crowdstrike.com' -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' -H $'Accept: application/json' -H $'Accept-Language: en-US,en;q=0.5' -H $'Accept-Encoding: gzip, deflate' -H $'content-type: application/json' "https://falcon.crowdstrike.com/api2/auth/verify" | grep csrf_token | sed -r 's/.*\"csrf_token\": \"(.*)\",/x-csrf-token: \1/g'`
-	echo `date` DEBUG: var_xsrf ${var_xsrf}
+        export var_xsrf=`curl  -X $'POST' -ikLs -b cookie -c cookie --compressed -H $'Host: falcon.crowdstrike.com' -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' -H $'Accept: application/json' -H $'Accept-Language: en-US,en;q=0.5' -H $'Accept-Encoding: gzip, deflate' -H $'content-type: application/json' "https://falcon.crowdstrike.com/api2/auth/verify" | grep csrf_token | sed -r 's/.*\"csrf_token\": \"(.*)\",/x-csrf-token: \1/g'`
+	if [[ (${var_xsrf} == "" ) ]]
+	then
+		echo `date` ERROR: var_xsrf is blank session has expired exiting
+		./EMAIL.sh "Session Expired"
+		exit
+	fi
 }
 
 function GO_VT_HASHREPORT(){
-        GET_CSRF
-        curl -kLs -b cookie -c cookie --compressed -H $'Host: falcon.crowdstrike.com' -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' -H $'Accept: application/json' -H $'Accept-Language: en-US,en;q=0.5' -H $'Accept-Encoding: gzip, deflate' -H $'content-type: application/json' -H "${var_xsrf}" "https://falcon.crowdstrike.com/api2/csapi/modules/entities/virustotal/v1?max_age=0&ids=${VAR_VTHASH}" > VT_HASHREPORT.json
-        python3 -m json.tool  VT_HASHREPORT.json > VT_HASHREPORT_results.json
-	grep -iPo '(?<=positives\":\")\d+(?=\",)' VT_HASHREPORT_results
+	GET_CSRF
+	curl -kLs -b cookie -c cookie --compressed -H $'Host: falcon.crowdstrike.com' -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' -H $'Accept: application/json' -H $'Accept-Language: en-US,en;q=0.5' -H $'Accept-Encoding: gzip, deflate' -H $'content-type: application/json' -H "${var_xsrf}" "https://falcon.crowdstrike.com/api2/csapi/modules/entities/virustotal/v1?max_age=0&ids=${VAR_VTHASH}" > ./VT_HASHREPORT.json
+	# remove junk from json file
+	sed -i -r -e 's/(.*)\"scans\".*(\"positives\".*)/\1\2/g' VT_HASHREPORT.json
+	# pretty output and format for Splunk
+	python -m json.tool ./VT_HASHREPORT.json |  sed -r -e 's/(    \"errors\"|^    \]$).*//g' -e 's/    \"resources\": \[/\"event\":/g'  > VT_HASHREPORT_results.json
 }
-
 
 function LOGIN_KEEPSESSTION(){
 # Clean up old cookie
-rm cookie
+rm cookie 
 echo `date` DEBUG: Getting xsrf token
 export var_xsrf=`curl -ikLs -b cookie -c cookie  --compressed -X $'POST' -H $'Host: falcon.crowdstrike.com' -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0' -H $'Accept: application/json' -H $'Accept-Language: en-US,en;q=0.5' -H $'Accept-Encoding: gzip, deflate' -H $'content-type: application/json' -H $'Origin: https://falcon.crowdstrike.com' -H $'Connection: close' $'https://falcon.crowdstrike.com/api2/auth/csrf'| grep csrf_token | sed 's/\"//g' |awk '{print $2}'`
 
@@ -50,11 +55,9 @@ do
 	curl --retry 10  --retry-delay 10  -ikLs -b cookie -c cookie  --compressed   -i -k -X $'POST' -H $'Host: falcon.crowdstrike.com'   -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0'  -H $'Accept: */*'  -H $'Accept-Language: en-US,en;q=0.5'  -H $'Accept-Encoding: gzip, deflate' -H $"x-csrf-token: ${var_xsrf}"  -H $'content-type: application/json' -H $'Origin: https://falcon.crowdstrike.com' -H $'Connection: close' $'https://falcon.crowdstrike.com/auth/pulse' -c ./cookie -b ./cookie  >> ./out.txt 2>&1 >> ./out.txt
 	# pull some cookies needed
 	curl --retry 10  --retry-delay 10  -ikLs -b cookie -c cookie  --compressed   -i -k -X $'POST' -H $'Host: falcon.crowdstrike.com'   -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0'  -H $'Accept: */*'  -H $'Accept-Language: en-US,en;q=0.5'  -H $'Accept-Encoding: gzip, deflate' -H $"x-csrf-token: ${var_xsrf}"  -H $'content-type: application/json' -H $'Origin: https://falcon.crowdstrike.com' -H $'Connection: close' $'https://falcon.crowdstrike.com/eam/en-US/app/eam2/audit_app?earliest=-1m&latest=now' -c ./cookie -b ./cookie  >> ./out.txt 2>&1 >> ./out.txt
-	#echo `date` DEBUG: Cookie file hash: `md5sum cookie` >> ./out.txt
-	#echo `date` DEBUG: Cookie file hash: `md5sum cookie`
 	echo `date` DEBUG: Cookie file hash: `grep splunkd_8000 cookie`
 	echo `date` DEBUG: Waiting for search query and keeping session alive...
-	sleep 25
+	sleep 59
 
 done
 }
@@ -68,9 +71,21 @@ echo '**************************************************************************
 echo `date` DEBUG: '*** WARNING SEARCH JOB DID NOT START WITH SEARCH,|INPUTLOOKUP OR |LOOKUP !!! ***'
 echo '**********************************************************************************************'
 echo '**********************************************************************************************'
-read 
 sleep 3
 fi
+
+# check if timestamp is in search query.
+if [[ (${VAR_QUERY} != *timestamp* ) ]]
+then
+echo '**********************************************************************************************'
+echo '**********************************************************************************************'
+echo `date` DEBUG: '*** TIMESTAMP IS MISSING FOR EASY PARSING AND UPLOAD TO SPLUNK BE SURE TIMESTAMP IS FIRST VALUE TO AUTO PARSE TIME !!! ***'
+echo `date` DEBUG: '*** EXAMPLE: stats count latest(timestamp) AS timestamp ***'
+echo '**********************************************************************************************'
+echo '**********************************************************************************************'
+sleep 3
+fi
+
 
 # check if max jobs reached if so kill and wait 60 seconds
 export VAR_ALLSIDS=`curl -ikLs -b cookie -c cookie --compressed  -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' "https://falcon.crowdstrike.com/eam/en-US/splunkd/__raw/servicesNS/csuser/eam2/search/jobs" -H $'Content-Type: application/x-www-form-urlencoded' -H $'X-Requested-With: XMLHttpRequest'|grep '\"sid\">'| sed -r 's/.*\"sid\">(.*)<\/s:key>/\1/g' | sed 's/rt_md_//g'|sort|wc -l`
@@ -81,16 +96,20 @@ clear
 echo `date` DEBUG: \*\*\* ERROR MAX SEARCH JOBS REACHED KILLING ALL JOBS \!\!\! \*\*\* 
 GO_KILL_ALL_JOBS
 echo `date` DEBUG: \*\*\* Sleeping 60 seconds for jobs to finalize before search is performed
+./EMAIL.sh "MAX SEARCH JOBS"
 exit
 fi
 
+# check Session
+GET_CSRF
+
 # send job and get job sid
 export var_sid=`curl -ikLs -b cookie -c cookie -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' --compressed  "https://falcon.crowdstrike.com/eam/en-US/splunkd/__raw/servicesNS/csuser/eam2/search/jobs?output_mode=json" -H $'Content-Type: application/x-www-form-urlencoded' -H $'X-Requested-With: XMLHttpRequest' --data-urlencode  search="${VAR_QUERY}"  |grep '\"sid\":'| sed -r 's/\{\"sid\":\"(.*)\"\}/\1/g' | tail -n 1`
-tail -c 100 ./tmp.json
 while true
 do
 # preview job 
-curl -kLs -b cookie -c cookie --compressed  -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' "https://falcon.crowdstrike.com/eam/en-US/splunkd/__raw/servicesNS/csuser/eam2/search/jobs/${var_sid}/results_preview?output_mode=json" -H $'Content-Type: application/x-www-form-urlencoded' -H $'X-Requested-With: XMLHttpRequest'|head -n 1 > ./tmp.json 2>&1 > ./tmp.json
+echo -n
+curl -kLs -b cookie -c cookie --compressed  -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' "https://falcon.crowdstrike.com/eam/en-US/splunkd/__raw/servicesNS/csuser/eam2/search/jobs/${var_sid}/results_preview?output_mode=json" -H $'Content-Type: application/x-www-form-urlencoded' -H $'X-Requested-With: XMLHttpRequest'|head -c 100
 
 # check runDuration and scanCount dispatchState eventCount
 export var_Status1=`curl -kLs -b cookie -c cookie --compressed  -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' "https://falcon.crowdstrike.com/eam/en-US/splunkd/__raw/servicesNS/nobody/eam2/search/jobs/${var_sid}" -H $'Content-Type: application/x-www-form-urlencoded' -H $'X-Requested-With: XMLHttpRequest'|egrep -Eia "(runDuration|scanCount|dispatchState|eventCount|final)"`
@@ -102,22 +121,16 @@ break
 else 
 echo `date` "DEBUG: dispatchState: ${var_Status1}"
 fi
-
-
-echo ''
-sleep .1
+sleep 10
 echo `date` DEBUG: Searching ...
-
+echo -n
 	if [[ (${var_Status1} = *DONE* )  ]]
 	then
 	echo `date` DEBUG: Search Complete! Saving output to tmp.json
 
 	# save output as broken json ...
 	curl -kLs -b cookie -c cookie --compressed  -X $'GET' -H $'Host: falcon.crowdstrike.com' -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0' -H $'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H $'Accept-Language: en-US,en;q=0.5' -H $'Accept-Encoding: gzip, deflate' "https://falcon.crowdstrike.com/eam/en-US/api/search/jobs/${var_sid}/results?isDownload=true&timeFormat=%25FT%25T.%25Q%25%3Az&maxLines=0&count=0&filename=555555&outputMode=json" > ./tmp.json 2>&1 > ./tmp.json
-	# fix broken json ...
-	sed -i -e '1 s/^{/[{/' -e 's/}}/}},/g'  -e '$s/,$//'  -e "\$a]" tmp.json
 	# sleep for file output ...
-	python3 -m json.tool tmp.json > results.json
 	unset  VAR_QUERY 	
 	# break loop because we have retults
 	break
@@ -146,7 +159,6 @@ GO_PLUCK_SEARCH(){
 echo `date` DEBUG: Running example batch job
 
 
-# DNS
 while [[ VAR_EARLIEST -lt 8 ]]
 do
 
@@ -158,40 +170,45 @@ if [ -z "${VAR_LATEST}" ]
 		VAR_EARLIEST_STRING="-${VAR_EARLIEST}d@d"
 fi
 
+
 ##########################################
 # DNS
 export VAR_QUERY='search index=json AND (ExternalApiType=Event_UserActivityAuditEvent AND OperationName=detection_update) OR ExternalApiType=Event_DetectionSummaryEvent earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"'
 | stats count by ComputerName
 | dedup ComputerName
-| map maxsearches=200 search="search event_simpleName=DnsRequest ComputerName=$ComputerName$  DomainName!=localhost  (FirstIP4Record!=192.168.0.0/16 AND FirstIP4Record!=10.0.0.0/8 AND FirstIP4Record!=172.16.0.0/12 AND FirstIP4Record!=127.0.0.0/8) earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"' | fillnull value=""
-|  stats count earliest("timestamp") AS "timestamp" by ComputerName DomainName FirstIP4Record| eval timestamp = substr(timestamp, 1, len(timestamp)-3)"
+| map maxsearches=200 search="search event_simpleName=DnsRequest ComputerName=$ComputerName$  DomainName!=localhost (FirstIP4Record!=192.168.0.0/16 AND FirstIP4Record!=10.0.0.0/8 AND FirstIP4Record!=172.16.0.0/12 AND FirstIP4Record!=127.0.0.0/8) earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"' | fillnull value=""
+|  stats count latest("timestamp") AS "timestamp" by ComputerName DomainName FirstIP4Record"
 '
-
-#export VAR_QUERY='search index=*|head 1'
 GO_SEARCH
-cp results.json  results_DNS_${VAR_EARLIEST}_${VAR_LATEST}.json
-echo `date` DEBUG: cp results.json  results_DNS_${VAR_EARLIEST}_${VAR_LATEST}.json
+echo `date` DEBUG: cp tmp.json  results_DNS_${VAR_EARLIEST}_${VAR_LATEST}.json
+cp tmp.json  results_DNS_${VAR_EARLIEST}_${VAR_LATEST}.json
 
+
+##########################################
 # NETWORK
 export VAR_QUERY='search index=json AND (ExternalApiType=Event_UserActivityAuditEvent AND OperationName=detection_update) OR ExternalApiType=Event_DetectionSummaryEvent earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"'
 | stats count by ComputerName
 | dedup ComputerName
-| map maxsearches=200 search="search event_simpleName=NetworkConnect*  ComputerName=$ComputerName$ RPort!=53 RPort!=0 LocalAddressIP4!=255.255.255.255 RemoteAddressIP4!=255.255.255.255 LocalAddressIP4!=127.0.0.1 RemoteAddressIP4!=127.0.0.1 earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"' |table timestamp ComputerName \"Agent IP\" MAC LocalAddressIP4 RemoteAddressIP4  RPort ContextProcessId_decimal|dedup LocalAddressIP4 RemoteAddressIP4| eval timestamp = substr(timestamp, 1, len(timestamp)-3)"
+| map maxsearches=200 search="search event_simpleName=NetworkConnect* RPort!=53 RPort!=0 LocalAddressIP4!=255.255.255.255 RemoteAddressIP4!=255.255.255.255 LocalAddressIP4!=127.0.0.1 RemoteAddressIP4!=127.0.0.1 ComputerName=$ComputerName$ earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"' | stats count latest(timestamp) AS timestamp latest(MAC) AS MAC latest(ContextProcessId_decimal) AS ContextProcessId_decimal by ComputerName aip LocalAddressIP4 RemoteAddressIP4 RPort"
 '
 GO_SEARCH
-cp results.json  results_NETWORK_${VAR_EARLIEST}_${VAR_LATEST}.json
-echo cp results.json  results_NETWORK_${VAR_EARLIEST}_${VAR_LATEST}.json
+echo `date` DEBUG: cp tmp.json  results_NETWORK_${VAR_EARLIEST}_${VAR_LATEST}.json
+cp tmp.json  results_NETWORK_${VAR_EARLIEST}_${VAR_LATEST}.json
 
+##########################################
 # PROCESS
 export VAR_QUERY='search index=json AND (ExternalApiType=Event_UserActivityAuditEvent AND OperationName=detection_update) OR ExternalApiType=Event_DetectionSummaryEvent earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"'
 | stats count by ComputerName
 | dedup ComputerName
-| map maxsearches=200 search="search event_simpleName="ProcessRollup2" ComputerName=$ComputerName$  earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"' |table \"Agent IP\" CommandLine ComputerName \"LocalAddressIP4\" \"MAC\" SHA256HashData ParentBaseFileName TargetProcessId_decimal WindowStation aid aip event_platform event_simpleName timestamp FileName | eval timestamp = substr(timestamp, 1, len(timestamp)-3)"
+| map maxsearches=200 search="search event_simpleName="ProcessRollup2" ComputerName=$ComputerName$ earliest='"${VAR_EARLIEST_STRING}"' latest='"${VAR_LATEST_STRING}"' | stats count latest(timestamp) AS timestamp latest(TargetProcessId_decimal) AS TargetProcessId_decimal BY CommandLine ComputerName ParentBaseFileName FileName SHA256HashData"
 '
 
 GO_SEARCH
-cp results.json  results_PROCESS_${VAR_EARLIEST}_${VAR_LATEST}.json
-echo cp results.json  results_PROCESS_${VAR_EARLIEST}_${VAR_LATEST}.json
+
+echo `date` DEBUG: cp tmp.json  results_PROCESS_${VAR_EARLIEST}_${VAR_LATEST}.json
+cp tmp.json  results_PROCESS_${VAR_EARLIEST}_${VAR_LATEST}.json
+
+
 
 if [[ "${VAR_LATEST}" == "now"  ]]
 		then
@@ -221,10 +238,20 @@ then
 	exit
 fi
 
+
+if [[ "${VAR_JSON_FILE}" == *VT_HASHREPORT* ]] 
+then
+	curl -sLk "${VAR_HOST_PORT}/services/collector/event" -H "Authorization: Splunk ${VAR_HEC_KEY}"   -d @"${VAR_JSON_FILE}"
+else
+	echo "${VAR_JSON_FILE}"
+	sleep 10
 echo `date` DEBUG: Converting and uploading "${VAR_JSON_FILE}"
-sed -e 's/\"preview\": false,//g' -e 's/\"result\": {/\"event\": {/g' ""${VAR_JSON_FILE}"" > "${VAR_JSON_FILE}"_SED
-sed -e 's/\"preview\": false,//g' -e 's/\"lastrow\": false,//g' -e 's/\"lastrow\": true,//g' -e 's/\"result\": {/\"event\": {/g' ""${VAR_JSON_FILE}"" > "${VAR_JSON_FILE}"_SED
-curl -Lk "${VAR_HOST_PORT}/services/collector/event" -H "Authorization: Splunk ${VAR_HEC_KEY}"   -d @"${VAR_JSON_FILE}"_SED
+sed -i -r -e 's/\"(preview|lastrow)\":\w+,//g' -e 's/\{\"result\"/\"event\"/g' -e 's/(.*),\"timestamp\":\"([[:digit:]]+)([[:digit:]][[:digit:]][[:digit:]])\"(.*)/\{\"time\":\"\2\",\1\4/g' -e 's/\}\}$/\}\},/g' -e '$ s/\}\},/\}\}/g' -e '1 i\['  -e '$a\]' "${VAR_JSON_FILE}"
+curl -sLk "${VAR_HOST_PORT}/services/collector/event" -H "Authorization: Splunk ${VAR_HEC_KEY}"   -d @"${VAR_JSON_FILE}"
+sleep 1
+echo -n
+fi
+
 }
 
 ######################## MAIN
@@ -238,10 +265,9 @@ then
 	echo Update \#\#\#\#\# CONFIG section of this script
 	echo $0 -t 2FA_TOKEN '(Run in screen or in the background to keep session)'
 	echo $0 -q \'QUERY\' if you already have active cookie session
-	echo $0 -k kill all jobs
 	echo $0 -h \'Virus Total Hash\'
 	echo $0 -j kill '(Kills all sids and jobs)'
-	echo $0 -j pluck '(Runs a example batch job of 7day DNS,Network and Process for each host with detectoins)'
+	echo $0 -j pluck '(Runs a example batch job of 7day DNS,Network and Process for each host with detection )'
 	echo $0 -u file.json '(Upload .json file to Splunk using HTTP Event Collector (HEC)'
 	exit
 fi
@@ -284,7 +310,7 @@ then
 
 	if [[ "${VAR_VT_HASH}" != "" ]]
 	then
-		export VAR_VTHASH="${2}"
+		export VAR_VTHASH="${2}" 
 		GO_VT_HASHREPORT
 	exit
 	fi
