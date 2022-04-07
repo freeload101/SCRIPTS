@@ -1,32 +1,43 @@
 #InstallKeybdHook
 #Persistent
 #MaxThreadsPerHotkey 2
+SetTitleMatchMode RegEx
 
 ; Todo: 
 ; * make Close Tab check if the current window still exist if it does try ^m or taskkill ?
 ;;;;;;;;;;;;;;;;;;;;
-;Initialize profiles
+; Main Code Block
 ;;;;;;;;;;;;;;;;;;;;
 
 LoadProfile()
+HotkeyOff()
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;KEY BINDS !!! 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; Close Tab Alt+w
+Enter::Message("Press F1 Key to Stop")
+NumpadEnter::Message("Press F1 Key to Stop")
 
+F1::HotkeyOff()
+
+; Close Tab Alt+w
 Numpad7::^w
 
-
 ; Copy
-Numpad4::send ^c
+Numpad4::Copy()
 
 ; Paste
 Numpad5::^v
 
 ; Fancy pants paste
 NumpadAdd::#v
+
+
+; Type Clipboard
+Numpad6::SendInput, %Clipboard%
+
+
 
 ; Alt Tab sort of 
 Numpad0:: Send !{Tab}	; brings up the Alt-Tab menu
@@ -45,6 +56,20 @@ NumpadSub::CloseWindow()
 
 ; Reload
 ^!r::ReloadScript()
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;FUNCTIONS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;
+;Sends F22 to anti idle
+;;;;;;;;;;;;;;;;;;;;
+
+SendF22()
+{
+Send,{F22}
+}
+return
 
 ;;;;;;;;;;;;;;;;;;;;
 ;Anti idle binding enter key to prevent sending of clipboard or sensitive data
@@ -95,25 +120,68 @@ AntiIdleUnknown()
 }
 return
 
-;;;;;;;;;;;;;;;;;;;;;
-;Sends F22 to anti idle
-;;;;;;;;;;;;;;;;;;;;
 
-SendF22()
+
+
+; --------------------------------------------------- JEE_WinGetCtlClassNNRegEx FUNCTION
+JEE_WinGetCtlClassNNRegEx(hWnd, vClassRegEx, vNum:=1)
 {
-Send,{F22}
+	if !hWnd
+		WinGet, hWnd, ID, A
+	vCount := 0
+	WinGet, vCtlList, ControlList, % "ahk_id " hWnd
+	Loop, Parse, vCtlList, `n
+	{
+		vCtlClassNN := A_LoopField
+		ControlGet, hCtl, Hwnd,, % vCtlClassNN, % "ahk_id " hWnd
+		WinGetClass, vCtlClass, % "ahk_id " hCtl
+		if RegExMatch(vCtlClass, vClassRegEx)
+			vCount++
+		if (vCount = vNum)
+			return vCtlClassNN
+	}
+}
+
+
+
+;----------------------------------------------------------------- Click_By_Control_Text FUNCTION
+Click_By_Control_Text(String1,exitloopflag){
+WinGet, ActiveControlList, ControlList, A
+Loop, Parse, ActiveControlList, `n
+{
+
+
+ControlGetPos, x, y, w, h, %A_LoopField%, Audio For VATSIM Client
+ControlGetText, theText, %A_LoopField% , Audio For VATSIM Client
+
+ 
+
+;ToolTip,
+;        (LTrim
+;         A_LoopField: %A_LoopField%
+;		  theText:	%theText%
+;        )
+
+		if (theText = String1)
+		{
+		MouseMove,%X%,%Y%
+		Click
+		}
+if (exitloopflag == "true")
+{
+return
+}
+}
 }
 return
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;FUNCTIONS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;
 ;Setup profile based on IP address
 ;;;;;;;;;;;;;;;;;;;;
 
 LoadProfile()
+
 {
 objWMIService := ComObjGet("winmgmts:{impersonationLevel = impersonate}!\\.\root\cimv2")
 colItems := objWMIService.ExecQuery("Select * from Win32_NetworkAdapterConfiguration WHERE IPEnabled = True")._NewEnum
@@ -128,7 +196,7 @@ while colItems[objItem]
 			Hotkey, Enter, Off
 			Hotkey, NumpadEnter, Off
 			SwapMouseButton(0)
-			HighContrastOn()
+			HighContrastOff()
 			break
 			}
 
@@ -140,7 +208,7 @@ while colItems[objItem]
 			Hotkey, Enter, Off
 			Hotkey, NumpadEnter, Off
 			SwapMouseButton(0)
-			HighContrastOn()			
+			HighContrastOff()
 			break
 			}
 
@@ -155,17 +223,7 @@ while colItems[objItem]
 			HighContrastOn()
 			break
 			}
-		else If InStr(IPAddress, "192.168.3.17")
-			{
-			Message("IPAddress: " . IPAddress . " Loading Game Home Profile")
-			SetTimer, AntiIdleNoEnter, 60000, 0
-			ProfileSet:=1
-			Hotkey, Enter, Off
-			Hotkey, NumpadEnter, Off
-			SwapMouseButton(0)
-			HighContrastOn()			
-			break
-			}	
+	
 	}
 
 ;;;;;;;;;;;;;;;;;;;;
@@ -197,21 +255,6 @@ GetPublicIP() {
 }
 return
 
-;;;;;;;;;;;;;;;;;;;;
-;Unbinds Enter key
-;;;;;;;;;;;;;;;;;;;;
-
-Enter::Message("Press F1 Key to Stop")
-NumpadEnter::Message("Press F1 Key to Stop")
-Hotkey, Enter, Off
-Hotkey, NumpadEnter, Off
-
-F1::
-{
-Hotkey, Enter, Off
-Hotkey, NumpadEnter, Off
-return
-}
 
 ;;;;;;;;;;;;;;;;;;;;
 ;Refresh all windows (F5)
@@ -304,6 +347,7 @@ return
 
 Message(Message)
 {
+;SoundBeep, 750, 500
 TrayTip, "%Message%" ," ",10, 1
 tooltip, "%Message%",300,300
 ;msgbox,0,, 	"%Message%",3 ; Do not use because of it changes focus ..
@@ -339,3 +383,38 @@ Reload
 Message("Reloading")
 }
 return
+
+
+
+;;;;;;;;;;;;;;;;;;;;
+; Copy Function Advanced
+;;;;;;;;;;;;;;;;;;;;
+
+Copy()
+{
+if WinActive("ahk_class TMobaXtermForm"){
+send,^{Ins}
+}
+else
+{
+send,^c
+}
+
+
+
+
+sleep,500
+tooltip,
+
+
+}
+return
+
+;;;;;;;;;;;;;;;;;;;;
+; Hotkey Off Function
+;;;;;;;;;;;;;;;;;;;;
+HotkeyOff()
+{
+Hotkey, Enter, Off
+Hotkey, NumpadEnter, Off
+}
