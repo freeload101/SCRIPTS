@@ -5,7 +5,7 @@
 IFS=$'\n'
 
 # Clean up old files
-rm -f tmp* tmp_cookie *DOMAIN* tmp_SONGLE2> /dev/null
+rm -f tmp* tmp_cookie *DOMAIN* tmp_SINGLE2> /dev/null
 
 # Main loop OMG this is so ugly 
 for i in `cat $1`
