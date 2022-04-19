@@ -2650,6 +2650,7 @@ http://translate.google.com/translate?sl=af&tl=en-au&js=n&prev=_t&hl=en&ie=UTF-8
 /rmccurdy/scripts/web_dump.sh:echo $i|sed 's/,/ /g' | gawk '{system ("curl -k --location-trusted -m 3 -L -o " $1"_"$2".html http:\/\/"$1":"$2 )}'  >>output.txt 2>&1 &
 
 #echo Checking URL:  "$1" Payload: "$2"  Header File: "$i"  Method: GET
+# REDIRECT CURL OUTPUT !!!!
 curl -A RMcCurdyDOTcom -b tmp_cookie -c tmp_cookie  -ivkL  -X 'GET' -H @$i "$1" >>output.txt 2>&1
 				
 				
