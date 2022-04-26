@@ -4819,3 +4819,153 @@ With Powershell to CSV ( powershell is annoying with objects strings etc … I u
 (Invoke-RestMethod -Uri 'https://plex.tv/api/users/?X-Plex-Token=_YOURTOKEN_HERE_').MediaContainer.User|select Username, Email |ConvertTo-Csv -NoTypeInformation 
 
 -RMcCurdy.com
+
+
+
+
+
+"What we don’t understand, we fear. What we fear, we judge as evil. What we judge as evil, we attempt to control. And what we cannot control…we attack."
+
+Portable Burp Suite (password is password)
+https://rmccurdy.com/.scripts/
+
+Zip: BurpPortable.zip 
+Video: BurpPortable.mp4
+
+Portable NEW burp/zap/seclist/java/certs/firefox/chrome / Jython / JRuby  no admin required almost idiot proof ;)
+
+Scanners:
+https://crxcavator.io/ Chrome extensions 
+https://observatory.mozilla.org/analyze/www.rmccurdy.com
+https://github.com/horsicq/Detect-It-Easy
+https://drakvuf.com/
+
+---
+
+
+Heh more classics If Google Was A Guy,NICK BURNS,The Expert, Tech Talk - iPhone 5,Late Night with Seth Meyers : Bitcoin Commercial: :
+
+http://rmccurdy.com/.scripts/videos/Hilarious%20Cyber%20Security%20Videos/
+
+https://youtu.be/339uy9B-PEw?t=222
+
+IR:
+https://zeltser.com/analyzing-malicious-documents/
+https://www.security-hive.com/post/document-malware-analysis-attacker-s-bread-butter
+
+
+https://github.com/paralax/awesome-honeypots
+https://github.com/meirwah/awesome-incident-response
+https://github.com/rshipp/awesome-malware-analysis
+https://jpcertcc.github.io/ToolAnalysisResultSheet/
+https://hub.docker.com/r/jgajek/cuckoo-docker/
+https://malshare.com/
+
+List/Documents/Wiki/User Githubs:
+pwnwiki.github.io
+https://github.com/pe3zx/my-infosec-awesome
+https://github.com/trustedsec
+https://github.com/Matanatr96
+https://github.com/tanprathan
+https://github.com/fireeye
+https://www.kernelmode.info/forum/
+
+
+
+java de obfuscation
+https://github.com/CapacitorSet/box-js  
+https://github.com/svent/jsdetox
+https://github.com/geeksonsecurity/illuminatejs
+
+
+
+
+Mobile:
+https://github.com/nccgroup/house
+https://github.com/MobSF/Mobile-Security-Framework-MobSF
+https://github.com/tanprathan/MobileApp-Pentest-Cheatsheet
+
+Cracking/Hacking/CTF/Labs:
+https://github.com/inAudible-NG/audible-activator
+https://github.com/clong/DetectionLab
+https://github.com/blacktop/docker-bro#getting-started
+https://github.com/utkonos
+
+
+Post Exploit: 
+https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/winPEAS/winPEASbat
+cme crackmap exec genrelay
+https://github.com/ropnop/kerbrute
+https://github.com/buftas/Active-Directory-Exploitation-Cheat-Sheet/blob/master/README.md
+https://github.com/swisskyrepo/PayloadsAllTheThings
+  
+ 
+Bug Bounty:
+https://cobalt.io
+https://bugcrowd.com
+https://hackerone.com
+
+Pentest Services:
+https://www.trustedsec.com
+https://www.trustwave.com/home
+https://www.netspi.com
+https://www.whitehatsec.com
+https://ioactive.com
+https://www.optiv.com/peneration-testing
+https://www.stalwartsystems.com (NorthState)
+
+https://github.com/Matanatr96
+
+Hacking Sites
+https://www.hackthebox.eu
+https://lab.pentestit.ru
+http://www.wechall.net
+
+#pastebin alternative 
+Zerobin.net
+---
+
+
+drill if you can, dig if you have to, nslookup if you must
+https://imdjh.github.io/toolchain/2015/10/07/drill-if-you-can-dig-if-you-have-to.html
+ 
+ 
+2x2 CUBE:
+
+• L' is toward you ... R' is same as L' 
+
+3 white on top  with lower right not white
+R',D,R,D' #white solved
+R',D,R,L',D',L,R',D,R #top layer solved
+# flip for white on bottom
+#if yellow put lower left 
+#if 2 yellow put on right side 
+R,U,R',U,R,U2,R' #bottom and top solved
+# yellow up
+R' F R' B2 R F' R' B2 R2 # solved
+
+3x3 CUBE:
+# yellow middle daisy
+#top middle match
+#rotate to botton for white cross
+#if bottom white trigger to get on top
+# if top white trigger 2x
+
+# get upside down T and U or U` away from the color on the top face of the T
+
+# do seq untill yellow cross
+FUR U'R'F'
+
+# put Yellow facing left side !
+#repeat untill yellow fish lower left or yellow solvedp
+RU R' UR U2 R'
+
+# untill corners solved
+L' UR U' LU2
+ R' UR U2 R'
+
+# untill solved!!
+
+#clock wise
+F2U LR' F2 L' RUF2
+
