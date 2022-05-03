@@ -4974,3 +4974,18 @@ https://www.itprotoday.com/mobile-management-and-security/how-reset-windows-disp
 
 REG DELETE "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Configuration" /f /va
 REG DELETE "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Connectivity" /f /va
+
+
+# portable python to exe  PyInstaller compile python to exe example
+
+set PATH=%PATH%;"C:\backup\Usb_Newell\programing\Python3.7_Portable\python-3.7.6.amd64";"C:\backup\Usb_Newell\programing\Python3.7_Portable\python-3.7.6.amd64\scripts\"
+rd /q/s build
+rd /q/s dist
+rd /q/s __pycache__
+del *.spec
+copy ..\CS_HIDE.py .\
+copy ..\config.yml .\config.yml
+
+C:\backup\Usb_Newell\programing\Python3.7_Portable\python-3.7.6.amd64\python.exe -m PyInstaller -F --add-data "python38.dll";. CS_HIDE.py
+
+
