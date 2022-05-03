@@ -4969,3 +4969,8 @@ L' UR U' LU2
 #clock wise
 F2U LR' F2 L' RUF2
 
+# wipe displaylink settings/config (display link monitors clear )
+https://www.itprotoday.com/mobile-management-and-security/how-reset-windows-displaylink
+
+REG DELETE "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Configuration" /f /va
+REG DELETE "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Connectivity" /f /va
