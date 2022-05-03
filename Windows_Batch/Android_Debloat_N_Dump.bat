@@ -66,6 +66,20 @@ EXIT /B %ERRORLEVEL%
 
 
 
+:DUMPAPK
+echo %date% %time% INFO: Pushing aapt2 to /data/local/tmp/ you may need to change the path to a read write path
+
+echo %date% %time% INFO: Dumping all package information to DUMPAPKINFO.txt this will take upto 10 minutes or more
+.\adb.exe push ..\aapt2 /data/local/tmp/
+.\adb.exe shell "chmod 777  /data/local/tmp/aapt2"
+
+::powershell  -command "& { $ErrorActionPreference= 'silentlycontinue';$BBList = cmd /c .\adb.exe shell pm list packages| Select-String -Pattern '.*verizon.*' ; $BBList -replace 'package:','' | ForEach-Object { $ApkPath = (cmd /c .\adb.exe shell pm path ($_)).replace(\"package:\",\"\") ;  Write-Output '###################################'  ; cmd /c .\adb.exe shell /data/local/tmp/aapt2 dump badging \"$ApkPath\"  | Where-Object { if($_ -like \"package:*\"){Write-Host $_}elseif($_ -like \"versionName:*\"){Write-Host $_ }elseif($_ -like \"application-label*\"){Write-Host \"$_\";break} }   }    }   "  > DUMPAPKINFO.txt
+::powershell  -command "& { $ErrorActionPreference= 'silentlycontinue';$BBList = cmd /c .\adb.exe shell pm list packages | Select-String -Pattern '.*com.vzw.apnlib.*' ; $BBList -replace 'package:','' | ForEach-Object { $ApkPath = (cmd /c .\adb.exe shell pm path ($_)).replace(\"package:\",\"\") ;  Write-Output '###################################'  ; cmd /c .\adb.exe shell /data/local/tmp/aapt2 dump badging \"$ApkPath\"  | Where-Object { if($_ -like \"package:*\"){Write-Host $_}elseif($_ -like \"versionName:*\"){Write-Host $_ }elseif($_ -like \"application-label*\"){Write-Host \"$_\";break} }   }    }   "  > DUMPAPKINFO.txt
+powershell  -command "& { $ErrorActionPreference= 'silentlycontinue';$BBList = cmd /c .\adb.exe shell pm list packages   ; $BBList -replace 'package:','' | ForEach-Object { $ApkPath = (cmd /c .\adb.exe shell pm path ($_)).replace(\"package:\",\"\") ;  Write-Output '###################################'   ;Write-Output "APKPATH: " \"$ApkPath\" ; cmd /c .\adb.exe pull  \"$ApkPath\"     }  } "   
+pause
+
+EXIT /B %ERRORLEVEL%
+
 
 :DUMPAPKINFO
 echo %date% %time% INFO: Pushing aapt2 to /data/local/tmp/ you may need to change the path to a read write path
