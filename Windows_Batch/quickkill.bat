@@ -14,7 +14,7 @@ echo RMcCurdy.com
 echo ==========================================================================
  
 CD /D "%~DP0"
-SET Exclusions=CSFalconContainer.exe CSFalconService.exe SecurityHealthService.exe SecurityHealthSystray.exe cmd.exe explorer.exe taskmgr.exe svchost.exe conhost.exe find.exe lsass.exe dwm.exe  sihost.exe fontdrvhost.exe ctfmon.exe  tasklist.exe dllhost.exe lsaiso.exe pwsh.exe powershell_ise.exe powershell.exe
+SET Exclusions=SecurityHealthHost.exe CSFalconContainer.exe CSFalconService.exe SecurityHealthService.exe SecurityHealthSystray.exe cmd.exe explorer.exe taskmgr.exe svchost.exe conhost.exe find.exe lsass.exe dwm.exe  sihost.exe fontdrvhost.exe ctfmon.exe  tasklist.exe dllhost.exe lsaiso.exe pwsh.exe powershell_ise.exe powershell.exe
 
 SET tmpfl=%~n0tmp.dat
 IF EXIST "%tmpfl%" DEL /F /Q "%tmpfl%"
