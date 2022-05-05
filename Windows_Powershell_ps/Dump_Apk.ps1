@@ -1,5 +1,4 @@
-﻿#cd C:\DELETE\_ANDROID\platform-tools
-#$Env:PATH += ";C:\DELETE\_ANDROID\platform-tools"
+$Env:PATH = "$Env:PATH;$Env:TEMP\platform-tools"
 adb shell pm list packages > apklist.txt
 Start-Sleep -s 5
 $apks = ((Get-Content .\apklist.txt)) -replace 'package:',''
