@@ -1627,3 +1627,4 @@ EXIT /B %ERRORLEVEL%
 :END
 echo [+] %date% %time% INFO: All done
 pause
+exit
