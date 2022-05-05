@@ -9,17 +9,12 @@ echo ' * Dump the app name example com.vzw.ecid and the friendly name "Verizon C
 echo '-----------------------------------------------------------------------------------------'
 
 CALL :INIT
-
 :: THIS IS NOT WORKING ON MY S10E CALL :ADGUARD
-
 CALL :TWEAKS
-
 CALL :GETINFO
-
-:: This basicly brinks your phone ... CALL :UNINSTALL
-
+:: This basicly brinks your phone ... so don't use it ... just example code here CALL :UNINSTALL
 CALL :DUMPAPKINFO
-
+CALL :DUMPAPK
 CALL :END
 
 
@@ -27,79 +22,85 @@ CALL :END
 
 cd "%~dp0"
 
-echo %date% %time% INFO: Checking for adb.exe
-if not exist ".\platform-tools\adb.exe" (
-echo %date% %time% INFO: Downloading adb.exe from "https://dl.google.com/android/repository/platform-tools-latest-windows.zip"
-		powershell "(New-Object Net.WebClient).DownloadFile('https://dl.google.com/android/repository/platform-tools-latest-windows.zip', '.\platform-tools-latest-windows.zip')" > %temp%/null
-		powershell "Expand-Archive .\platform-tools-latest-windows.zip -DestinationPath .\ "  > %temp%/null
-	)
+ 
+ 
+set PATH = %PATH%;"%TEMP%\platform-tools"
+
+echo [+] %date% %time% INFO: Checking for adb.exe
+ if not exist "%TEMP%\platform-tools\adb.exe" (
+echo [+] %date% %time% INFO: Downloading adb.exe from "https://dl.google.com/android/repository/platform-tools-latest-windows.zip"
+	powershell "(New-Object Net.WebClient).DownloadFile('https://dl.google.com/android/repository/platform-tools-latest-windows.zip', '%temp%\platform-tools-latest-windows.zip')" 
+	powershell "Expand-Archive %temp%\platform-tools-latest-windows.zip -DestinationPath "%temp%" "  
+
+)
 
 
-echo %date% %time% INFO: Checking for aapt2 (to get info from apks)
-if not exist ".\aapt2" (
-echo %date% %time% INFO: Downloading aapt2 from "https://github.com/JonForShort/android-tools/raw/master/build/android-11.0.0_r33/aapt2/armeabi-v7a/bin/aapt2"
-		powershell "(New-Object Net.WebClient).DownloadFile('https://github.com/JonForShort/android-tools/raw/master/build/android-11.0.0_r33/aapt2/armeabi-v7a/bin/aapt2', '.\aapt2')" > %temp%/null
-	)
+echo [+] %date% %time% INFO: Checking for aapt2 (to get info from apks)
+if not exist "%TEMP%\aapt2" (
+pause
+echo [+] %date% %time% INFO: Downloading aapt2 from "https://github.com/JonForShort/android-tools/raw/master/build/android-11.0.0_r33/aapt2/armeabi-v7a/bin/aapt2"
+	powershell "(New-Object Net.WebClient).DownloadFile('https://github.com/JonForShort/android-tools/raw/master/build/android-11.0.0_r33/aapt2/armeabi-v7a/bin/aapt2', '%TEMP%\aapt2')" 
+)
 
 
  
-echo %date% %time% "Please make sure you click allow on your device when prompted.  Plug in your phone and disable/re-enable USB Debuging and press any key."
-pause
+echo [+] %date% %time% "Please make sure you click allow on your device when prompted.  Plug in your phone and disable/re-enable USB Debuging and revoke USB auth. Press any key."
+CHOICE /T 3 /C y /CS /D y > %temp%/null
 
 
-cd "%~dp0platform-tools"
 
-echo %date% %time% INFO: Killing any existing adb server
-.\adb.exe kill-server
-.\adb.exe kill-server 
-.\adb.exe kill-server
 
+
+echo [+] %date% %time% INFO: Killing any existing adb server
+"%TEMP%\platform-tools\adb.exe" kill-server
+
+:: kill all nox app player adb and adb ..
+taskkill /F /IM adb.exe 2> %temp%/null
+taskkill /F /IM nox_adb.exe 2> %temp%/null
+
+CHOICE /T 3 /C y /CS /D y > %temp%/null
 
 EXIT /B %ERRORLEVEL%
 
 
 :TWEAKS
-echo %date% %time% INFO: Disabling wake on tap and lift to save battery  
-.\adb.exe shell "settings put system lift_to_wake 0"
-.\adb.exe shell "adb shell settings put secure wake_gesture_enabled 0"
+echo [+] %date% %time% INFO: Disabling wake on tap and lift to save battery  
+"%TEMP%\platform-tools\adb.exe" shell "settings put system lift_to_wake 0"
+"%TEMP%\platform-tools\adb.exe" shell "adb shell settings put secure wake_gesture_enabled 0"
 EXIT /B %ERRORLEVEL%
 
 
 
 :DUMPAPK
-echo %date% %time% INFO: Pushing aapt2 to /data/local/tmp/ you may need to change the path to a read write path
+mkdir APKS
+cd .\APKS
 
-echo %date% %time% INFO: Dumping all package information to DUMPAPKINFO.txt this will take upto 10 minutes or more
-.\adb.exe push ..\aapt2 /data/local/tmp/
-.\adb.exe shell "chmod 777  /data/local/tmp/aapt2"
+echo [+] %date% %time% INFO: Disabling PowerShell Executionpolicy
+@powershell.exe   -Enc UwBlAHQALQBFAHgAZQBjAHUAdABpAG8AbgBQAG8AbABpAGMAeQAgAC0ARQB4AGUAYwB1AHQAaQBvAG4AUABvAGwAaQBjAHkAIABVAG4AcgBlAHMAdAByAGkAYwB0AGUAZAAgAC0ARgBvAHIAYwBlAA== 
 
-::powershell  -command "& { $ErrorActionPreference= 'silentlycontinue';$BBList = cmd /c .\adb.exe shell pm list packages| Select-String -Pattern '.*verizon.*' ; $BBList -replace 'package:','' | ForEach-Object { $ApkPath = (cmd /c .\adb.exe shell pm path ($_)).replace(\"package:\",\"\") ;  Write-Output '###################################'  ; cmd /c .\adb.exe shell /data/local/tmp/aapt2 dump badging \"$ApkPath\"  | Where-Object { if($_ -like \"package:*\"){Write-Host $_}elseif($_ -like \"versionName:*\"){Write-Host $_ }elseif($_ -like \"application-label*\"){Write-Host \"$_\";break} }   }    }   "  > DUMPAPKINFO.txt
-::powershell  -command "& { $ErrorActionPreference= 'silentlycontinue';$BBList = cmd /c .\adb.exe shell pm list packages | Select-String -Pattern '.*com.vzw.apnlib.*' ; $BBList -replace 'package:','' | ForEach-Object { $ApkPath = (cmd /c .\adb.exe shell pm path ($_)).replace(\"package:\",\"\") ;  Write-Output '###################################'  ; cmd /c .\adb.exe shell /data/local/tmp/aapt2 dump badging \"$ApkPath\"  | Where-Object { if($_ -like \"package:*\"){Write-Host $_}elseif($_ -like \"versionName:*\"){Write-Host $_ }elseif($_ -like \"application-label*\"){Write-Host \"$_\";break} }   }    }   "  > DUMPAPKINFO.txt
-powershell  -command "& { $ErrorActionPreference= 'silentlycontinue';$BBList = cmd /c .\adb.exe shell pm list packages   ; $BBList -replace 'package:','' | ForEach-Object { $ApkPath = (cmd /c .\adb.exe shell pm path ($_)).replace(\"package:\",\"\") ;  Write-Output '###################################'   ;Write-Output "APKPATH: " \"$ApkPath\" ; cmd /c .\adb.exe pull  \"$ApkPath\"     }  } "   
-pause
+echo [+] %date% %time% INFO: Downloading Dump_Apk.ps1
+powershell -nop -c "iex(New-Object Net.WebClient).DownloadString('https://github.com/freeload101/SCRIPTS/raw/master/Windows_Powershell_ps/Dump_Apk.ps1')"
 
 EXIT /B %ERRORLEVEL%
 
 
 :DUMPAPKINFO
-echo %date% %time% INFO: Pushing aapt2 to /data/local/tmp/ you may need to change the path to a read write path
+echo [+] %date% %time% INFO: Pushing aapt2 to /data/local/tmp/ you may need to change the path to a read write path
 
-echo %date% %time% INFO: Dumping all package information to DUMPAPKINFO.txt this will take upto 10 minutes or more
-.\adb.exe push ..\aapt2 /data/local/tmp/
-.\adb.exe shell "chmod 777  /data/local/tmp/aapt2"
+echo [+] %date% %time% INFO: Dumping all package information to DUMPAPKINFO.txt this will take upto 10 minutes or more
+"%TEMP%\platform-tools\adb.exe" push "%TEMP%\aapt2 /data/local/tmp/
+"%TEMP%\platform-tools\adb.exe" shell "chmod 777  /data/local/tmp/aapt2"
 
-::powershell  -command "& { $ErrorActionPreference= 'silentlycontinue';$BBList = cmd /c .\adb.exe shell pm list packages| Select-String -Pattern '.*verizon.*' ; $BBList -replace 'package:','' | ForEach-Object { $ApkPath = (cmd /c .\adb.exe shell pm path ($_)).replace(\"package:\",\"\") ;  Write-Output '###################################'  ; cmd /c .\adb.exe shell /data/local/tmp/aapt2 dump badging \"$ApkPath\"  | Where-Object { if($_ -like \"package:*\"){Write-Host $_}elseif($_ -like \"versionName:*\"){Write-Host $_ }elseif($_ -like \"application-label*\"){Write-Host \"$_\";break} }   }    }   "  > DUMPAPKINFO.txt
-::powershell  -command "& { $ErrorActionPreference= 'silentlycontinue';$BBList = cmd /c .\adb.exe shell pm list packages | Select-String -Pattern '.*com.vzw.apnlib.*' ; $BBList -replace 'package:','' | ForEach-Object { $ApkPath = (cmd /c .\adb.exe shell pm path ($_)).replace(\"package:\",\"\") ;  Write-Output '###################################'  ; cmd /c .\adb.exe shell /data/local/tmp/aapt2 dump badging \"$ApkPath\"  | Where-Object { if($_ -like \"package:*\"){Write-Host $_}elseif($_ -like \"versionName:*\"){Write-Host $_ }elseif($_ -like \"application-label*\"){Write-Host \"$_\";break} }   }    }   "  > DUMPAPKINFO.txt
-powershell  -command "& { $ErrorActionPreference= 'silentlycontinue';$BBList = cmd /c .\adb.exe shell pm list packages   ; $BBList -replace 'package:','' | ForEach-Object { $ApkPath = (cmd /c .\adb.exe shell pm path ($_)).replace(\"package:\",\"\") ;  Write-Output '###################################'  ; cmd /c .\adb.exe shell /data/local/tmp/aapt2 dump badging \"$ApkPath\"    | Where-Object { if($_ -like \"package:*\"){Write-Host $_}elseif($_ -like \"versionName:*\"){Write-Host $_ }elseif($_ -like \"application-label*\"){Write-Host \"$_\";break} }     }    }   "  > DUMPAPKINFO.txt
+powershell  -command "& { $ErrorActionPreference= 'silentlycontinue';$BBList = cmd /c "%TEMP%\platform-tools\adb.exe" shell pm list packages   ; $BBList -replace 'package:','' | ForEach-Object { $ApkPath = (cmd /c "%TEMP%\platform-tools\adb.exe" shell pm path ($_)).replace(\"package:\",\"\") ;  Write-Output '###################################'  ; cmd /c "%TEMP%\platform-tools\adb.exe" shell /data/local/tmp/aapt2 dump badging \"$ApkPath\"    | Where-Object { if($_ -like \"package:*\"){Write-Host $_}elseif($_ -like \"versionName:*\"){Write-Host $_ }elseif($_ -like \"application-label*\"){Write-Host \"$_\";break} }     }    }   "  > DUMPAPKINFO.txt
 start DUMPAPKINFO.txt
 EXIT /B %ERRORLEVEL%
 
 :GETINFO
-echo %date% %time% INFO: Listing users on device
-.\adb.exe shell "pm list users" > GETINFO.txt
+echo [+] %date% %time% INFO: Listing users on device
+"%TEMP%\platform-tools\adb.exe" shell "pm list users" > GETINFO.txt
 
-echo %date% %time% INFO: Please wait running top to show possible high CPU processes...
-.\adb.exe shell "top -b -n 5 -m 10 -o  PID,USER,PR,NI,VIRT,RES,SHR,S,%%CPU,%%MEM,TIME+,CMDLINE" >> GETINFO.txt
+echo [+] %date% %time% INFO: Please wait running top to show possible high CPU processes...
+"%TEMP%\platform-tools\adb.exe" shell "top -b -n 5 -m 10 -o  PID,USER,PR,NI,VIRT,RES,SHR,S,%%CPU,%%MEM,TIME+,CMDLINE" >> GETINFO.txt
 
 start GETINFO.txt
 EXIT /B %ERRORLEVEL%
@@ -111,8 +112,8 @@ IF ERRORLEVEL 2 SET adguard=NO
 SET ERRORLEVEL=0
 
 IF "%adguard%" == "YES" (
-adb shell settings put global private_dns_mode hostname
-adb shell settings put global private_dns_specifier dns.adguard.com
+"%TEMP%\platform-tools\adb.exe" shell settings put global private_dns_mode hostname
+"%TEMP%\platform-tools\adb.exe" shell settings put global private_dns_specifier dns.adguard.com
 )
 
 IF "%adguard%" == "NO" (
@@ -128,7 +129,7 @@ EXIT /B %ERRORLEVEL%
 :UNINSTALL
 
 
-echo %date% %time% INFO: Running mass uninstall/disable 
+echo [+] %date% %time% INFO: Running mass uninstall/disable 
 ::Credit: 
 ::system/app/PlayAutoInstallConfig/PlayAutoInstallConfig.apk"
 ::# Credits: https://forum.xda-developers.com/galaxy-note-8/how-to/list-software-packages-apps-disabled-t3676131/page3"
@@ -1616,20 +1617,13 @@ tv.pluto.android
 us.com.dt.iq.appsource.tmobile
        ) do (
 		echo Trying to Uninstall:		%%x
-       .\adb.exe shell "pm uninstall -k --user 0 %%x"
+		"%TEMP%\platform-tools\adb.exe" shell "pm uninstall -k --user 0 %%x"
 		echo Trying to Disable:		%%x
-		.\adb.exe shell "pm disable --user 0 %%x" 2> null
+		"%TEMP%\platform-tools\adb.exe" shell "pm disable --user 0 %%x" 2> null
        )
 
 EXIT /B %ERRORLEVEL%
 
-
-
 :END
-echo %date% %time% INFO: Killing any existing adb server
-.\adb.exe kill-server
-.\adb.exe kill-server
-.\adb.exe kill-server
-echo %date% %time% INFO: All done
+echo [+] %date% %time% INFO: All done
 pause
-exit
