@@ -31,6 +31,16 @@ function Enumerate-ObjectProperties {
         )
  
  
+ 
+ # DCOM CLSID
+ #Set-Variable -Name ErrorActionPreference -Value SilentlyContinue
+ 
+((gwmi Win32_COMSetting).InprocServer32) | Sort-Object -Unique  | foreach-object {
+} | Export-Csv -Path .\WmiData.csv -NoTypeInformation
+start  .\WmiData.csv 
+
+
+ 
 
 
 Write-Output $($Object.PSObject.Properties | Format-Table @{ Label = 'Type'; Expression = { "[$($($_.TypeNameOfValue).Split('.')[-1])]" } }, Name, Value -AutoSize -Wrap | Out-String)
