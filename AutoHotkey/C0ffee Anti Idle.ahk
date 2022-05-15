@@ -50,6 +50,9 @@ NumpadMult::^tab
 !F11::HighContrastOn()
 !F12::HighContrastOff()
 
+!F9SwapMouseButton(0) 
+!F10SwapMouseButton(1)
+
 ; Alt F4!
 NumpadSub::CloseWindow()
 
