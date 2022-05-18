@@ -104,7 +104,7 @@ EXIT /B %ERRORLEVEL%
 
 :QUICKKILL
 echo %date% %time% INFO: Downloading/Running Quickkill.bat
-powershell "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/freeload101/SCRIPTS/master/Windows_Batch/quickkill.bat.txt', '.\quickkill.bat')"  1>> output.log 2>&1
+powershell "(New-Object Net.WebClient).DownloadFile('https://github.com/freeload101/SCRIPTS/raw/master/Windows_Batch/quickkill.bat', '.\quickkill.bat')"  1>> output.log 2>&1
 start /W "quickkill" CALL .\quickkill.bat
 EXIT /B %ERRORLEVEL%
 
