@@ -28,8 +28,6 @@ FOR /F "DELIMS=: TOKENS=2" %%A IN ('TASKLIST    /FO LIST ^| FIND /I "Image name:
     ECHO !var! | FINDSTR /I /V "%Exclusions%">>"%tmpfl%"
 )
 FOR /F "USEBACKQ TOKENS=*" %%A IN ("%tmpfl%") DO (
-	rem DEBUG ECHO KILLING %%~A	
-	rem DEBUG ping -n 1 -w 1 123.123.123.123 > %temp%\null
 sc stop "TrustedInstaller"    1>> output.log 2>&1
 
 sc config TrustedInstaller binPath= "cmd /c TASKKILL /F  /IM %%~A"    1>> output.log 2>&1
@@ -47,13 +45,10 @@ REM dont remove this or things will go wrong...it will fix the service back
 sc config TrustedInstaller binPath= "C:\Windows\servicing\TrustedInstaller.exe"   1>> output.log 2>&1
 sc config TrustedInstaller binPath= "C:\Windows\servicing\TrustedInstaller.exe"  1>> output.log 2>&1
 
-
- 
-
 )
 DEL /F /Q "%tmpfl%"
 echo All clean!
  
-ping -n 1  123.123.123.123 > %temp%/derp 
+CHOICE /T 1 /C y /CS /D y > %temp%/null
 :: removed to support Bleachbit/quickkill   taskkill /F /IM cmd.exe
 exit
