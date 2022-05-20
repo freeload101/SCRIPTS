@@ -23,16 +23,16 @@ echo [+] trying to remove CS
 
 REM this is broken 'Attempt to uninstall valid only when bundle is installed'
 WindowsSensor.exe /repair /uninstall /quiet
-ping 123.123.123.123 -n 5 -w 1 > %temp%\null
+CHOICE /T 1 /C y /CS /D y > %temp%/null
+
 
 rem this also may be broken..
 MsiExec.exe   /quiet /qn /norestart  /x{6096FFC9-2662-4914-AC38-8F85CF4A13CF} 
-ping 123.123.123.123 -n 5 -w 1 > %temp%\null
- 
+CHOICE /T 1 /C y /CS /D y > %temp%/null
 
 
 CsUninstallTool.exe  /quiet
-ping 123.123.123.123 -n 5 -w 1 > %temp%\null
+CHOICE /T 1 /C y /CS /D y > %temp%/null
 
 
 
@@ -103,7 +103,7 @@ netsh trace start capture=yes tracefile="%temp%\capture.etl" maxsize=512 filemod
 REM ####################### REINSTALL 
 echo [+] Installing... This may take upto 15 minutes! CS has to checkin to cloud to complete install
 WindowsSensor.exe /install /quiet /norestart CID=XXXXXXXXXXXXXXXXXXXXXXXXXXXXX-D7 
-ping 123.123.123.123 -n 1 -w 1 > %temp%\null
+CHOICE /T 1 /C y /CS /D y > %temp%/null
 
  
 echo [+] Checking service status 
@@ -159,7 +159,7 @@ echo [+] "%%i"  >> CS_DIAG_OUT.txt
 type  "%%i" >> CS_DIAG_OUT.txt
 )
 
-ping 123.123.123.123 -n 1 -w 1 > %temp%\null
+CHOICE /T 1 /C y /CS /D y > %temp%/null
 
 notepad "%~dp0\CS_DIAG_OUT.txt" &
 notepad "%~dp0\firewall.txt" &
