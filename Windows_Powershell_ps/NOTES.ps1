@@ -195,3 +195,11 @@ Search-ADAccount –SearchBase ‘OU=YOUROUNAMEHERE,DC=YOURDOMAINHERE,DC=com’ 
 #Get-ADUser -Filter {PasswordNotRequired -eq $true} |  Export-Csv -Path .\PasswordNotRequired.csv
 Get-ADUser -Filter * -Properties * |  Export-Csv -Path .\ADAudit.csv
 start .\ADAudit.csv
+
+
+
+# not match ...
+
+$WScript.CreateShortcut($_.FullName).Arguments}| sort -Unique | Select-String -Pattern 'WINDOWS|Teams|program files' -NotMatch 
+
+
