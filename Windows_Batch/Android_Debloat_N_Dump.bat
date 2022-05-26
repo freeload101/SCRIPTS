@@ -10,6 +10,7 @@ echo '--------------------------------------------------------------------------
 
 CALL :INIT
 :: THIS IS NOT WORKING ON MY S10E CALL :ADGUARD
+CALL :BACKUP
 CALL :TWEAKS
 CALL :GETINFO
 :: This basicly brinks your phone ... so don't use it ... just example code here CALL :UNINSTALL
@@ -69,6 +70,10 @@ echo [+] %date% %time% INFO: Disabling wake on tap and lift to save battery
 "%TEMP%\platform-tools\adb.exe" shell "adb shell settings put secure wake_gesture_enabled 0"
 EXIT /B %ERRORLEVEL%
 
+:BACKUP
+echo [+] %date% %time% INFO: Running legacy adb backup command 
+adb backup -apk -shared -all -f backup.ab
+EXIT /B %ERRORLEVEL%
 
 
 :DUMPAPK
