@@ -4995,5 +4995,7 @@ dd if=SWITCH256.raw of=/dev/sde
 
 pv < SWITCH256.raw > /dev/sde
 
- 
+# Get CPU usage for top 5 process
+Get-Process | Sort CPU -descending | Select -first 5 -Property ID, ProcessName, Description, CPU 
+
 
