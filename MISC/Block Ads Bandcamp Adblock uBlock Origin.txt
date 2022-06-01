@@ -1,0 +1,6 @@
+! 2022-05-09 https://bandcamp.com Block Ads Bandcamp Adblock uBlock Origin.txt
+!bandcamp.com##li.df.story > .track_play_hilite.collection-item-container.story-innards > .story-body
+!bandcamp.com##li.fp.story > .track_play_hilite.collection-item-container.story-innards > .story-body
+bandcamp.com##li.fp.story > .track_play_hilite.collection-item-container.story-innards
+bandcamp.com##li.df.story > .track_play_hilite.collection-item-container.story-innards
+
