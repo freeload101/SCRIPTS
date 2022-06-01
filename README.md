@@ -1,4 +1,4 @@
-Random scripts sort of orginized ... fu.txt is massive and old 
+Random scripts sort of organized ... fu.txt is massive and old 
 
 
 [Block Ads Bandcamp Adblock uBlock Origin.txt](https://github.com/freeload101/SCRIPTS/blob/master/MISC/Block%20Ads%20Bandcamp%20Adblock%20uBlock%20Origin.txt)
