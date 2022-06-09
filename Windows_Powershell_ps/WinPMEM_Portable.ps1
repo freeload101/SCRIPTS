@@ -8,6 +8,8 @@ Stop-process -name robert_mccurdy_winpmem -Force
 Stop-process -name 7z -Force
 
 New-Item -Path 'C:\ftech_temp' -ItemType Directory
+
+############################### This is just a obfucasted binary using echo '' >> binary.exe
 Invoke-WebRequest -Uri "https://xn--neellco-cvb.com/.scripts/.IR/robert_mccurdy_winpmem" -OutFile "C:\ftech_temp\robert_mccurdy_winpmem"
 
 Rename-Item -Path "C:\ftech_temp\robert_mccurdy_winpmem" -NewName "C:\ftech_temp\robert_mccurdy_winpmem.exe"
