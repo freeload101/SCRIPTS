@@ -1,4 +1,11 @@
-curl -i -s -k -X $'GET' \
-    -H $'Host: flickmetrix.com' -H $'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0' -H $'Accept: application/json, text/plain, */*' -H $'Accept-Language: en-US,en;q=0.5' -H $'Accept-Encoding: gzip, deflate' -H $'Response: application/json' -H $'Connection: close' -H $'Referer: https://flickmetrix.com/us/movies?id=4965061' \
-    -b $'_ga=GA1.2.774430291.1618258818; _gid=GA1.2.2105059173.1618368715' \
-    $'https://flickmetrix.com/api2/values/getFilms?amazonRegion=us&audienceRatingMax=100&audienceRatingMin=0&audienceReviewsMax=25000000&audienceReviewsMin=0&cast=&comboScoreMax=100&comboScoreMin=65&countryCode=us&criticRatingMax=100&criticRatingMin=0&criticReviewsMax=700&criticReviewsMin=0&currentPage=0&deviceID=1&director=&excludeGenres=horror&format=movies&genreAND=false&imdbRatingMax=10&imdbRatingMin=0&imdbVotesMax=2300000&imdbVotesMin=10000&inCinemas=true&includeDismissed=false&includeSeen=false&includeWantToWatch=true&isCastSearch=false&isDirectorSearch=false&language=all&letterboxdScoreMax=100&letterboxdScoreMin=0&letterboxdVotesMax=400000&letterboxdVotesMin=0&onAmazonPrime=false&onAmazonVideo=false&onDVD=false&onNetflix=false&pageSize=80&plot=&queryType=GetFilmsToSieve&searchTerm=&sharedUser=&sortOrder=dateDesc&title=&token=&watchedRating=0&writer=&yearMax=2021&yearMin=2020'| awk '{gsub(",\\\\\"","\n"); print}'|  grep -E "(Title|Trailer)"  | sed 's/[\\|\"]//g' | sed 's/Title://g' | sed -r 's/Trailer:(.*)/<a target=_blank href=\"https:\/\/www\.youtube\.com\/watch\?v=\1\">Trailer<\/a><br>/g'
+# Note the end of line is \ no spaces etc ...
+curl -s 'https://flickmetrix.com/api2/values/getFilms?amazonRegion=us&cast=&comboScoreMax=100&comboScoreMin=61&countryCode=us&criticRatingMax=100&criticRatingMin=0&criticReviewsMax=1000&criticReviewsMin=0&currentPage=0&deviceID=1&director=&excludeGenres=horror&format=movies&genreAND=false&imdbRatingMax=10&imdbRatingMin=0&imdbVotesMax=2600000&imdbVotesMin=0&inCinemas=true&includeDismissed=false&includeSeen=false&includeWantToWatch=true&isCastSearch=false&isDirectorSearch=false&isPersonSearch=false&language=en&letterboxdScoreMax=100&letterboxdScoreMin=0&letterboxdVotesMax=1200000&letterboxdVotesMin=0&metacriticRatingMax=100&metacriticRatingMin=0&metacriticReviewsMax=100&metacriticReviewsMin=0&onAmazonPrime=false&onAmazonVideo=false&onDVD=false&onNetflix=false&pageSize=100&person=&plot=&queryType=GetFilmsToSieve&searchTerm=&sharedUser=&sortOrder=dateDesc&title=&token=&watchedRating=0&writer=&yearMax=2022&yearMin=2022' \
+  --compressed | \
+awk '{gsub(",\\\\\"","\n"); print}'| \
+grep -E "(Title|Trailer|Genre|PosterPath|Cast|imdbRating|Plot)"  | \
+sed -r \
+-e 's/[\\]//g' \
+-e 's/PosterPath\":\"(.*)\"/<img width=30% src=https:\/\/image.tmdb.org\/t\/p\/w342\1>/g' \
+-e 's/Trailer\":\"(.*)\"/<a target=_blank href=\"https:\/\/www\.youtube\.com\/watch\?v=\1\">Trailer<\/a>/g' \
+-e 's/Title/<hr>Title/g' \
+-e 's/$/<br>/g' > /rmccurdy/.scripts/MOVIES.html
