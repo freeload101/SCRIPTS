@@ -215,6 +215,19 @@ while colItems[objItem]
 			break
 			}
 
+
+		else If InStr(IPAddress, "192.168.3.17")
+			{
+			Message("IPAddress: " . IPAddress . " Loading Game Profile")
+			SetTimer, AntiIdleNoEnter, 60000, 0
+			ProfileSet:=1
+			Hotkey, Enter, Off
+			Hotkey, NumpadEnter, Off
+			SwapMouseButton(0)
+			HighContrastOff()
+			break
+			}
+
 		else If InStr(IPAddress, "10.206.")
 			{
 			Message("IPAddress: " . IPAddress . " Loading Work Office Profile")
