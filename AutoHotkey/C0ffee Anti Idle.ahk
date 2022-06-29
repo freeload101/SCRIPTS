@@ -250,7 +250,6 @@ while colItems[objItem]
 	{
 	Message("Setting profile for unknown system?")
 	SetTimer, AntiIdleUnknown, 58000, 0
-	SwapMouseButton(0)
 	Hotkey, Enter, Off
 	Hotkey, NumpadEnter, Off
 	SwapMouseButton(0)
