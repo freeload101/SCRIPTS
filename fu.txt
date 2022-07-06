@@ -2322,6 +2322,9 @@ find . -maxdepth 3 -exec cacls.exe '{}' /T /E /G everyone:f  \;
 # windows compatibility mode compat command line.
 set __COMPAT_LAYER=WinXPSP3
 
+# run without admin !
+set __COMPAT_LAYER=RUNASINVOKER 
+
 # fix windows boot loader
 ms-sys --mbr /dev/sdx
 # or
