@@ -5003,3 +5003,11 @@ Get-Process | Sort CPU -descending | Select -first 5 -Property ID, ProcessName, 
 
 
 yt-dlp --external-downloader aria2c --external-downloader-args " -x 16 -s 16 -k 1M"    "https://www.youtube.com/c/kidzbop/playlists"  -o "%(channel_id)s/%(playlist_id)s/%(title)s %(id)s.%(ext)s"  -f 'ba' -x --audio-format mp3
+
+
+
+This is a difficult problem that took me forever to figure out but once I show you the trick, you are going to kick yourself. You cannot stop map from doing this, but you can work around it; you need to use both a subsearch and a map like this:
+
+| makeresults
+| eval test = "sourcetype,host"
+| map search="| tstats latest(_time) AS lastTime WHERE index=_internal by [|makeresults | eval test=$test$ | return $test]"
