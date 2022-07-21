@@ -5011,3 +5011,8 @@ This is a difficult problem that took me forever to figure out but once I show y
 | makeresults
 | eval test = "sourcetype,host"
 | map search="| tstats latest(_time) AS lastTime WHERE index=_internal by [|makeresults | eval test=$test$ | return $test]"
+
+
+# Defender ForcePoint...I just can't anymore ...
+Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Sense" /v Start /t reg_dword /d 4 /f
+Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Fppsvc" /v Start /t reg_dword /d 4 /f
