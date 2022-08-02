@@ -194,11 +194,11 @@ while colItems[objItem]
 		If InStr(IPAddress, "10.76.")
 			{
 			Message("IPAddress: " . IPAddress . " Loading Work Home Profile")
-			SetTimer, AntiIdleNoEnter, 900000, 0
+			;SetTimer, AntiIdleNoEnter, 900000, 0
 			ProfileSet:=1
 			Hotkey, Enter, Off
 			Hotkey, NumpadEnter, Off
-			SwapMouseButton(0)
+			;SwapMouseButton(0)
 			HighContrastOff()
 			break
 			}
@@ -206,11 +206,11 @@ while colItems[objItem]
 		else If InStr(IPAddress, "192.168.20.12")
 			{
 			Message("IPAddress: " . IPAddress . " Loading Work Home Profile")
-			SetTimer, AntiIdleNoEnter, 60000, 0
+			;SetTimer, AntiIdleNoEnter, 60000, 0
 			ProfileSet:=1
 			Hotkey, Enter, Off
 			Hotkey, NumpadEnter, Off
-			SwapMouseButton(0)
+			;SwapMouseButton(0)
 			HighContrastOff()
 			break
 			}
@@ -219,7 +219,7 @@ while colItems[objItem]
 		else If InStr(IPAddress, "192.168.3.17")
 			{
 			Message("IPAddress: " . IPAddress . " Loading Game Profile")
-			SetTimer, AntiIdleNoEnter, 60000, 0
+			;SetTimer, AntiIdleNoEnter, 60000, 0
 			ProfileSet:=1
 			Hotkey, Enter, Off
 			Hotkey, NumpadEnter, Off
@@ -231,12 +231,12 @@ while colItems[objItem]
 		else If InStr(IPAddress, "10.206.")
 			{
 			Message("IPAddress: " . IPAddress . " Loading Work Office Profile")
-			SetTimer, AntiIdleNoEnter, 60000, 0
+			;SetTimer, AntiIdleNoEnter, 60000, 0
 			ProfileSet:=1
 			Hotkey, Enter, Off
 			Hotkey, NumpadEnter, Off
-			SwapMouseButton(1)
-			HighContrastOn()
+			SwapMouseButton(0)
+			HighContrastOff()
 			break
 			}
 	
