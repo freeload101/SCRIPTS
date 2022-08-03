@@ -9,3 +9,7 @@ $SendWait.SendKeys('{ENTER}')
 
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+
+explorer "$env:LOCALAPPDATA\Onlykey\"
+
+Start-Process -FilePath "$env:LOCALAPPDATA\Onlykey\nw.exe"
