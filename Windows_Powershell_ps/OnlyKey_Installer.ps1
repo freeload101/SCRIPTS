@@ -10,6 +10,8 @@ $SendWait.SendKeys('{ENTER}')
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
 
+Wait-Process -Name Onlykey -Timeout 300
+
 explorer "$env:LOCALAPPDATA\Onlykey\"
 
 Start-Process -FilePath "$env:LOCALAPPDATA\Onlykey\nw.exe"
