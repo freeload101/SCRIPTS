@@ -1707,7 +1707,7 @@ copy /b filename.ext +,,
 # Split long col into 7 equal col
 Sub SplitIntoCellsPerColumn()
 Range("B2:H1894").ClearContents
-  Dim X As Long, LastRow As Long, vArrIn As Variant, vArrOut As Variant
+  Dim X As Long, LastRow As Long, vArrIn As Variant, vArrOut /iant
   LastRow = Cells(Rows.Count, "A").End(xlUp).Row
   numofrows = LastRow / 7
   numofrows_rundup = Round_Up(numofrows)
@@ -3553,6 +3553,9 @@ IFS=$'\n'
     else
 echo 'python2.7 ./cve_2020_14882_checker.py  --ip '${VAR_IP}' --port '${j}' --ssl &' >> CHECK
 echo 'python2.7 ./cve_2020_14882_checker.py  --ip '${VAR_IP}' --port '${j}'  &' >> CHECK
+echo "IP: ${VAR_IP}"
+curl -s -m 3 -ikLv -x ${VAR_IP}:${j} "https://yahoo.com" &
+curl -s -m 3 -sikLv --socks5 ${VAR_IP}:${j}      "https://yahoo.com"  &
 
 
 #python2.7 ./cve_2020_14882_checker.py  --ip $i --port 80 &
