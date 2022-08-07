@@ -50,25 +50,34 @@ choco upgrade chocolatey -y
 ::run installer
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%DIR%install.ps1' %*"
 
-
-
 set PATH=%PATH%;"C:\ProgramData\chocolatey\bin"
+choco feature enable -n allowGlobalConfirmation
 
-choco install mobaxterm -y
-choco install chromium -y
-choco install notepadplusplus -y 
-choco install irfanview -y
-choco install irfanview-shellextension -y
-choco install irfanviewplugins -y 
-
-REM choco install veracrypt -y
-choco install 7zip -y
-
-choco install vlc -y
-choco install filezilla -y
-
-echo to install  LibreOffice: choco install libreoffice-fresh -y
-
+for %%x in (
+	discord
+	irfanview
+	libreoffice
+	openshot
+	plexamp
+	vlc
+	zoom
+	veracrypt
+	7zip
+	chromium
+	irfanview
+	irfanview-shellextension
+	irfanviewplugins
+ mobaxterm
+ chromium
+	notepadplusplus
+ filezilla
+ libreoffice-fresh
+ 
+) do (
+	echo Installing:	%%x
+	choco install %%x
+)
+ 
 choco upgrade all -y
 
 :: dirty hack to make updates autorun on boot Choco has AU script but its stupid comlicated (AU)
@@ -81,9 +90,11 @@ net start Chocolatey_Update
 
 
 
-echo [+] Downloading/Installing Cygwin Portable
 
 ::cygwinportable
+echo [+] Downloading/Installing Cygwin Portable
+echo [+] Exit now if you do not want to install Cygwin
+timeout /t 10
 cd "%DIR%"
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://github.com/vegardit/cygwin-portable-installer/raw/main/cygwin-portable-installer.cmd','%DIR%cygwin-portable-installer.cmd'))"
 cmd /c cygwin-portable-installer.cmd
