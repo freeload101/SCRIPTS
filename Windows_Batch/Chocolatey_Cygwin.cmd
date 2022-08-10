@@ -57,6 +57,7 @@ for %%x in (
 	discord
 	irfanview
 	libreoffice
+	gimp
 	openshot
 	plexamp
 	vlc
