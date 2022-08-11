@@ -3,7 +3,7 @@ Invoke-WebRequest -Uri $downloadUri -Out $env:LOCALAPPDATA\Onlykey.exe
 $Env:__COMPAT_LAYER='RunAsInvoker'
 Start-Process -FilePath "$env:LOCALAPPDATA\Onlykey.exe" -ArgumentList  " /D=$env:LOCALAPPDATA\Onlykey\  "  #-Wait  -Verbose -WindowStyle Hidden 
 
-start-sleep -Seconds 2
+start-sleep -Seconds 5
 $SendWait = New-Object -ComObject wscript.shell;
 $SendWait.SendKeys('{ENTER}')
 
