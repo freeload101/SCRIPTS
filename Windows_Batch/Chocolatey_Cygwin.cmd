@@ -18,9 +18,7 @@ IF "%DEBLOAT%" == "YES" (
 CALL :DEBLOAT
 ) 
 
-IF "%CYGWIN%" == "YES" (
-CALL :CYGWIN
-)
+
 
 echo [+] Checking powershell version...
 @powershell if ($PSVersionTable.PSVersion.Major -eq 5) {    Write-Host " [+] You are running PowerShell version 5"}else {    Write-Host " [+] This is version $PSVersionTable.PSVersion.Major Please update!!!";Start-Sleep -s 99 }
@@ -73,6 +71,10 @@ sc create "Chocolatey_Update"  binpath= "cmd /c start powershell.exe -nop -w hid
 sc description Chocolatey_Update "Chocolatey_Update"
 sc config Chocolatey_Update start= auto
 ::net start Chocolatey_Update
+
+IF "%CYGWIN%" == "YES" (
+CALL :CYGWIN
+)
 
 GOTO theEnd
 
