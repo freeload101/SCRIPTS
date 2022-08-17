@@ -82,23 +82,10 @@ choco upgrade chocolatey.extension
 echo [+] Running Sync Check ?
 choco list -lo
 
+echo [+] Installing Packages
+choco upgrade "chromium" "irfanview" "irfanview-shellextension" "irfanviewplugins" "vlc" "7zip" "Mobaxterm" "notepadplusplus" "filezilla" 
 
-for %%x in (
-	chromium
-	irfanview
-	irfanview-shellextension
-	irfanviewplugins
-	vlc	
-	7zip
-	mobaxterm
-	notepadplusplus
-	filezilla
-) do (
-	echo Installing:	%%x
-	choco upgrade %%x
-)
-
- 
+echo [+] Upgrading all Packages
 choco upgrade all -y
 
 :: dirty hack to make updates autorun on boot Choco has AU script but its stupid comlicated (AU)
@@ -111,18 +98,8 @@ EXIT /B %ERRORLEVEL%
 
 :CYGWIN
 
-:: more choco
 echo [+] Installing additional choco apps 
-for %%x in (
-	openshot
-	plexamp
-	veracrypt
-	libreoffice-fresh
-) do (
-	echo Installing:	%%x
-	choco upgrade %%x
-)
-
+choco upgrade "openshot" "plexamp" "veracrypt" "libreoffice-fresh" 
 
 ::cygwinportable
 echo [+] Downloading/Installing Cygwin Portable
