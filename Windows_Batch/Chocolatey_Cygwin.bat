@@ -84,6 +84,7 @@ choco list -lo
 
 
 for %%x in (
+	chocolateygui
 	chromium
 	irfanview
 	irfanview-shellextension
