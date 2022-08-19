@@ -7,6 +7,35 @@ echo ###########################################################################
 
 SET DIR=%~dp0%
 
+powercfg –restoredefaultschemesf
+
+:: On Battery
+powercfg /SETDCVALUEINDEX SCHEME_CURRENT 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e 0
+
+:: On AC Timeout
+powercfg /SETACVALUEINDEX SCHEME_CURRENT 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e 0
+
+:: On Battery lid
+powercfg -setdcvalueindex SCHEME_CURRENT 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936
+:: On AC lid 
+powercfg -setacvalueindex SCHEME_CURRENT 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936
+
+:: Disable sleep for everything
+powercfg /x -hibernate-timeout-ac 0
+powercfg /x -hibernate-timeout-dc 0
+powercfg /x -disk-timeout-ac 0
+powercfg /x -disk-timeout-dc 0
+powercfg /x -monitor-timeout-ac 0
+powercfg /x -monitor-timeout-dc 0
+Powercfg /x -standby-timeout-ac 0
+powercfg /x -standby-timeout-dc 0
+
+:: Lock After Screensaver ( needs admin)
+powercfg /SETDCVALUEINDEX SCHEME_CURRENT SUB_NONE CONSOLELOCK 0
+powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_NONE CONSOLELOCK 0
+
+
+
 CHOICE /C YN /N /T 5 /D N /M "Install Cygwin and optional Windows apps ? Y/N"
 IF ERRORLEVEL 1 SET CYGWIN=YES
 IF ERRORLEVEL 2 SET CYGWIN=NO
