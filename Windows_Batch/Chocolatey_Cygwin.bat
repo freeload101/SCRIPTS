@@ -7,8 +7,11 @@ echo ###########################################################################
 
 SET DIR=%~dp0%
 
-:: Installing Mono Font for MobaXterm
-%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/DroidSansMono/complete/Droid Sans Mono Nerd Font Complete Mono Windows Compatible.otf','c:\windows\fonts\DroidSans.otf'))"
+:: Installing Droid Sans Mono Font for MobaXterm
+%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/DroidSansMono/complete/Droid Sans Mono Nerd Font Complete Mono Windows Compatible.otf','c:\windows\fonts\Droid Sans Mono Nerd Font Complete Mono Windows Compatible.otf'))"
+REG add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" /v "DroidSandMono NF" /t REG_SZ /d "Droid Sans Mono Nerd Font Complete Mono Windows Compatible.otf" /f
+
+:: Disable Sleep,Lid and Power stuff
 powercfg –restoredefaultschemesf
 
 :: On Battery
