@@ -12,7 +12,7 @@ SET DIR=%~dp0%
 REG add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" /v "DroidSandMono NF" /t REG_SZ /d "Droid Sans Mono Nerd Font Complete Mono Windows Compatible.otf" /f
 
 :: Disable Sleep,Lid and Power stuff
-powercfg –restoredefaultschemesf
+powercfg -restoredefaultschemes
 
 :: On Battery
 powercfg /SETDCVALUEINDEX SCHEME_CURRENT 7516b95f-f776-4464-8c53-06167f40cc99 3c0bc021-c8a8-4e07-a973-6b14cbcb2b7e 0
@@ -55,10 +55,6 @@ SET ERRORLEVEL=0
 IF "%DEBLOAT%" == "YES" (
 CALL :DEBLOAT
 ) 
-
-IF "%CYGWIN%" == "YES" (
-CALL :CYGWIN
-)
 
 echo [+] Checking powershell version...
 @powershell if ($PSVersionTable.PSVersion.Major -eq 5) {    Write-Host " [+] You are running PowerShell version 5"}else {    Write-Host " [+] This is version $PSVersionTable.PSVersion.Major Please update!!!";Start-Sleep -s 99 }
@@ -117,6 +113,7 @@ echo [+] Running Sync Check ?
 choco list -lo
 
 
+
 for %%x in (
 	chocolateygui
 	chromium
@@ -134,7 +131,12 @@ for %%x in (
 	choco upgrade %%x
 )
 
- 
+
+IF "%CYGWIN%" == "YES" (
+CALL :CYGWIN
+)
+
+
 choco upgrade all -y
 
 :: dirty hack to make updates autorun on boot Choco has AU script but its stupid comlicated (AU)
