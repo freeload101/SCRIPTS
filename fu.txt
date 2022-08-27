@@ -1589,8 +1589,9 @@ sed -i 's/^black/#black/' /etc/zmap/zmap.conf
 zmap -M icmp_echoscan -B 1G -P 1 -T 100 -w net_only_big.txt -o net_only_big.csv
 zmap -p  80 -B 90MB -P 1 -T 50 -w in -o scope.csv
  
-# sort ips logicly and show counts of class C to find host ranges that return all as UP
-sort -n -t . -k 1,1 -k 2,2 -k 3,3 -k 4,4  | sed  's/\.[0-9]\{1,3\}$//g' |  uniq -c | sort -n
+# sort ips logicly and show counts of class C (subnet) to find host ranges that return all as UP
+# sort -n -t . -k 1,1 -k 2,2 -k 3,3 -k 4,4  | sed  's/\.[0-9]\{1,3\}$//g' |  uniq -c | sort -n
+sed 's/\./ /g' | awk '{print $1"."$2"."$3}' |  uniq -c | sort -nr
 
 # faster nmap
 nmap -n -sn -PE -T5 --max-retries 1 --min-parallelism 100 -iL scope.txt -oA scope
