@@ -3158,8 +3158,8 @@ FOR /F "delims==" %%A IN ('DIR/B "*.amr"') DO ffmpeg -i %%A -vn -acodec libmp3la
 
 # nvidia ffmpeg
 #Option placement matters. Encoders are specified after all inputs and before the output file they are intended for.
-ffmpeg.exe -i "large.avi" -vcodec h264_nvenc .\large_enc.mp4
 
+FOR /F "delims==" %%A IN ('DIR/B "*.mp4"') DO ffmpeg.exe -i "%%A" -vcodec libx264 -acodec aac "%%A_enc.mp4"
 
 # 720 at 15fps
 ffmpeg.exe  -i 20211118_185936.mp4  -vf "fps=15,scale=1280:720"  PROJECT_365_WLED_ENC.mp4
