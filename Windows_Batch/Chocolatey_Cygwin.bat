@@ -161,6 +161,8 @@ for %%x in (
 	veracrypt
 	libreoffice-fresh
 	teracopy
+	procexp
+	procmon
 ) do (
 	echo Installing:	%%x
 	choco upgrade %%x
