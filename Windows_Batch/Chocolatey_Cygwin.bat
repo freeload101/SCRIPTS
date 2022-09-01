@@ -160,6 +160,7 @@ for %%x in (
 	plexamp
 	veracrypt
 	libreoffice-fresh
+	teracopy
 ) do (
 	echo Installing:	%%x
 	choco upgrade %%x
