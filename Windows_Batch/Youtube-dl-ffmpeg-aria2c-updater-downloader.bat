@@ -83,7 +83,7 @@ if not exist "C:\Windows\SysWOW64\msvcr100.dll" (
 	if not exist "C:\Windows\System32\msvcr100.dll" (
 		echo %date% %time% INFO: Downloading Missing msvcr100.dll from "https://download.microsoft.com/download/C/6/D/C6D0FD4E-9E53-4897-9B91-836EBA2AACD3/vcredist_x86.exe"
 		powershell "(New-Object Net.WebClient).DownloadFile('https://download.microsoft.com/download/C/6/D/C6D0FD4E-9E53-4897-9B91-836EBA2AACD3/vcredist_x86.exe', '.\vcredist_x86.exe')" > %temp%/null
-		.\vcredist_x86.exe  
+		powershell -NoP -NonI -W Hidden  -Exec Bypass "Start-Process '.\vcredist_x86.exe' -ArgumentList \" /q /norestart\" -wait "
 		)
 	)
 EXIT /B %ERRORLEVEL%
