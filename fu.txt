@@ -2964,3 +2964,11 @@ This is a difficult problem that took me forever to figure out but once I show y
 Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Sense" /v Start /t reg_dword /d 4 /f
 Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Fppsvc" /v Start /t reg_dword /d 4 /f
 Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CcmExec" /v Start /t reg_dword /d 4 /f
+
+# block bandcamp ads bandcamp feed albums only show
+! 2022-09-07 https://bandcamp.com
+bandcamp.com##li.fp.story > .track_play_hilite.collection-item-container.story-innards
+bandcamp.com##li.df.story > .track_play_hilite.collection-item-container.story-innards
+bandcamp.com##li.np.story > .story-innards > .story-body
+bandcamp.com##li.np.story > .story-innards
+
