@@ -1,3 +1,8 @@
+$VARCD = (Get-Location)
+Write-Host "[+] Current Working Directory $VARCD"
+Set-Location -Path "$VARCD"
+
+
 <#
 # Download 7zip to extract 
 $downloadUri = ((Invoke-WebRequest -UseBasicParsing "https://www.7-zip.org/download.html").links | select  href   | Where-Object href -like 'a/7z*-x64.exe'  | select -first 1).href
@@ -28,6 +33,8 @@ if (-not(Test-Path -Path "$VARCD\autohotkey" )) {
 
 
 Write-Host "[+] Download latetst AHK script"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/freeload101/SCRIPTS/master/AutoHotkey/C0ffee Anti Idle.ahk" -Out "$VARCD\C0ffee Anti Idle.ahk"  
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/freeload101/SCRIPTS/master/AutoHotkey/C0ffee Anti Idle.ahk" -OutFile  "$VARCD\C0ffee Anti Idle.ahk"
+Start-Sleep -Seconds 2
+
 # start AHK 
-Start-Process -FilePath "$VARCD\autohotkey\AutoHotkey.exe" -WorkingDirectory "$VARCD" -ArgumentList " `"$VARCD\C0ffee` Anti` Idle.ahk`"  " 
+Start-Process -FilePath "$VARCD\autohotkey\AutoHotkey.exe" -WorkingDirectory "$VARCD" -ArgumentList " `"$VARCD\C0ffee Anti Idle.ahk`"  " 
