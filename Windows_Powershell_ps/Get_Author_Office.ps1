@@ -1,4 +1,4 @@
-(Get-ChildItem -Path "\\DEEERPPP\Everyone" -Depth 1 -Filter *.xlsx) |ForEach-Object { 
+(Get-ChildItem -Path "\\DEEERPPP\Everyone" -Depth 1 -Filter *.*x) |ForEach-Object { 
 
 $FullName = $_.FullName
 
