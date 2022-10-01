@@ -208,4 +208,5 @@ $WScript.CreateShortcut($_.FullName).Arguments}| sort -Unique | Select-String -P
 echo "Computer Name: $env:COMPUTERNAME"
 Get-Process | Sort CPU -descending | Select -first 5 -Property ID, ProcessName, Description, CPU 
 
-        
+# print string backward
+-join $CertSubjectHash[-1..-$CertSubjectHash.Length]
