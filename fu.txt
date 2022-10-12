@@ -2720,6 +2720,8 @@ net group  /add "domain admins" USERNAME /domain
 
 # got r00t got r00t ?
 
+https://github.com/hackerschoice/thc-tips-tricks-hacks-cheat-sheet
+
 # ref http://en.wikipedia.org/wiki/Setuid
 # find Setuid world writable files
 find / \( \( -perm -4000 -o -perm -2000 -type f \) -and \( -perm -0002 -o -perm -0020 \) \) -type f -ls
