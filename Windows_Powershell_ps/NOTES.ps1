@@ -208,5 +208,12 @@ $WScript.CreateShortcut($_.FullName).Arguments}| sort -Unique | Select-String -P
 echo "Computer Name: $env:COMPUTERNAME"
 Get-Process | Sort CPU -descending | Select -first 5 -Property ID, ProcessName, Description, CPU 
 
+# better 
+foreach($i in 1..10){
+Get-Counter '\Process(*)\% Processor Time' | Select-Object -ExpandProperty countersamples| Select-Object -Property instancename, cookedvalue| ? {$_.instanceName -notmatch "^(idle|_total|system)$"} | Sort-Object -Property cookedvalue -Descending | Select-Object -First 10|Out-String
+Start-Sleep -Seconds .5
+}
+
+
 # print string backward
 -join $CertSubjectHash[-1..-$CertSubjectHash.Length]
