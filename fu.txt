@@ -2974,3 +2974,20 @@ bandcamp.com##li.df.story > .track_play_hilite.collection-item-container.story-i
 bandcamp.com##li.np.story > .story-innards > .story-body
 bandcamp.com##li.np.story > .story-innards
 
+
+#setup find/Replace in burp for request  body
+LESSON_STATUS%3Dincomplete
+LESSON_STATUS%3Dpassed
+
+#request body
+completionStatus%3Eincomplete
+completionStatus%3Ecompleted
+
+
+#request body
+Status%3Eunknown
+Status%3Ecompleted
+
+#request body ( now with more 2010 era XML !...)
+successStatus%3Eunknown
+successStatus%3Ecompleted
