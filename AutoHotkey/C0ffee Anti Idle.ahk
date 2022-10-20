@@ -19,43 +19,63 @@ HotkeyOff()
 Enter::Message("Press F1 Key to Stop")
 NumpadEnter::Message("Press F1 Key to Stop")
 
-F1::HotkeyOff()
+F1::HotkeyOff() 
 
-; Close Tab Alt+w
-Numpad7::^w
+;bind space to space
+space::space
+
+;;;;;; LEFT SIDE OF KEYBOARD
+
+;;;;;; COPY PASTE
+; Select All
+space & a::^a
+
+; Cut
+space & x::^x
 
 ; Copy
-Numpad4::Copy()
+space & c::Copy()
 
 ; Paste
-Numpad5::^v
+space & v::^v
 
 ; Fancy pants paste
-NumpadAdd::#v
-
+space & b::#v
 
 ; Type Clipboard
-Numpad6::SendInput, %Clipboard%
+space & z::SendInput, %Clipboard%
+
+;;;;;;; COMMON HOTKEYS 
+
+; Ctrl + F (find)
+space & f::^f
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;RIGHT SIDE OF KEYBOARD 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;; WINDOW MANAGMENT
+; Close Tab Alt+w
+space & h::^w
+
+; Alt F4!
+space & y::CloseWindow()
 
 ; Alt Tab sort of 
-Numpad0:: Send !{Tab}	; brings up the Alt-Tab menu
-Numpad1:: Send {Alt Down}{Shift Down}{Tab}{Alt Up}{Shift Up}	; brings up the Alt-Tab menu backaward
+space & j:: Send !{Tab}	; brings up the Alt-Tab menu
+space & k:: Send {Alt Down}{Shift Down}{Tab}{Alt Up}{Shift Up}	; brings up the Alt-Tab menu backaward
 
-; Chrome Tabs
-NumpadDiv::^+tab
-NumpadMult::^tab
+; Chrome Tabs Move
+space & n::^+tab
+space & m::^tab
 
+;;;;;;; ADMIN / CONFIG 
 !F11::HighContrastOn()
 !F12::HighContrastOff()
 
 !F9::SwapMouseButton(0) 
 !F10::SwapMouseButton(1)
-
-; Alt F4!
-NumpadSub::CloseWindow()
-
 
 ; Reload
 ^!r::ReloadScript()
