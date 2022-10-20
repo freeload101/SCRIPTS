@@ -11,69 +11,73 @@ SetTitleMatchMode RegEx
 
 LoadProfile()
 HotkeyOff()
+send,{LCtrl Up}
+send,{Alt Up}
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;KEY BINDS !!! 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 Enter::Message("Press F1 Key to Stop")
 NumpadEnter::Message("Press F1 Key to Stop")
+1::1
+2::2
+3::3
+
+7::7
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;LEFT SIDE OF KEYBOARD
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 F1::HotkeyOff() 
 
-;bind space to space
-space::space
-
- 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;LEFT SIDE OF KEYBOARD ( keep this for binds needing mouse hand OR swap if left handed mouse ;P
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;; COPY PASTE
 ; Select All
-space & a::^a
+!q::send,{LCtrl Down}a{LCtrl Up}
 
 ; Cut
-space & x::^x
+!w::send,{LCtrl Down}x{LCtrl Up}
 
 ; Copy
-space & c::Copy()
+!a::Copy()
 
 ; Paste
-space & v::^v
+!s::send,{LCtrl Down}v{LCtrl Up}
 
 ; Fancy pants paste
-space & b::#v
+; broken becase of alt being held !d::FancyPantsPaste()
 
 ; Type Clipboard
-space & z::SendInput, %Clipboard%
+!z::SendInput, %Clipboard%
+
+;;;;;;; WINDOW MANAGMENT
+; Alt Tab sort of 
+1 & 2:: Send !{Tab}	; brings up the Alt-Tab menu
+1 & 3:: Send {Alt Down}{Shift Down}{Tab}{Alt Up}{Shift Up}	; brings up the Alt-Tab menu backaward
+; Alt F4!
+1 & 4::CloseWindow()
+
+; Chrome Tabs Move
+2 & 3::^+tab
+2 & 4::^tab
+; Close Tab Alt+w
+2 & 5::^w
+
+; Dictate
+3 & 4::#h
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;RIGHT SIDE OF KEYBOARD ( USE RIGHT SIDE IF YOU DON'T NEED THE MOUSE SOON BEFORE/AFTER OR IF YOU ARE GOING TO BE TYPING 44)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;; COMMON HOTKEYS 
 
 ; Ctrl + F (find)
-space & f::^f
+7 & f::^f
 
-; toggle dictation
-space & g::#h
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;RIGHT SIDE OF KEYBOARD 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;;;;;; WINDOW MANAGMENT
-; Close Tab Alt+w
-space & h::^w
-
-; Alt F4!
-space & y::CloseWindow()
-
-; Alt Tab sort of 
-space & j:: Send !{Tab}	; brings up the Alt-Tab menu
-space & k:: Send {Alt Down}{Shift Down}{Tab}{Alt Up}{Shift Up}	; brings up the Alt-Tab menu backaward
-
-; Chrome Tabs Move
-space & n::^+tab
-space & m::^tab
 
 ;;;;;;; ADMIN / CONFIG 
 !F11::HighContrastOn()
@@ -98,6 +102,14 @@ SendF22()
 Send,{F22}
 }
 return
+
+FancyPantsPaste()
+{
+	send,{LWin Down}v
+	sleep,10000
+	send,{LWin Up}
+}
+
 
 ;;;;;;;;;;;;;;;;;;;;
 ;Anti idle binding enter key to prevent sending of clipboard or sensitive data
