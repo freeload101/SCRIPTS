@@ -50,6 +50,8 @@ space & z::SendInput, %Clipboard%
 ; Ctrl + F (find)
 space & f::^f
 
+; toggle dictation
+space & g::#h
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;RIGHT SIDE OF KEYBOARD 
