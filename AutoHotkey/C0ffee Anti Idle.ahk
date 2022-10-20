@@ -24,7 +24,10 @@ F1::HotkeyOff()
 ;bind space to space
 space::space
 
-;;;;;; LEFT SIDE OF KEYBOARD
+ 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;LEFT SIDE OF KEYBOARD ( keep this for binds needing mouse hand OR swap if left handed mouse ;P
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;; COPY PASTE
 ; Select All
