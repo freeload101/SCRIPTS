@@ -79,10 +79,7 @@ F1::HotkeyOff()
 
 ;;;;;;; ADMIN / CONFIG 
 ; hibernate
-!0::{
-Run "C:\Program Files\Putty\putty.exe -load "-"
-RunWait, %comspec% /c "C:\Windows\System32\shutdown.exe -h"
-}
+!0::RunWait, %comspec% /c "C:\Windows\System32\shutdown.exe -h"
 !F11::HighContrastOn()
 !F12::HighContrastOff()
 
