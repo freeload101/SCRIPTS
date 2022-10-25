@@ -220,7 +220,7 @@ Start-Sleep -Seconds .5
 
 
 
-# dump AD memberOf
+# dump AD memberOf and OU
 Set-ItemProperty “REGISTRY::HKLM\Software\Policies\Microsoft\Windows\WindowsUpdate\AU” UseWUserver -value 0
 Get-Service wuauserv | Restart-Service
 Add-WindowsCapability -Online -Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
@@ -235,9 +235,18 @@ Get-Service wuauserv | Restart-Service
 cd "$env:temp"
 $newPath  = ".\ADAudit_$(get-date -f yyyyMMdd_mm).csv"
 
-Get-ADUser -Filter "Enabled -eq '$true'" -Prop LastLogonDate,PasswordNeverExpires,PasswordNotRequired,Enabled,SamAccountName,UserPrincipalName,PasswordLastSet,Department,Description,DisplayName,EmailAddress,LastBadPasswordAttempt,LastKnownParent,ScriptPath,Title,userAccountControl,whenChanged,whenCreated,memberof |
-#DEBUG select -First 10 LastLogonDate,PasswordNeverExpires,PasswordNotRequired,Enabled,SamAccountName,UserPrincipalName,PasswordLastSet,Department,Description,DisplayName,EmailAddress,LastBadPasswordAttempt,LastKnownParent,ScriptPath,Title,userAccountControl,whenChanged,whenCreated, 
-select LastLogonDate,PasswordNeverExpires,PasswordNotRequired,Enabled,SamAccountName,UserPrincipalName,PasswordLastSet,Department,Description,DisplayName,EmailAddress,LastBadPasswordAttempt,LastKnownParent,ScriptPath,Title,userAccountControl,whenChanged,whenCreated, 
+Get-ADUser -Filter "Enabled -eq '$true'" -Prop LastLogonDate,PasswordNeverExpires,PasswordNotRequired,Enabled,SamAccountName,UserPrincipalName,PasswordLastSet,Department,Description,DisplayName,EmailAddress,LastBadPasswordAttempt,LastKnownParent,ScriptPath,Title,userAccountControl,whenChanged,whenCreated,DistinguishedName,memberof |
+#select -First 100| #debug
+select LastLogonDate,PasswordNeverExpires,PasswordNotRequired,Enabled,SamAccountName,UserPrincipalName,PasswordLastSet,Department,Description,DisplayName,EmailAddress,LastBadPasswordAttempt,LastKnownParent,ScriptPath,Title,userAccountControl,whenChanged,whenCreated,DistinguishedName,
 @{N= "MemberGroups"; E ={(($_.MemberOf).split(",") |
-where-object {$_.contains("CN=")}).replace("CN=","")-join "`n"} }|
-Export-Csv -NoType -Path $newPath
+where-object {$_.contains("CN=")}).replace("CN=","")-join "`n"}} |Export-Csv -NoType -Path $newPath
+Start-Sleep -Seconds 1
+start $newPath
+<#
+
+[pscustomobject]@{"MemberOf"=$_ }} 
+
+$_.memberOf -replace '^CN=|\\|,\w\w=.*' -join ', '
+
+
+#>
