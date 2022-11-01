@@ -15,3 +15,4 @@ Wait-Process -Name Onlykey -Timeout 300
 explorer "$env:LOCALAPPDATA\Onlykey\"
 
 Start-Process -FilePath "$env:LOCALAPPDATA\Onlykey\nw.exe"
+ 
