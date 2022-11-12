@@ -250,3 +250,35 @@ $_.memberOf -replace '^CN=|\\|,\w\w=.*' -join ', '
 
 
 #>
+
+
+
+function install-VS19BuildTools{
+
+downloadFile "https://aka.ms/vs/16/release/vs_BuildTools.exe" "$VARCD\vs19_buildtools.exe"
+
+$AllArgs = " --add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --add Microsoft.VisualStudio.Workload.WebBuildTools --add Microsoft.VisualStudio.Workload.NetCoreBuildTools --add Microsoft.VisualStudio.Component.Windows10SDK.18362 --add Microsoft.Net.Component.4.7.TargetingPack --includeRecommended --wait"
+
+$scriptRootPath = $PSScriptRoot
+$vsToolsPath = Join-Path $scriptRootPath "vs19_buildtools.exe"
+
+$Result = Start-Process $vsToolsPath -ArgumentList $AllArgs -Wait -NoNewWindow
+return $Result
+}
+
+
+
+function install-VS19BuildTools{
+
+downloadFile "https://aka.ms/vs/16/release/vs_BuildTools.exe" "$VARCD\vs19_buildtools.exe"
+
+$AllArgs = " --add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --add Microsoft.VisualStudio.Workload.WebBuildTools --add Microsoft.VisualStudio.Workload.NetCoreBuildTools --add Microsoft.VisualStudio.Component.Windows10SDK.18362 --add Microsoft.Net.Component.4.7.TargetingPack --includeRecommended --wait"
+
+$scriptRootPath = $PSScriptRoot
+$vsToolsPath = Join-Path $scriptRootPath "vs19_buildtools.exe"
+
+$Result = Start-Process $vsToolsPath -ArgumentList $AllArgs -Wait -NoNewWindow
+return $Result
+}
+
+
