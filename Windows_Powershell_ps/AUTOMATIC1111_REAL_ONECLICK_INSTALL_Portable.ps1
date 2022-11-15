@@ -119,43 +119,8 @@ Function CheckPython {
             Add-Type -AssemblyName System.IO.Compression
             [System.IO.Compression.ZipFile]::ExtractToDirectory("$VARCD\python.zip", "$VARCD\python")
             
-            Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\stable-diffusion-webui-master" -ArgumentList " -m pip install -r requirements.txt" -wait -NoNewWindow 
-
-
-            <#
-            # lol just use requirments.txt
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install basicsr " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install diffusers " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install fairscale==0.4.4 " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install fonts " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install font-roboto " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install gfpgan " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install gradio==3.9 " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install invisible-watermark " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install numpy " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install omegaconf " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install opencv-python " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install requests " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install piexif " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install Pillow " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install pytorch_lightning==1.7.7 " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install realesrgan " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install scikit-image>=0.19 " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install timm==0.4.12 " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install transformers==4.19.2 " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install torch " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install einops " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install jsonmerge " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install clean-fid " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install resize-right " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install torchdiffeq " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install kornia " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install lark " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install inflection " -wait -NoNewWindow
-                Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools" -ArgumentList " -m pip install GitPython " -wait -NoNewWindow
-
-                #>
-  
+            Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools\Tools\scripts" -ArgumentList " -m pip install -r requirements.txt" -wait -NoNewWindow 
+            
             }
                 catch {
                     throw $_.Exception.Message
@@ -168,25 +133,17 @@ Function CheckPython {
 
 ### MAIN ###
 
-Write-Host "`n[+] Downloading stable-diffusion-webui"
-downloadFile "https://github.com/AUTOMATIC1111/stable-diffusion-webui/archive/refs/heads/master.zip" "$VARCD\master.zip"
-[System.IO.Compression.ZipFile]::ExtractToDirectory("$VARCD\master.zip", "$VARCD\")
-
-<#
-Write-Host "`n[+] Downloading upx-3.96-win64.zip"
-downloadFile "https://github.com/upx/upx/releases/download/v3.96/upx-3.96-win64.zip" "$VARCD\upx.zip"
-[System.IO.Compression.ZipFile]::ExtractToDirectory("$VARCD\upx.zip", "$VARCD\")
-#>
-
 CheckPython
-
-
-
 CheckGit
 
-Start-Process -FilePath "cmd" -WorkingDirectory "$VARCD" 
+Write-Host "`n[+] Cloning stable-diffusion-webui"
+Start-Process -FilePath "$VARCD\PortableGit\cmd\git.exe" -WorkingDirectory "$VARCD\" -ArgumentList " clone `"https://github.com/AUTOMATIC1111/stable-diffusion-webui.git`" " -wait -NoNewWindow 
+
+
+
 
 #Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\stable-diffusion-webui-master" -ArgumentList "$VARCD\stable-diffusion-webui-master\launch.py" -wait -NoNewWindow 
+Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\stable-diffusion-webui" -ArgumentList "$VARCD\stable-diffusion-webui\webui-user.bat" -wait -NoNewWindow 
 
 <#
 #  --skip-torch-cuda-test --precision full --no-half
@@ -195,3 +152,5 @@ Start-Sleep -Seconds 2
 start RedirectStandardOutput.txt 
 start RedirectStandardError.txt
 #>
+
+Start-Process -FilePath "cmd" -WorkingDirectory "$VARCD" 
