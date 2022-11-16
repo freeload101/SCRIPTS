@@ -1,5 +1,10 @@
 <# 
+
+* needs models thats really it ..
+
+
 TODO: 
+* pull and ask if you want to run cmdr2
 *warn about existing python env ...
 * check for existing python env
 * delete files:
@@ -62,25 +67,6 @@ function downloadFile($url, $targetFile)
     $responseStream.Dispose()
 }
 
-############# CompileVol
-function CompileVol
-{
-    Write-Host "[+] Building Volatility" 
-    Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\volatility3-develop\" -ArgumentList " setup.py build " -wait -NoNewWindow
-    Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\volatility3-develop\" -ArgumentList " setup.py install " -wait -NoNewWindow
-
-    Write-Host "`n[+] Current Working Directory $VARCD\volatility3-develop\volatility3"
-    Start-Process -FilePath "$VARCD\python\tools\Scripts\pyinstaller.exe" -WorkingDirectory "$VARCD\volatility3-develop\volatility3" -ArgumentList "  --upx-dir `"$VARCD\upx-3.96-win64`" ..\vol.spec " -wait -NoNewWindow
-    
-    Write-Host "[+] Downloading Volatility Symbols ~800MB" 
-    downloadFile "https://downloads.volatilityfoundation.org/volatility3/symbols/windows.zip" "$VARCD\windows.zip"
-    New-Item -Path "$VARCD\volatility3-develop\volatility3\dist\symbols" -ItemType Directory  -ErrorAction SilentlyContinue |Out-Null
-
-    Write-Host "`n[+] Extracting Volatility Symbols"    
-    [System.IO.Compression.ZipFile]::ExtractToDirectory( "$VARCD\windows.zip", "$VARCD\volatility3-develop\volatility3\dist\symbols")
-
-
-}
 
 ############# CHECK CheckGit
 Function CheckGit {
@@ -118,9 +104,7 @@ Function CheckPython {
             Add-Type -AssemblyName System.IO.Compression.FileSystem
             Add-Type -AssemblyName System.IO.Compression
             [System.IO.Compression.ZipFile]::ExtractToDirectory("$VARCD\python.zip", "$VARCD\python")
-            
-            Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\python\tools\Tools\scripts" -ArgumentList " -m pip install -r requirements.txt" -wait -NoNewWindow 
-            
+                    
             }
                 catch {
                     throw $_.Exception.Message
@@ -133,20 +117,17 @@ Function CheckPython {
 
 ### MAIN ###
 
-CheckPython
+
 CheckGit
 
 Write-Host "`n[+] Cloning stable-diffusion-webui"
 Start-Process -FilePath "$VARCD\PortableGit\cmd\git.exe" -WorkingDirectory "$VARCD\" -ArgumentList " clone `"https://github.com/AUTOMATIC1111/stable-diffusion-webui.git`" " -wait -NoNewWindow 
+CheckPython
 
-
-
-
-#Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\stable-diffusion-webui-master" -ArgumentList "$VARCD\stable-diffusion-webui-master\launch.py" -wait -NoNewWindow 
-Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\stable-diffusion-webui" -ArgumentList "$VARCD\stable-diffusion-webui\webui-user.bat" -wait -NoNewWindow 
+Start-Process -FilePath "$VARCD\stable-diffusion-webui\webui-user.bat" -WorkingDirectory "$VARCD\stable-diffusion-webui" -wait -NoNewWindow 
 
 <#
-#  --skip-torch-cuda-test --precision full --no-half
+#  --skip-torch-cuda-test --precision full --no-half --medvram 
 Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\stable-diffusion-webui-master" -ArgumentList "$VARCD\stable-diffusion-webui-master\launch.py" -wait -NoNewWindow -RedirectStandardOutput RedirectStandardOutput.txt -RedirectStandardError RedirectStandardError.txt
 Start-Sleep -Seconds 2
 start RedirectStandardOutput.txt 
