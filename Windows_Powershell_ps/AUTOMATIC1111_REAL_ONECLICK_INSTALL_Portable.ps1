@@ -1,11 +1,13 @@
 <# 
 
+USAGE:
+* right click and run it ...
 * needs models thats really it ..
 
-
 TODO: 
+* add decent models URL
 * pull and ask if you want to run cmdr2
-*warn about existing python env ...
+* warn about existing python env ...
 * check for existing python env
 * delete files:
 c:\users\administrator\appdata\local\pip
