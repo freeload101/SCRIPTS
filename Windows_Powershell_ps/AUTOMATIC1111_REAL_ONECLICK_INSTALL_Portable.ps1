@@ -124,7 +124,8 @@ Write-Host "`n[+] Cloning stable-diffusion-webui"
 Start-Process -FilePath "$VARCD\PortableGit\cmd\git.exe" -WorkingDirectory "$VARCD\" -ArgumentList " clone `"https://github.com/AUTOMATIC1111/stable-diffusion-webui.git`" " -wait -NoNewWindow 
 CheckPython
 
-Start-Process -FilePath "$VARCD\stable-diffusion-webui\webui-user.bat" -WorkingDirectory "$VARCD\stable-diffusion-webui" -wait -NoNewWindow 
+ 
+Start-Process -FilePath "$VARCD\stable-diffusion-webui\webui-user.bat" -WorkingDirectory "$VARCD\stable-diffusion-webui"  -ArgumentList " --listen 0.0.0.0 --theme dark"  -wait -NoNewWindow 
 
 <#
 #  --skip-torch-cuda-test --precision full --no-half --medvram 
