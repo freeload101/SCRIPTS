@@ -1,15 +1,22 @@
 <# 
 
 USAGE:
-* right click and run it ...
-* needs models thats really it ..
+* Uninstall all python
+* un-install all videocard drivers
+* reboot
+* install normal GPU drivers (not CUDA etc...)
+* create new user
+* right-click raw button from this github and save the raw .ps1 script
+* once downloaded right-click run ..
+* just add models thats really it ..
 
 TODO: 
-* add decent models URL
+* add decent models via areia2c magnet links?
 * pull and ask if you want to run cmdr2
 * warn about existing python env ...
 * check for existing python env
-* delete files:
+* check for anaconda BS
+* delete files like:
 c:\users\administrator\appdata\local\pip
 c:\users\administrator\appdata\roaming\python\
 
