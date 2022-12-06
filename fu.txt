@@ -2997,3 +2997,10 @@ Status%3Ecompleted
 #request body ( now with more 2010 era XML !...)
 successStatus%3Eunknown
 successStatus%3Ecompleted
+
+Only show Albums on feed!!!! (ublock ad blocker)
+Bandcamp
+There's no easy way to just show new albums in your feed. Use this uBlock filter to only show new albums!
+
+bandcamp.com##li.fp.story > .track_play_hilite.collection-item-container.story-innards
+bandcamp.com##li.df.story > .track_play_hilite.collection-item-container.story-innards
