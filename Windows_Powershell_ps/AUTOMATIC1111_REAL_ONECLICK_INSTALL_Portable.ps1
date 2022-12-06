@@ -12,6 +12,7 @@ USAGE:
 * just add models thats really it ..
 
 TODO: 
+* command line ? --xformers --deepdanbooru --disable-safe-unpickle --listen --theme dark
 * add decent models via areia2c magnet links?
 * pull and ask if you want to run cmdr2
 * warn about existing python env ...
