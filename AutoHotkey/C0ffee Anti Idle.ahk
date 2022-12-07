@@ -51,7 +51,7 @@ Copy()
 !z::SendInput, %Clipboard%
 
 ;;;;;;; WINDOW MANAGMENT
-# can't use numbers or anything thats not a special key ... typing delay is too slow so 12345 ends up looking like 1 & 2 ...
+; can't use numbers or anything thats not a special key ... typing delay is too slow so 12345 ends up looking like 1 & 2 ...
 
 ; Alt Tab sort of 
 ;1 & 2:: Send !{Tab}	; brings up the Alt-Tab menu
