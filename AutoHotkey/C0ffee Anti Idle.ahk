@@ -19,22 +19,21 @@ send,{Alt Up}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Enter::Message("Press F1 Key to Stop")
 NumpadEnter::Message("Press F1 Key to Stop")
-1::1
-2::2
-3::3
-
-7::7
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;LEFT SIDE OF KEYBOARD
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-F1::HotkeyOff() 
+!F1::HotkeyOff() 
 
 
 ;;;;;; COPY PASTE
-; Select All
-!q::send,{LCtrl Down}a{LCtrl Up}
+; Select All Copy
+!q::{
+send,{LCtrl Down}a{LCtrl Up}
+sleep,500
+Copy()
+}
 
 ; Cut
 !w::send,{LCtrl Down}x{LCtrl Up}
@@ -52,20 +51,22 @@ F1::HotkeyOff()
 !z::SendInput, %Clipboard%
 
 ;;;;;;; WINDOW MANAGMENT
+# can't use numbers or anything thats not a special key ... typing delay is too slow so 12345 ends up looking like 1 & 2 ...
+
 ; Alt Tab sort of 
-1 & 2:: Send !{Tab}	; brings up the Alt-Tab menu
-1 & 3:: Send {Alt Down}{Shift Down}{Tab}{Alt Up}{Shift Up}	; brings up the Alt-Tab menu backaward
+;1 & 2:: Send !{Tab}	; brings up the Alt-Tab menu
+;1 & 3:: Send {Alt Down}{Shift Down}{Tab}{Alt Up}{Shift Up}	; brings up the Alt-Tab menu backaward
 ; Alt F4!
-1 & 4::CloseWindow()
+;1 & 4::CloseWindow()
 
 ; Chrome Tabs Move
-2 & 3::^+tab
-2 & 4::^tab
+;2 & 3::^+tab
+;2 & 4::^tab
 ; Close Tab Alt+w
-2 & 5::^w
+;2 & 5::^w
 
 ; Dictate
-3 & 4::#h
+;3 & 4::#h
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -75,7 +76,7 @@ F1::HotkeyOff()
 ;;;;;;; COMMON HOTKEYS 
 
 ; Ctrl + F (find)
-7 & f::^f
+;7 & f::^f
 
 ;;;;;;; ADMIN / CONFIG 
 ; hibernate
