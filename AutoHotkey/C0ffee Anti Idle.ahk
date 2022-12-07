@@ -29,11 +29,7 @@ NumpadEnter::Message("Press F1 Key to Stop")
 
 ;;;;;; COPY PASTE
 ; Select All Copy
-!q::{
-send,{LCtrl Down}a{LCtrl Up}
-sleep,500
-Copy()
-}
+!q::SelectAllCopy()
 
 ; Cut
 !w::send,{LCtrl Down}x{LCtrl Up}
@@ -467,6 +463,17 @@ tooltip,
 
 }
 return
+
+;;;;;;;;;;;;;;;;;;;;
+; SelectAllCopy
+;;;;;;;;;;;;;;;;;;;;
+
+SelectAllCopy()
+{
+send,{LCtrl Down}a{LCtrl Up}
+sleep,500
+Copy()
+}
 
 ;;;;;;;;;;;;;;;;;;;;
 ; Hotkey Off Function
