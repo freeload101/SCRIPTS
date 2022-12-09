@@ -138,7 +138,7 @@ Start-Process -FilePath "$VARCD\PortableGit\cmd\git.exe" -WorkingDirectory "$VAR
 CheckPython
 
  
-Start-Process -FilePath "$VARCD\stable-diffusion-webui\webui-user.bat" -WorkingDirectory "$VARCD\stable-diffusion-webui"  -ArgumentList " --listen 0.0.0.0 --theme dark"  -wait -NoNewWindow 
+Start-Process -FilePath "$VARCD\stable-diffusion-webui\webui-user.bat" -WorkingDirectory "$VARCD\stable-diffusion-webui"  -ArgumentList " "  -wait -NoNewWindow 
 
 <#
 #  --skip-torch-cuda-test --precision full --no-half --medvram 
