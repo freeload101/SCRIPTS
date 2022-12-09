@@ -4,6 +4,7 @@ USAGE:
 * un-install all python
 * un-install all videocard drivers
 * un-install any anaconda crap
+* un-install any git
 * reboot
 * install normal GPU drivers (not CUDA etc...)
 * create new user
