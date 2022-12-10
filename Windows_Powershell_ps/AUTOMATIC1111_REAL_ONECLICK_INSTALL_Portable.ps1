@@ -23,6 +23,14 @@ TODO:
 * delete files like:
 c:\users\administrator\appdata\local\pip
 c:\users\administrator\appdata\roaming\python\
+* add Invoke AI ?
+git clone Invoke AI
+copy environments-and-requirements\requirements-win-colab-cuda.txt requirements.txt
+# start SD webui first so it fixes depends ...
+pip install --prefer-binary -r requirements.txt
+python scripts\invoke.py --web
+
+
 
 
 #> 
