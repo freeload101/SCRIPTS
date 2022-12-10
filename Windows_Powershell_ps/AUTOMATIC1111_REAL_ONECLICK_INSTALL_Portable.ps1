@@ -142,6 +142,9 @@ Start-Process -FilePath "$VARCD\stable-diffusion-webui\webui-user.bat" -WorkingD
 
 <#
 #  --skip-torch-cuda-test --precision full --no-half --medvram 
+
+for testing build process set COMMANDLINE_ARGS= --skip-torch-cuda-test --use-cpu True
+
 Start-Process -FilePath "$VARCD\python\tools\python.exe" -WorkingDirectory "$VARCD\stable-diffusion-webui-master" -ArgumentList "$VARCD\stable-diffusion-webui-master\launch.py" -wait -NoNewWindow -RedirectStandardOutput RedirectStandardOutput.txt -RedirectStandardError RedirectStandardError.txt
 Start-Sleep -Seconds 2
 start RedirectStandardOutput.txt 
@@ -149,3 +152,4 @@ start RedirectStandardError.txt
 #>
 
 Start-Process -FilePath "cmd" -WorkingDirectory "$VARCD" 
+ 
