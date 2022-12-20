@@ -145,7 +145,7 @@ choco upgrade all -y
 
 :: dirty hack to make updates autorun on boot Choco has AU script but its stupid comlicated (AU)
 sc delete "Chocolatey_Update"
-sc create "Chocolatey_Update"  binpath= "cmd /c start powershell.exe -nop -w hidden -c \"choco upgrade chocolatey -y\""
+sc create "Chocolatey_Update"  binpath= "cmd /c start powershell.exe -nop -w hidden -c \"choco upgrade all -y\""
 sc description Chocolatey_Update "Chocolatey_Update"
 sc config Chocolatey_Update start= auto
 net start Chocolatey_Update
