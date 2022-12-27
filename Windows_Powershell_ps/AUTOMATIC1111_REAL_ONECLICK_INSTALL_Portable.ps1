@@ -30,6 +30,13 @@ copy environments-and-requirements\requirements-win-colab-cuda.txt requirements.
 pip install --prefer-binary -r requirements.txt
 python scripts\invoke.py --web
 
+BAT SCRIPT / STARTUP:
+
+@echo off
+ 
+SET DIR=%~dp0%
+%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%DIR%AUTOMATIC1111_REAL_ONECLICK_INSTALL_Portable.ps1' %*"
+
 
 
 
