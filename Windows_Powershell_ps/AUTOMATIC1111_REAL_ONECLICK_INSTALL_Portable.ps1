@@ -1,6 +1,14 @@
 <# 
 
 USAGE:
+
+
+* right-click raw button from this github and save the raw .ps1 script
+* make sure to save it to c: root path without spaces ? Example: c:\SDPortable
+* once downloaded right-click run ..
+* just add models thats really it ..
+
+Issues ?:
 * un-install all python
 * un-install all videocard drivers
 * un-install any anaconda crap
@@ -8,10 +16,7 @@ USAGE:
 * reboot
 * install normal GPU drivers (not CUDA etc...)
 * create new user
-* right-click raw button from this github and save the raw .ps1 script
-* make sure to save it to c: root path without spaces ? Example: c:\SDPortable
-* once downloaded right-click run ..
-* just add models thats really it ..
+
 
 TODO: 
 * command line ? --xformers --deepdanbooru --disable-safe-unpickle --listen --theme dark
