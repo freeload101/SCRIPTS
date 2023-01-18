@@ -69,18 +69,14 @@ ReloadScript()
 
 HighContrastOn()
 {
-	;C:\Windows\Resources\Themes\Light.theme
-	;start "" "C:\Windows\Resources\Ease of Access Themes\hc1.theme" & timeout /t 3 & taskkill /im "systemsettings.exe" /f
-	Run "`"C:\Windows\Resources\Ease of Access Themes\hc1.theme`""
-	sleep 1000
+	Run "`"C:\Windows\Resources\Ease of Access Themes\hc2.theme`""
+	sleep 5000
 	run "taskkill /im systemsettings.exe /f"
 }
 
 HighContrastOff()
 {
-	;C:\Windows\Resources\Themes\Light.theme
-	;start "" "C:\Windows\Resources\Ease of Access Themes\hc1.theme" & timeout /t 3 & taskkill /im "systemsettings.exe" /f
 	Run "C:\Windows\Resources\Themes\Light.theme"
-	sleep 1000
+	sleep 5000
 	run "taskkill /im systemsettings.exe /f"
 }
