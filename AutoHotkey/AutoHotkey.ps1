@@ -17,10 +17,12 @@ $env:__COMPAT_LAYER="RUNASINVOKER"
 if (-not(Test-Path -Path "$VARCD\autohotkey" )) { 
         try {
                 Write-Host "[+] Downloading AutoHotkey "
-                $downloadUri = ((Invoke-RestMethod -Method GET -Uri "https://api.github.com/repos/Lexikos/AutoHotkey_L/releases/latest").assets | Where-Object name -like *.exe ).browser_download_url
-                Invoke-WebRequest -Uri $downloadUri -Out "$VARCD\autohotkey_setup.exe"
-                Start-Process -FilePath "$VARCD\autohotkey_setup.exe" -WorkingDirectory "$VARCD" -ArgumentList "  /S /D=`"$VARCD\autohotkey`" " 
-
+                $downloadUri = ((Invoke-RestMethod -Method GET -Uri "https://api.github.com/repos/Lexikos/AutoHotkey_L/releases/latest").assets | Where-Object name -like *.zip ).browser_download_url
+                Invoke-WebRequest -Uri $downloadUri -Out "$VARCD\autohotkey.zip"
+                Write-Host "[+] Extracting Autohoykey.zip" 
+                Add-Type -AssemblyName System.IO.Compression.FileSystem
+                Add-Type -AssemblyName System.IO.Compression
+                [System.IO.Compression.ZipFile]::ExtractToDirectory("$VARCD\autohotkey.zip", "$VARCD\autohotkey")
             }
                 catch {
                     throw $_.Exception.Message
@@ -33,8 +35,8 @@ if (-not(Test-Path -Path "$VARCD\autohotkey" )) {
 
 
 Write-Host "[+] Download latetst AHK script"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/freeload101/SCRIPTS/master/AutoHotkey/C0ffee Anti Idle.ahk" -OutFile  "$VARCD\C0ffee Anti Idle.ahk"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/freeload101/SCRIPTS/master/AutoHotkey/C0ffee Anti Idle v2.ahk" -OutFile  "$VARCD\C0ffee Anti Idle v2.ahk"
 Start-Sleep -Seconds 2
 
 # start AHK 
-Start-Process -FilePath "$VARCD\autohotkey\AutoHotkey.exe" -WorkingDirectory "$VARCD" -ArgumentList " `"$VARCD\C0ffee Anti Idle.ahk`"  " 
+Start-Process -FilePath "$VARCD\autohotkey\AutoHotkey64.exe" -WorkingDirectory "$VARCD" -ArgumentList " `"$VARCD\C0ffee Anti Idle v2.ahk`"  " 
