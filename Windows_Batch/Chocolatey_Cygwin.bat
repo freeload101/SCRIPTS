@@ -131,6 +131,7 @@ for %%x in (
 	filezilla
 	gimp
 	teracopy
+	beyondcompare
 ) do (
 	echo Installing:	%%x
 	choco install %%x
