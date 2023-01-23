@@ -129,6 +129,8 @@ for %%x in (
 	mobaxterm
 	notepadplusplus
 	filezilla
+	gimp
+	teracopy
 ) do (
 	echo Installing:	%%x
 	choco install %%x
