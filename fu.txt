@@ -31,8 +31,11 @@ reboot
 find /etc/apt   -exec sed 's/stretch/buster/g' -i.bak '{}' \;
 
 apt-get update
-apt-get upgrade
-apt-get dist-upgrade
+aptitude full-upgrade
+
+#apt-get upgrade
+#apt-get dist-upgrade
+
 
 #bashtop
 apt install python3-pip
