@@ -3012,3 +3012,19 @@ There's no easy way to just show new albums in your feed. Use this uBlock filter
 
 bandcamp.com##li.fp.story > .track_play_hilite.collection-item-container.story-innards
 bandcamp.com##li.df.story > .track_play_hilite.collection-item-container.story-innards
+
+
+#windows 11 vbox virtualbox
+When the Registry Editor opens, navigate to "HKEY_LOCAL_MACHINE\SYSTEM\Setup", right-click on the "Setup" key and select "New => Key".
+
+When prompted to name the key, enter "LabConfig" and press enter.
+
+Now right-click on the "LabConfig" key and select "New => DWORD  (32-bit)" value and create a value named "BypassTPMCheck", and set its data to "1". With the same steps create the "BypassRAMCheck" and "BypassSecureBootCheck" values and set also their data to "1", so it looks like the following image.
+
+Click the Skip button if you do not need to configure a second layout.
+
+On the “Oops, you’ve lost internet connection” or “Let’s connect you to a network” page, use the Shift + F10 keyboard shortcut.
+
+In Command Prompt, type the OOBE\BYPASSNRO command to bypass network requirements on Windows 11 and press Enter.
+
+use normal Is HWID   HWIDGEN  
