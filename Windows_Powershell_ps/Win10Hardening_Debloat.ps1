@@ -1,4 +1,5 @@
 ##########
+# UPDATED FOR WIN 11 WIP
 # Win10 / WinServer2016 Initial Setup Script
 # updated 2021 for https://github.com/freeload101 - rmccurdy.com
 # basicly  keeping SMB1 stuff but RemoveW10Bloat.bat , remove-default-apps.ps1 ,Win10Hardening.ps1 and windows_hardening.cmd all in one with settings I like
@@ -3057,3 +3058,10 @@ If ($args) {
 
 # Call the desired tweak functions
 $tweaks | ForEach { Invoke-Expression $_ }
+
+
+# Enable or Disable "Show more options" context menu using Command
+reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve
+reg add "HKLM\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve
+
+
