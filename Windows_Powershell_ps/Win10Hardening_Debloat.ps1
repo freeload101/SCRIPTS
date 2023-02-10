@@ -3061,7 +3061,18 @@ $tweaks | ForEach { Invoke-Expression $_ }
 
 
 # Enable or Disable "Show more options" context menu using Command
-reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve
-reg add "HKLM\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve
+# hack for regedit as trusted installer :P 
+sc stop "TrustedInstaller"    
+sc config TrustedInstaller binPath= "cmd /c reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve" 1>> output.log 2>&1
+sc start "TrustedInstaller"   1>> output.log 2>&1
+sc stop "TrustedInstaller"  
+  
+sc config TrustedInstaller binPath= "cmd /c reg add "HKLM\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve" 1>> output.log 2>&1
+sc start "TrustedInstaller"   1>> output.log 2>&1
+sc stop "TrustedInstaller" 
+
+sc config TrustedInstaller binPath= "C:\Windows\servicing\TrustedInstaller.exe"   1>> output.log 2>&1
+sc config TrustedInstaller binPath= "C:\Windows\servicing\TrustedInstaller.exe"  1>> output.log 2>&1
+
 
 
