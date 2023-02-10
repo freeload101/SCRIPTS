@@ -101,7 +101,7 @@ $tweaks = @(
 	"HideNetworkFromLockScreen",    # "ShowNetworkOnLockScreen",
 	"HideShutdownFromLockScreen",   # "ShowShutdownOnLockScreen",
 	"DisableStickyKeys",            # "EnableStickyKeys",
-	"ShowTaskManagerDetails"        # "HideTaskManagerDetails",
+	# hangs windows 11 "ShowTaskManagerDetails"        # "HideTaskManagerDetails",
 	"ShowFileOperationsDetails",    # "HideFileOperationsDetails",
 	"EnableFileDeleteConfirm",      # "DisableFileDeleteConfirm",
 	"HideTaskbarSearch",            # "ShowTaskbarSearchIcon",      # "ShowTaskbarSearchBox",
