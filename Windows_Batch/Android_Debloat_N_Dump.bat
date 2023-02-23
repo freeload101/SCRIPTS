@@ -1,11 +1,11 @@
-@echo off
+::@echo off
 setlocal enabledelayedexpansion
 
 echo '-----------------------------------------------------------------------------------------'
 echo 'rmccurdy.com ( Android_Debloat_N_Dump )'
 echo ' This script will:'
 echo ' * DISABLED!!!!: Uninstall and disable any apps listed online as bloat'
-echo ' * Dump the app name example com.vzw.ecid and the friendly name "Verizon Call Filter" to easily identidfy what apps to uninstall or disable by hand'
+echo ' * Dump the app name example com.vzw.ecid and the friendly name "Verizon Call Filter" to easily identidfy what apps to install or disable by hand'
 echo '-----------------------------------------------------------------------------------------'
 
 CALL :INIT
@@ -20,54 +20,66 @@ CALL :END
 
 
 :INIT
+echo [+] %date% %time% "WARNING THIS SCRIPT DOES NOT SUPPORT MULTIPLE ADB DEVICES!!!! "
+CHOICE /T 8 /C y /CS /D y > %~dp0\null
 
 cd "%~dp0"
-
  
  
-set PATH = %PATH%;"%TEMP%\platform-tools"
+set PATH = %PATH%;"%~dp0platform-tools"
 
 echo [+] %date% %time% INFO: Checking for adb.exe
- if not exist "%TEMP%\platform-tools\adb.exe" (
+ if not exist "%~dp0platform-tools\adb.exe" (
 echo [+] %date% %time% INFO: Downloading adb.exe from "https://dl.google.com/android/repository/platform-tools-latest-windows.zip"
-	powershell "(New-Object Net.WebClient).DownloadFile('https://dl.google.com/android/repository/platform-tools-latest-windows.zip', '%temp%\platform-tools-latest-windows.zip')" 
-	powershell "Expand-Archive %temp%\platform-tools-latest-windows.zip -DestinationPath "%temp%" "  
-
+	powershell "(New-Object Net.WebClient).DownloadFile('https://dl.google.com/android/repository/platform-tools-latest-windows.zip', '%~dp0platform-tools-latest-windows.zip')" 
+	powershell "Expand-Archive %~dp0platform-tools-latest-windows.zip -DestinationPath "%temp%" -force "  
+	xcopy /Y /S /I "%TEMP%\platform-tools" %~dp0platform-tools
 )
 
 
 echo [+] %date% %time% INFO: Checking for aapt2 (to get info from apks)
-if not exist "%TEMP%\aapt2" (
-pause
+if not exist "%~dp0aapt2" (
 echo [+] %date% %time% INFO: Downloading aapt2 from "https://github.com/JonForShort/android-tools/raw/master/build/android-11.0.0_r33/aapt2/armeabi-v7a/bin/aapt2"
-	powershell "(New-Object Net.WebClient).DownloadFile('https://github.com/JonForShort/android-tools/raw/master/build/android-11.0.0_r33/aapt2/armeabi-v7a/bin/aapt2', '%TEMP%\aapt2')" 
+	powershell "(New-Object Net.WebClient).DownloadFile('https://github.com/JonForShort/android-tools/raw/master/build/android-11.0.0_r33/aapt2/armeabi-v7a/bin/aapt2', '%TEMP%\aapt2')"
+copy "%TEMP%\aapt2" %~dp0
 )
+
 
 
  
 echo [+] %date% %time% "Please make sure you click allow on your device when prompted.  Plug in your phone and disable/re-enable USB Debuging and revoke USB auth. Press any key."
-CHOICE /T 3 /C y /CS /D y > %temp%/null
+CHOICE /T 3 /C y /CS /D y > %~dp0\null
 
-
-
+echo [+] %date% %time% INFO: Trying to find and kill processes on port 5563 that will break adb  
+FOR /F "tokens=5 " %%A in ('netstat -ano ^| findstr :5563') do (
+echo [+] %date% %time% INFO: Killing process PID "%%A"
+taskkill /PID %%A /F
+)
 
 
 echo [+] %date% %time% INFO: Killing any existing adb server
-"%TEMP%\platform-tools\adb.exe" kill-server
+"%~dp0platform-tools\adb.exe" kill-server
 
 :: kill all nox app player adb and adb ..
-taskkill /F /IM adb.exe 2> %temp%/null
-taskkill /F /IM nox_adb.exe 2> %temp%/null
+taskkill /F /IM adb.exe 2> %~dp0\null
+taskkill /F /IM nox_adb.exe 2> %~dp0\null
 
-CHOICE /T 3 /C y /CS /D y > %temp%/null
+CHOICE /T 3 /C y /CS /D y > %~dp0\null
+
+echo [+] %date% %time% INFO: Trying to find non offline Android devices
+FOR /F "tokens=1 skip=1 " %%A in ('adb devices^|find /V "offline" ') do (
+echo [+] %date% %time% INFO: Setting emulator device to "%%A"
+set VAREMU=%%A
+)
+
 
 EXIT /B %ERRORLEVEL%
 
 
 :TWEAKS
 echo [+] %date% %time% INFO: Disabling wake on tap and lift to save battery  
-"%TEMP%\platform-tools\adb.exe" shell "settings put system lift_to_wake 0"
-"%TEMP%\platform-tools\adb.exe" shell "adb shell settings put secure wake_gesture_enabled 0"
+"%~dp0platform-tools\adb.exe" shell "settings put system lift_to_wake 0"
+"%~dp0platform-tools\adb.exe" shell "adb shell settings put secure wake_gesture_enabled 0"
 EXIT /B %ERRORLEVEL%
 
 :BACKUP
@@ -93,19 +105,19 @@ EXIT /B %ERRORLEVEL%
 echo [+] %date% %time% INFO: Pushing aapt2 to /data/local/tmp/ you may need to change the path to a read write path
 
 echo [+] %date% %time% INFO: Dumping all package information to DUMPAPKINFO.txt this will take upto 10 minutes or more
-"%TEMP%\platform-tools\adb.exe" push "%TEMP%\aapt2 /data/local/tmp/
-"%TEMP%\platform-tools\adb.exe" shell "chmod 777  /data/local/tmp/aapt2"
+"%~dp0platform-tools\adb.exe" push "%~dp0aapt2 /data/local/tmp/
+"%~dp0platform-tools\adb.exe" shell "chmod 777  /data/local/tmp/aapt2"
 
-powershell  -command "& { $ErrorActionPreference= 'silentlycontinue';$BBList = cmd /c "%TEMP%\platform-tools\adb.exe" shell pm list packages   ; $BBList -replace 'package:','' | ForEach-Object { $ApkPath = (cmd /c "%TEMP%\platform-tools\adb.exe" shell pm path ($_)).replace(\"package:\",\"\") ;  Write-Output '###################################'  ; cmd /c "%TEMP%\platform-tools\adb.exe" shell /data/local/tmp/aapt2 dump badging \"$ApkPath\"    | Where-Object { if($_ -like \"package:*\"){Write-Host $_}elseif($_ -like \"versionName:*\"){Write-Host $_ }elseif($_ -like \"application-label*\"){Write-Host \"$_\";break} }     }    }   "  > DUMPAPKINFO.txt
+powershell  -command "& { $ErrorActionPreference= 'silentlycontinue';$BBList = cmd /c "%~dp0platform-tools\adb.exe" shell pm list packages   ; $BBList -replace 'package:','' | ForEach-Object { $ApkPath = (cmd /c "%~dp0platform-tools\adb.exe" shell pm path ($_)).replace(\"package:\",\"\") ;  Write-Output '###################################'  ; cmd /c "%~dp0platform-tools\adb.exe" shell /data/local/tmp/aapt2 dump badging \"$ApkPath\"    | Where-Object { if($_ -like \"package:*\"){Write-Host $_}elseif($_ -like \"versionName:*\"){Write-Host $_ }elseif($_ -like \"application-label*\"){Write-Host \"$_\";break} }     }    }   "  > DUMPAPKINFO.txt
 start DUMPAPKINFO.txt
 EXIT /B %ERRORLEVEL%
 
 :GETINFO
 echo [+] %date% %time% INFO: Listing users on device
-"%TEMP%\platform-tools\adb.exe" shell "pm list users" > GETINFO.txt
+"%~dp0platform-tools\adb.exe" shell "pm list users" > GETINFO.txt
 
 echo [+] %date% %time% INFO: Please wait running top to show possible high CPU processes...
-"%TEMP%\platform-tools\adb.exe" shell "top -b -n 5 -m 10 -o  PID,USER,PR,NI,VIRT,RES,SHR,S,%%CPU,%%MEM,TIME+,CMDLINE" >> GETINFO.txt
+"%~dp0platform-tools\adb.exe" shell "top -b -n 5 -m 10 -o  PID,USER,PR,NI,VIRT,RES,SHR,S,%%CPU,%%MEM,TIME+,CMDLINE" >> GETINFO.txt
 
 start GETINFO.txt
 EXIT /B %ERRORLEVEL%
@@ -117,8 +129,8 @@ IF ERRORLEVEL 2 SET adguard=NO
 SET ERRORLEVEL=0
 
 IF "%adguard%" == "YES" (
-"%TEMP%\platform-tools\adb.exe" shell settings put global private_dns_mode hostname
-"%TEMP%\platform-tools\adb.exe" shell settings put global private_dns_specifier dns.adguard.com
+"%~dp0platform-tools\adb.exe" shell settings put global private_dns_mode hostname
+"%~dp0platform-tools\adb.exe" shell settings put global private_dns_specifier dns.adguard.com
 )
 
 IF "%adguard%" == "NO" (
@@ -1622,9 +1634,9 @@ tv.pluto.android
 us.com.dt.iq.appsource.tmobile
        ) do (
 		echo Trying to Uninstall:		%%x
-		"%TEMP%\platform-tools\adb.exe" shell "pm uninstall -k --user 0 %%x"
+		"%~dp0platform-tools\adb.exe" shell "pm uninstall -k --user 0 %%x"
 		echo Trying to Disable:		%%x
-		"%TEMP%\platform-tools\adb.exe" shell "pm disable --user 0 %%x" 2> null
+		"%~dp0platform-tools\adb.exe" shell "pm disable --user 0 %%x" 2> null
        )
 
 EXIT /B %ERRORLEVEL%
