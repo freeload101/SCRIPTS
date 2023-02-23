@@ -20,7 +20,7 @@ CALL :END
 
 
 :INIT
-echo [+] %date% %time% "WARNING THIS SCRIPT DOES NOT SUPPORT MULTIPLE ADB DEVICES!!!! "
+echo [+] %date% %time% "WARNING THIS SCRIPT DOES NOT SUPPORT MULTIPLE ADB DEVICES OR USERS !!!! "
 CHOICE /T 8 /C y /CS /D y > %~dp0\null
 
 cd "%~dp0"
