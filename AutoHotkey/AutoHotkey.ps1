@@ -1,6 +1,6 @@
 $VARCD = (Get-Location)
 Write-Host "[+] Current Working Directory $VARCD"
-Set-Location -Path "$VARCD"
+Set-Location -Path "$env:userprofile"
 
 
 <#
