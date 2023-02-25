@@ -1,7 +1,7 @@
 $VARCD = (Get-Location)
 Write-Host "[+] Current Working Directory $VARCD"
 Set-Location -Path "$env:userprofile"
-
+$VARCD = "$env:userprofile"
 
 <#
 # Download 7zip to extract 
