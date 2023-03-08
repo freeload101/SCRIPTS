@@ -3032,3 +3032,17 @@ On the “Oops, you’ve lost internet connection” or “Let’s connect you t
 In Command Prompt, type the OOBE\BYPASSNRO command to bypass network requirements on Windows 11 and press Enter.
 
 use normal Is HWID   HWIDGEN  
+
+
+plex email grep magic grep -o 
+
+sed:
+curl -k --silent "https://plex.tv/api/users/?X-Plex-Token=_YOURTOKEN_HERE_"| sed -rn 's/.*username=\"(.*)" email=\"(.*)" recommend.*/\1,\2/p'
+
+grep :
+curl -k --silent "https://plex.tv/api/users/?X-Plex-Token=_YOURTOKEN_HERE_"| grep -iPo '(?<=username=")\w+(?=")|(?<=email=")[[:alnum:]].*(?=" recommendation)'
+
+powershell:
+(Invoke-RestMethod -Uri 'https://plex.tv/api/users/?X-Plex-Token=_YOURTOKEN_HERE_').MediaContainer.User|select Username, Email |ConvertTo-Csv -NoTypeInformation 
+
+
