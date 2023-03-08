@@ -1,0 +1,8 @@
+sed:
+curl -k --silent "https://plex.tv/api/users/?X-Plex-Token=_YOURTOKEN_HERE_"| sed -rn 's/.*username=\"(.*)" email=\"(.*)" recommend.*/\1,\2/p'
+
+grep :
+curl -k --silent "https://plex.tv/api/users/?X-Plex-Token=_YOURTOKEN_HERE_"| grep -iPo '(?<=username=")\w+(?=")|(?<=email=")[[:alnum:]].*(?=" recommendation)'
+
+powershell:
+(Invoke-RestMethod -Uri 'https://plex.tv/api/users/?X-Plex-Token=_YOURTOKEN_HERE_').MediaContainer.User|select Username, Email |ConvertTo-Csv -NoTypeInformation 
