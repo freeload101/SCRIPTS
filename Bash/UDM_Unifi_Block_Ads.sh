@@ -11,3 +11,4 @@ sed -i 's/#conf-dir=\/etc\/dnsmasq.d\/,\*\.conf/conf-dir=\/etc\/dnsmasq.d\/,\*\.
 /etc/init.d/dnsmasq force-reload
 
 # test with nslookup doubleclick.net
+echo 'test with https://d3ward.github.io/toolz/adblock.html' 
