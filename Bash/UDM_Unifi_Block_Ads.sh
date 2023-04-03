@@ -1,3 +1,5 @@
+# bash <(curl -s https://github.com/freeload101/SCRIPTS/raw/master/Bash/UDM_Unifi_Block_Ads.sh)
+
 # download python script 
 wget 'https://github.com/freeload101/Python/raw/master/UDM_Unifi_Block_Ads.py'
 chmod 777 UDM_Unifi_Block_Ads.py
