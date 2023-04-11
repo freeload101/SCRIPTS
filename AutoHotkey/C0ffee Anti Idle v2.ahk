@@ -18,7 +18,7 @@ Copy()
 !z::Send  A_Clipboard
 
 ; Type Clipboard
-!x::Send "Robert.mccurdy@newelco.com"
+!x::Send "Robert.mccurdy@newellco.com"
 
 ; Reload
 ^!r::ReloadScript()
