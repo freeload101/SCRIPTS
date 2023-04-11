@@ -6,6 +6,12 @@
 ; Paste
 !s::send "{LCtrl Down}v{LCtrl Up}"
 
+; Type Clipboard
+!z::SendInput, %Clipboard%
+
+; Type Clipboard
+!x::SendInput, Robert.mccurdy@newelco.com
+
 ; Reload
 ^!r::ReloadScript()
 
