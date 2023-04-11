@@ -3,6 +3,14 @@
 ; Copy
 !a::Copy()
 
+; SELECT ALLCOPY
+!q::
+{
+send "{LCtrl Down}a{LCtrl Up}"
+sleep 200
+Copy()
+}
+
 ; Paste
 !s::send "{LCtrl Down}v{LCtrl Up}"
 
