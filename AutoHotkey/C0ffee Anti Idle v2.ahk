@@ -7,10 +7,10 @@
 !s::send "{LCtrl Down}v{LCtrl Up}"
 
 ; Type Clipboard
-!z::SendInput, %Clipboard%
+!z::Send  A_Clipboard
 
 ; Type Clipboard
-!x::SendInput, Robert.mccurdy@newelco.com
+!x::Send "Robert.mccurdy@newelco.com"
 
 ; Reload
 ^!r::ReloadScript()
