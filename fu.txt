@@ -1213,6 +1213,8 @@ apt-get remove --purge -y unattended-upgrades
 sleep 3
 apt-get install -y unattended-upgrades  -o Dpkg::Options::="--force-confdef"
 sed -i.bak 's/\/\/Unattended-Upgrade::Automatic-Reboot "false";/Unattended-Upgrade::Automatic-Reboot "true";/g'  /etc/apt/apt.conf.d/50unattended-upgrades
+sed -i.bak 's/\/\/Unattended-Upgrade::Automatic-Reboot "false";/Unattended-Upgrade::Automatic-Reboot "true";/g'  /usr/share/unattended-upgrades/50unattended-upgrades
+
 unattended-upgrades -v
 
 
