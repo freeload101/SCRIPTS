@@ -3048,3 +3048,8 @@ powershell:
 (Invoke-RestMethod -Uri 'https://plex.tv/api/users/?X-Plex-Token=_YOURTOKEN_HERE_').MediaContainer.User|select Username, Email |ConvertTo-Csv -NoTypeInformation 
 
 
+How do I do a ls and then sort the results by date created?
+# https://askubuntu.com/questions/404567/how-to-organize-sort-images-by-exif-image-data
+# https://stackoverflow.com/questions/43711535/linux-batch-filename-change-adding-creation-date
+
+ls -l --time=birth or --time=creation
