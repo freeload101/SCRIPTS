@@ -17,8 +17,9 @@ Copy()
 ; Type Clipboard
 !z::Send  A_Clipboard
 
-; Type Clipboard
+; common input
 !x::Send "Robert.mccurdy@newellco.com"
+!c::Send "Refine the following message to make it more clear and concise:"
 
 ; Reload
 ^!r::ReloadScript()
