@@ -15,7 +15,10 @@ Copy()
 !s::send "{LCtrl Down}v{LCtrl Up}"
 
 ; Type Clipboard
-!z::Send  A_Clipboard
+!z::{
+Send A_Clipboard
+send "{Ctrl Up}{Alt Up}"
+} 
 
 ; common input
 !x::Send "Robert.mccurdy@newellco.com"
