@@ -38,6 +38,9 @@ send "{Ctrl Up}{Alt Up}"
 ;FUNCTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP 
+SetTimer AntiIdleUnknown, 58000, 0
+
 ;;;;;;;;;;;;;;;;;;;;;
 ;Sends F22 to anti idle
 ;;;;;;;;;;;;;;;;;;;;
