@@ -8,6 +8,14 @@ write-host "About to kill " $_
 Stop-Process $_ -Force 
 } 
  
+Start-Sleep -Seconds 5
+
+Get-Process | Where{!($_.UserName -match "NT AUTHORITY\\(?:SYSTEM|(?:LOCAL|NETWORK) SERVICE)") -and !($_.ProcessName -eq "powershell" -and !($_.ProcessName -eq "explorer") -and !($_.ProcessName -eq "powershell_ise") -and !($_.ProcessName -eq "wdm") -and !($_.ProcessName -eq "conhost")  )}  | Sort-Object | Get-Unique | foreach { 
+write-host "About to kill " $_ 
+Stop-Process $_ -Force 
+} 
+
+
 $count = (Get-Process | Where{!($_.UserName -match "NT AUTHORITY\\(?:SYSTEM|(?:LOCAL|NETWORK) SERVICE)") -and !($_.ProcessName -eq "explorer") -and !($_.ProcessName -eq "powershell")}).Count
 write-host "$count` Processes Active `n"
 
