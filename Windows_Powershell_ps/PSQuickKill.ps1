@@ -1,19 +1,17 @@
 Set-Variable -Name ErrorActionPreference -Value SilentlyContinue
 
-$count = (Get-Process | Where{!($_.UserName -match "NT AUTHORITY\\(?:SYSTEM|(?:LOCAL|NETWORK) SERVICE)") -and !($_.ProcessName -eq "explorer") -and !($_.ProcessName -eq "powershell")}).Count
-write-host "$count` Processes to be killed `n"
-
-Get-Process | Where{!($_.UserName -match "NT AUTHORITY\\(?:SYSTEM|(?:LOCAL|NETWORK) SERVICE)") -and !($_.ProcessName -eq "powershell" -and !($_.ProcessName -eq "explorer") -and !($_.ProcessName -eq "powershell_ise") -and !($_.ProcessName -eq "wdm") -and !($_.ProcessName -eq "conhost")  )}  | Sort-Object | Get-Unique | foreach { 
-write-host "About to kill " $_ 
+$countb4 = (Get-Process).Count
+ 
+ 
+Get-Process   | Where{!($_.UserName -match "NT AUTHORITY\\(?:SYSTEM|(?:LOCAL|NETWORK) SERVICE)") -and !($_.ProcessName -eq "explorer") -and !($_.ProcessName -eq "smss")  -and !($_.ProcessName -eq "conhost")  -and !($_.ProcessName -eq "powershell") -and !($_.ProcessName -eq "smartscreen") -and !($_.ProcessName -eq "sihost") }  | foreach { 
+write-host "Killing" $_.ProcessName
 Start-Sleep -Seconds .5
-Stop-Process  $_ -Force 
+Stop-Process  $_.Id -Force 
+}
  
 
-} 
-  
-
-$count = (Get-Process | Where{!($_.UserName -match "NT AUTHORITY\\(?:SYSTEM|(?:LOCAL|NETWORK) SERVICE)") -and !($_.ProcessName -eq "explorer") -and !($_.ProcessName -eq "powershell")}).Count
-write-host "$count` Processes Active `n"
+$countafter = (Get-Process).Count
+write-host "$countafter killed out of  $countb4 Processes"
 
 write-host "`DONE`n"
 Start-Sleep -Seconds 10
