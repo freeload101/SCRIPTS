@@ -11,7 +11,8 @@ Stop-Process  $_.Id -Force
  
 
 $countafter = (Get-Process).Count
-write-host "$countafter killed out of  $countb4 Processes"
+$countkilled = $countb4-$countafter
+write-host "Killed $countkilled Processes"
 
 write-host "`DONE`n"
 Start-Sleep -Seconds 10
