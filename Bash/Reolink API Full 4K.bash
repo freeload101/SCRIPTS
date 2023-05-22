@@ -6,7 +6,7 @@ export token=`curl -s -i -k -X 'POST' "https://${1}/cgi-bin/api.cgi?cmd=Login" -
 
 curl -ik "https://${1}/cgi-bin/api.cgi?cmd=GetDevInfo&token=${token}" 
 
-for i in `curl -i -s -k -X $'POST' -d '[{"cmd":"Search","action":0,"param":{"Search":{"channel":0,"onlyStatus":0,"streamType":"main","StartTime":{"year":'"${2}"',"mon":'"${3}"',"day":'"${4}"',"hour":0,"min":0,"sec":0},"EndTime":{"year":'"${2}"',"mon":'"${3}"',"day":'"${4}"',"hour":23,"min":59,"sec":59}}}}]' "https://192.168.2.22/cgi-bin/api.cgi?cmd=Search&token=${token}"|grep -iPo '(?<="name" : ").*(?=")'`
+for i in `curl -i -v -k -X $'POST' -d '[{"cmd":"Search","action":0,"param":{"Search":{"channel":0,"onlyStatus":0,"streamType":"main","StartTime":{"year":'"${2}"',"mon":'"${3}"',"day":'"${4}"',"hour":0,"min":0,"sec":0},"EndTime":{"year":'"${2}"',"mon":'"${3}"',"day":'"${4}"',"hour":23,"min":59,"sec":59}}}}]' "https://${1}/cgi-bin/api.cgi?cmd=Search&token=${token}"|grep -iPo '(?<="name" : ").*(?=")'`
 do
 	echo Downloading: $i
 	export fname=`echo "${i}"|grep -iPo '(?<=[0-9]\/).*'`
