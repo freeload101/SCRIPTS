@@ -1,3 +1,6 @@
+## or just run ...
+# sed -re 's/.*[0-9][0-9] [V|D|I|W|E|F|S] //g' *.txt| sort | uniq -c | sort -nr | head -n 100
+
 Echo "This script will parse all .txt files in the current path and pull the top 10 uniq events with count and then show the top 10 uniq details of each."
 echo "TODO: remove all timestamps for top 10 so you actualy get all the top 10 and not just the first 10 because of timestamps are uniq!"
 
