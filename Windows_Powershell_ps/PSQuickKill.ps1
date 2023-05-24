@@ -1,3 +1,8 @@
+# safe mode add/remove software 
+# REG ADD "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Minimal\MSIServer" /VE /T REG_SZ /F /D "Service"
+# REG ADD "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Network\MSIServer" /VE /T REG_SZ /F /D "Service"
+# net start msiserver
+
 Set-Variable -Name ErrorActionPreference -Value SilentlyContinue
 
 $countb4 = (Get-Process).Count
