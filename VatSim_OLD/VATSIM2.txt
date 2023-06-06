@@ -1,0 +1,232 @@
+;----------------------- INIT
+SoundBeep, 750, 100
+SoundBeep, 750, 100
+#singleinstance force
+
+SetTitleMatchMode, 2 
+#InstallKeybdHook
+#InstallMouseHook
+#UseHook
+
+
+
+DetectHiddenWindows, On
+SetTitleMatchMode 2
+ 
+
+
+
+
+;----------------------------- DISABLED INIT sSTUFF 
+;DetectHiddenWindows, On
+;SetBatchLines -1
+;#MaxThreadsPerHotkey 2
+;SetControlDelay -1
+;#InstallKeybdHook
+;#InstallMouseHook
+;#UseHook
+;#maxhotkeysperinterval 99999
+;SetKeyDelay, 70
+ 
+
+
+
+
+
+
+
+; -------------------- FUNCTIONS START HERE -------------------------------
+
+
+; --------------------------------------------------- VRC FUNCTION
+START_VRC(){
+SetTitleMatchMode, 2 
+#WinActivateForce
+Run, %comspec% /c taskkill /f /im VRC.exe,,hide
+
+sleep 2000
+run "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\VRC\VRC.exe"
+
+
+
+WinWait,VRC
+WinActivate,  VRC
+ 
+send,{enter}
+sleep 10000
+
+WinWait,VRC
+WinActivate,  VRC
+
+send,{alt}f
+sleep,200
+send,c
+sleep,200
+send,{enter}
+
+return
+}
+
+
+ 
+
+; --------------------------------------------------- JEE_WinGetCtlClassNNRegEx FUNCTION
+JEE_WinGetCtlClassNNRegEx(hWnd, vClassRegEx, vNum:=1)
+{
+	if !hWnd
+		WinGet, hWnd, ID, A
+	vCount := 0
+	WinGet, vCtlList, ControlList, % "ahk_id " hWnd
+	Loop, Parse, vCtlList, `n
+	{
+		vCtlClassNN := A_LoopField
+		ControlGet, hCtl, Hwnd,, % vCtlClassNN, % "ahk_id " hWnd
+		WinGetClass, vCtlClass, % "ahk_id " hCtl
+		if RegExMatch(vCtlClass, vClassRegEx)
+			vCount++
+		if (vCount = vNum)
+			return vCtlClassNN
+	}
+}
+
+
+
+;----------------------------------------------------------------- Click_By_Control_Text FUNCTION
+Click_By_Control_Text(String1,exitloopflag){
+WinGet, ActiveControlList, ControlList, A
+Loop, Parse, ActiveControlList, `n
+{
+
+
+ControlGetPos, x, y, w, h, %A_LoopField%, Audio For VATSIM Client
+ControlGetText, theText, %A_LoopField% , Audio For VATSIM Client
+
+ 
+
+;ToolTip,
+;        (LTrim
+;         A_LoopField: %A_LoopField%
+;		  theText:	%theText%
+;        )
+
+		if (theText = String1)
+		{
+		MouseMove,%X%,%Y%
+		Click
+		}
+if (exitloopflag == "true")
+{
+return
+}
+}
+}
+return
+
+killall()
+{
+
+Run, %comspec% /c taskkill /f /im AudioForVATSIM.exe,,hide
+Run, %comspec% /c taskkill /f /im AudioForVATSIM.exe,,hide
+Run, %comspec% /c taskkill /f /im vlc.exe,,hide
+Run, %comspec% /c taskkill /f /im vlc.exe,,hide
+Run, %comspec% /c taskkill /f /im VRC.exe,,hide
+Run, %comspec% /c taskkill /f /im VRC.exe,,hide
+
+}
+return
+
+
+
+;----------------------------------------------------------------- MAIN 
+
+ 
+
+F1::
+
+killall()
+
+
+;start VLC stream
+Run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\STREAM_AFV_VLC.bat","C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\"
+
+
+; start VLC stream
+;Run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\STREAM_AFV_VLC.bat"
+sleep, 2000
+Run, %comspec% /c taskkill /f /im cmd.exe,,hide
+
+; start AudioForVATSIM
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+run, "C:\BACKUP\_GAMES\_XPLANE\VATSIM_ATC\AudioForVATSIM\1.lnk"
+
+;start VRC
+START_VRC()
+
+
+
+WinActivate, Audio For VATSIM Client
+tooltip,"Waiting 10 seconds for Connect + delay for AFV"
+sleep,10000
+tooltip,
+
+
+
+ 
+
+
+
+Click_By_Control_Text("Connect",true)
+sleep,5000
+
+
+Click_By_Control_Text("+",true)
+sleep,500
+send,A80{enter}
+sleep,5000
+
+Click_By_Control_Text("+",true)
+sleep,500
+send,ATL{enter}
+sleep,5000
+
+Click_By_Control_Text("+",true)
+sleep,500
+send,ATL_CTR{enter}
+sleep,5000
+
+loop, 6 {
+Click_By_Control_Text("RX",false)
+
+
+Click_By_Control_Text(">",true)
+sleep,20
+}
+return
+ 
+F2::
+SetKeyDelay, 0,0
+clipboard := "Feed is up: http://tunnel.rmccurdy.com:11059/live.ogg"
+send,Feed is up: http://tunnel.rmccurdy.com:11059/live.ogg{enter}
+
+return
+
+
+
+F3::
+send,command_once("sim/lights/landing_lights_on")
+
+return
