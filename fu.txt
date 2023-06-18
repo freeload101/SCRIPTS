@@ -3053,3 +3053,6 @@ How do I do a ls and then sort the results by date created?
 # https://stackoverflow.com/questions/43711535/linux-batch-filename-change-adding-creation-date
 
 ls -l --time=birth or --time=creation
+
+# disable snap notifications 
+snap set core experimental.refresh-app-awareness=false
