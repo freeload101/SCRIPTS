@@ -1,0 +1,46 @@
+## referernce my repo for CS hunting etc .. 
+
+| inputlookup managedassets.csv 
+| eval "Time EST"=strftime(_time, "%m/%d/%y %I:%M%p")
+| sort 0 -"Time EST"    | lookup oui.csv MACPrefix OUTPUT Manufacturer 
+    | fillnull value=NA Manufacturer | eval Manufacturer=if(Manufacturer="NA",InterfaceDescription,Manufacturer) 
+
+| join aid  
+    [| inputlookup aid_master where cid=*
+    | eval "Time EST"=strftime(_time, "%m/%d/%y %I:%M%p")
+    | sort 0 -"Time EST"    | lookup oui.csv MACPrefix OUTPUT Manufacturer 
+    | fillnull value=NA Manufacturer | eval Manufacturer=if(Manufacturer="NA",InterfaceDescription,Manufacturer) 
+    | dedup aid]
+
+  | append 
+    [| inputlookup append=t unmanaged_high.csv where cid=* MACPrefix!=none LocalAddressIP4=* LocalAddressIP4!=none
+    | rename ComputerName AS "Last Discovered By"
+    | eval "Time EST"=strftime(_time, "%m/%d/%y %I:%M%p")
+    | fillnull value=null aid
+    | eval LocalAddressIP4=mvsort(mvdedup(split(LocalAddressIP4," "))) 
+    | eval discoverer_aid=mvsort(mvdedup(split(discoverer_aid," "))) 
+    | eval aip=mvsort(mvdedup(split(aip," "))) 
+    | sort 0 -"Time EST"
+    | lookup oui.csv MACPrefix OUTPUT Manufacturer, ManufacturerAddress 
+    | fillnull value=NA Manufacturer | eval Manufacturer=if(Manufacturer="NA",InterfaceDescription,Manufacturer)
+  ] 
+  
+ 
+| table aid,ComputerName,"Last Discovered By",LastDiscoveredBy,confidence,NeighborName,CurrentLocalIP,LocalAddressIP4,InterfaceDescription,aip,GatewayIP,MAC,Manufacturer,MACPrefix,"Time EST",City,Country,MachineDomain,OU,SystemManufacturer,SystemProductName,Version,event_platform
+ 
+
+ 
+| search aid=null   
+| fillnull value=""
+
+| stats count  AS count_MACPrefix
+first("Last Discovered By") AS first_"Last Discovered By"
+last(NeighborName) AS last_NeighborName
+last(LocalAddressIP4) AS last_LocalAddressIP4
+last(aip) AS last_aip
+values(Manufacturer) AS Manufacturer
+BY MACPrefix  
+| fillnull value=""
+| where count_MACPrefix>100
+
+| sort +Manufacturer
