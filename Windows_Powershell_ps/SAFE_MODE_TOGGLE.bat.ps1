@@ -141,3 +141,14 @@ sc stop CcmExec
 
 # Windows Performance Analyzer High CPU
 # wpr.exe -start cpu.verbose && timeout 30 && wpr.exe -stop && timeout 10 && C:\CPUUsage.etl
+
+
+
+cd "$env:temp"
+$newPath  = ".\ADAudit_$(get-date -f yyyyMMdd_mm).csv"
+
+Get-Service  | Where-Object {$_.Status -EQ “Running”} | Select Name , DisplayName , DependentServices|Export-Csv -NoType -Path $newPath
+Start-Sleep -Seconds 1
+start $newPath
+
+
