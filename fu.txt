@@ -3059,4 +3059,4 @@ snap set core experimental.refresh-app-awareness=false
 
 
 # Windows Performance Analyzer High CPU
-# wpr.exe -start cpu.verbose && timeout 30 && wpr.exe -stop && timeout 10 && C:\CPUUsage.etl
+# wpr.exe -start cpu.verbose && timeout 30 && wpr.exe -stop C:\CPUUsage.etl  
