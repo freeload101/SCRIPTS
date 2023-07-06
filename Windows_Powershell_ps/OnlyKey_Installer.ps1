@@ -29,7 +29,7 @@ function downloadFile($url, $targetFile)
     $responseStream.Dispose()
 }
 
-$downloadUri = ((Invoke-RestMethod -Method GET -Uri "https://api.github.com/repos/trustcrypto/OnlyKey-App/releases/latest").assets | Where-Object name -like *Portable*.exe ).browser_download_url
+$downloadUri = ((Invoke-RestMethod -Method GET -Uri "https://api.github.com/repos/trustcrypto/OnlyKey-App/releases").assets | Where-Object name -like *Portable*.exe ).browser_download_url
 downloadFile "$downloadUri" "$VARCD\OnlyKey_Portable.exe"
 
 <# NOT NEEDED THEY MADE IT PORTABLE ...
