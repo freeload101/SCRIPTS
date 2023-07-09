@@ -132,6 +132,8 @@ for %%x in (
 	gimp
 	teracopy
 	beyondcompare
+	yt-dlp
+	ffmpeg
 ) do (
 	echo Installing:	%%x
 	choco install %%x
