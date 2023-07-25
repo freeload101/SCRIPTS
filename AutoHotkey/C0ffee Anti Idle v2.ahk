@@ -23,6 +23,7 @@ send "{Ctrl Up}{Alt Up}"
 ; common input
 !x::Send "Robert.mccurdy@newellco.com"
 !c::Send "Refine the following message to make it more clear and concise:"
+!v::Send "https://bit.ly/BookMcCurdy to setup a call any time"
 
 ; Reload
 ^!r::ReloadScript()
