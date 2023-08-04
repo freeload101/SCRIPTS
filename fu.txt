@@ -3087,3 +3087,8 @@ snap set core experimental.refresh-app-awareness=false
 
 # Windows Performance Analyzer High CPU
 # wpr.exe -start cpu.verbose && timeout 30 && wpr.exe -stop C:\CPUUsage.etl  
+
+
+# block pintrest in Chrome
+# Settings>Manage Search Engines
+{google:baseURL}search?q=+-site:pinterest.*+%s&{google:RLZ}{google:originalQueryForSuggestion}{google:assistedQueryStats}{google:searchFieldtrialParameter}{google:iOSSearchLanguage}{google:searchClient}{google:sourceId}{google:contextualSearchVersion}ie={inputEncoding}
