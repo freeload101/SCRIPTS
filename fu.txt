@@ -3093,5 +3093,7 @@ snap set core experimental.refresh-app-awareness=false
 # Settings>Manage Search Engines
 {google:baseURL}search?q=+-site:pinterest.*+%s&{google:RLZ}{google:originalQueryForSuggestion}{google:assistedQueryStats}{google:searchFieldtrialParameter}{google:iOSSearchLanguage}{google:searchClient}{google:sourceId}{google:contextualSearchVersion}ie={inputEncoding}
 
+# What Happened To Google Search?
+# https://www.youtube.com/watch?v=48AOOynnmqU
 
 # this broken because "security" (Get-Content "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Secure Preferences") -replace 'search\?q=', 'search\?q=qqq123' |   Out-File "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Secure Preferences"
