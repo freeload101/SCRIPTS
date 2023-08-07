@@ -1,0 +1,102 @@
+use_default_settings: true
+
+general:
+  debug: true
+  instance_name: "Not Google"
+
+search:
+  safe_search: 0
+  autocomplete: 'duckduckgo'
+
+server:
+  secret_key: "41XXXXXXXXXXXXdf0b"
+  limiter: true
+  image_proxy: true
+
+redis:
+  url: unix:///usr/local/searxng-redis/run/redis.sock?db=0
+
+ui:
+  static_use_hash: true
+  theme_args:
+    simple_style: dark
+  infinite_scroll: true
+  query_in_title: true
+  results_on_new_tab: true
+
+enabled_plugins:
+  - 'Hash plugin'
+  - 'Search on category select'
+  - 'Self Informations'
+  - 'Tracker URL remover'
+  - 'Ahmia blacklist'
+
+engines:
+
+
+# BING AND NO GOOGLE !
+
+  - name: bing
+    engine: bing
+    shortcut: bi
+    disabled: false
+
+  - name: bing images
+    engine: bing_images
+    shortcut: bii
+
+  - name: bing news
+    engine: bing_news
+    shortcut: bin
+
+  - name: bing videos
+    engine: bing_videos
+    shortcut: biv
+
+  - name: flickr
+    engine: flickr_noapi
+    disabled: true
+
+  - name: youtube
+    engine: youtube_api
+    shortcut: yt
+    api_key: 'AIzaSyXXXXXXXXXXXXXXXz0p_9g8'
+
+  - name: google
+    engine: google
+    shortcut: go
+    disabled: true
+
+  - name: google images
+    engine: google_images
+    shortcut: goi
+    disabled: true
+
+  - name: google news
+    engine: google_news
+    shortcut: gon
+    disabled: true
+
+  - name: google videos
+    engine: google_videos
+    shortcut: gov
+    disabled: true
+
+  - name: google scholar
+    engine: google_scholar
+    shortcut: gos
+    disabled: true
+
+  - name: google play apps
+    engine: google_play
+    categories: [files, apps]
+    shortcut: gpa
+    play_categ: apps
+    disabled: true
+
+  - name: google play movies
+    engine: google_play
+    categories: videos
+    shortcut: gpm
+    play_categ: movies
+    disabled: true
