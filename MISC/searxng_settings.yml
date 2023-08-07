@@ -9,7 +9,7 @@ search:
   autocomplete: 'duckduckgo'
 
 server:
-  secret_key: "41XXXXXXXXXXXXdf0b"
+  secret_key: "41XXXXXXXXXXXXXXdf0b"
   limiter: true
   image_proxy: true
 
@@ -60,7 +60,7 @@ engines:
   - name: youtube
     engine: youtube_api
     shortcut: yt
-    api_key: 'AIzaSyXXXXXXXXXXXXXXXz0p_9g8'
+    api_key: 'AXXXXXXXXXXXXXXXXXXXXXXX'
 
   - name: google
     engine: google
