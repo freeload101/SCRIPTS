@@ -1,0 +1,30 @@
+
+https://docs.docker.com/engine/install/debian/#install-using-the-convenience-script  
+
+
+
+docker rm -f $(docker ps -a -q)
+sleep  5
+docker rmi -f $(docker images -q)
+
+
+
+cd /opt
+export PORT=8080
+docker pull searxng/searxng
+
+docker run --rm  -d -p 8080:8080 -v "/opt/searxng:/etc/searxng" -e "BASE_URL=http://localhost:8080/"  -e "INSTANCE_NAME=No Google" searxng/searxng
+ 
+docker exec  -it  `docker ps -a -q|head -n 1` sh
+
+# replace PNG
+wget 'https://github.com/freeload101/SCRIPTS/blob/master/MISC/searxng.png?raw=true' -O ./searxng.png
+find / -iname "searxng.png" -exec cp ./searxng.png '{}' \;
+find / -iname "favicon.png" -exec cp ./searxng.png '{}' \;
+
+# OMG SVG WTF
+
+# replace SVG code for logo with png image. ... ewww
+vi searx/templates/simple/search.html
+<a id="search_logo" href="/" tabindex="0" title="Display the front page"><img height="18" src="./static/themes/simple/img/searxng.png"></a>
+
