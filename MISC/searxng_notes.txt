@@ -1,6 +1,6 @@
 
 https://docs.docker.com/engine/install/debian/#install-using-the-convenience-script  
-
+https://github.com/searxng/searxng/blob/master/searx/settings.yml
 
 
 docker rm -f $(docker ps -a -q)
