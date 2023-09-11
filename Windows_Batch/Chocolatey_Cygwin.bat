@@ -154,8 +154,9 @@ choco upgrade all -y
 :: sc description Chocolatey_Update "Chocolatey_Update"
 :: sc config Chocolatey_Update start= auto
 :: net start Chocolatey_Update
+:: choco install choco-upgrade-all-at-startup -y
 
-choco install choco-upgrade-all-at-startup -y
+choco install choco-upgrade-all-at --params "'/TIME:23:00'"
 
 EXIT /B %ERRORLEVEL%
 
