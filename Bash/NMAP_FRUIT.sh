@@ -75,6 +75,18 @@ rm /tmp/*.csv
 cp *.csv /tmp
 chmod 744 /tmp/*.csv
 
+echo "dumping to Splunk HEC1!!!"
+cd /apps/RMCCURDY/NMAP/XtremeNmapParser
+rm -Rf ./*.xml ./*.xlsx ./*.csv ./*.json
+cp ../172_NETWORKS.xml ./
+cp ../10_NETWORKS.xml ./
+cp ../192.xml ./
+
+python3 xnp.py -d ./ -M -R --open -C all
+
+sed -re 's/\{\"Hostname\"/\{ \"event\" : \{\"Hostname\"/g' -re 's/$/}/g' merged_nmap_scan_data.json -ibak
+
+curl -k https://http-inputs-xxxxxxxxxxxxxxx.splunkcloud.com/services/collector/event -H 'Authorization: Splunk 6adedXXXXXXXXXXXXXXXXXXXXXXXXXXccd1fb' -d @merged_nmap_scan_data.json
 
 
 echo `date` INFO: Running FRUIT path assumes you have ./metasploit/msfconsole ./changeme/changeme.py ./SAP_GW_RCE_exploit
