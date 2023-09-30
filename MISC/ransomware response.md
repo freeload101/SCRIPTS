@@ -1,5 +1,16 @@
 Credit: Nate @slackgo_t1482dya3-u9m2qcg0y:beeper.local 7minsec Slack Channel
 
+One of the most overlooked items is a communication plan. If you’re impacted, your customers will notice, and the response you provide will greatly influence future trust. Additionally, you may be bound to disclose the incident within a certain timeline and format depending on what regulations apply to your business. 
+
+Before my older relatives passed, I helped setup MFA on their critical accounts to my phone after they lost money due to a scam. If they needed access, it was another excuse to talk. Could implement something similar if concerned about the elderly. 
+
+Yeah, that’s just a stripped down version to get them started. Plenty of great frameworks like NIST 800-61r2, and playbooks are widely  available. 
+
+Main changes for DFIR these days are reporting and communication guidelines. 
+
+You’re welcome. I’ve helped 20+ orgs navigate a ransomware incident, hundreds of BECs, and a few big wire transfers. Hope I have at least some helpful knowledge to share. 
+
+Ken Nevers I don’t have a blog, but you’re more than welcome to use it. 10:59PM 
 
 Here’s a stripped down version of a playbook I compiled for ransomware response: General Process
 
