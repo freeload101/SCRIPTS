@@ -58,9 +58,8 @@ engines:
     disabled: true
 
   - name: youtube
-    engine: youtube_api
+    engine: engine: youtube_noapi
     shortcut: yt
-    api_key: 'AXXXXXXXXXXXXXXXXXXXXXXX'
 
   - name: google
     engine: google
