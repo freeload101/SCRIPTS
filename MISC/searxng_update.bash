@@ -18,7 +18,8 @@ docker exec -it `docker ps -a -q|head -n 1` /bin/sh -c "/tmp/searxng_docker_scri
 
 
 # make whatever changes you like .. to the conf
-# I can't auto remove goole for the life of me ...
+# I can't auto remove goole for the life of me ... so i have to disable google / qwant and duckduckgo by hand none of them work 1/2 the time
+
 docker exec -it `docker ps -a -q|head -n 1` /bin/sh -c "vi /etc/searxng/settings.yml"
  
 # set to auto restart
