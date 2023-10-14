@@ -1,4 +1,3 @@
-
 /*
 Original author: Daniele Linguaglossa
 28/07/2021 -    Edited by Simone Quatrini
@@ -7,6 +6,8 @@ Original author: Daniele Linguaglossa
 */
 
 Java.perform(function() {
+	console.log("");
+	console.log("[.] Antiroot check");
     var RootPackages = ["com.noshufou.android.su", "com.noshufou.android.su.elite", "eu.chainfire.supersu",
         "com.koushikdutta.superuser", "com.thirdparty.superuser", "com.yellowes.su", "com.koushikdutta.rommanager",
         "com.koushikdutta.rommanager.license", "com.dimonvideo.luckypatcher", "com.chelpus.lackypatch",
@@ -360,71 +361,129 @@ Java.perform(function() {
 
 });
 
-
 /* 
-   Android SSL Re-pinning frida script v0.2 030417-pier 
-
-   $ adb push burpca-cert-der.crt /data/local/tmp/cert-der.crt
-   $ frida -U -f it.app.mobile -l frida-android-repinning.js --no-pause
-
-   https://techblog.mediaservice.net/2017/07/universal-android-ssl-pinning-bypass-with-frida/
+   Android SSL Re-pinning frida script v0.1 @masbog 
+   $ frida -U -f it.app.mobile -l frida-android-unpinning-ssl.js
+   $ [Samsung GT-I9500::it.app.mobile]-> %resume
    
-   UPDATE 20191605: Fixed undeclared var. Thanks to @oleavr and @ehsanpc9999 !
+   or
+   
+   $ frida --codeshare masbog/frida-android-unpinning-ssl
+   $ [Samsung GT-I9500::it.app.mobile]-> %resume
+   
+   TODO: bypass kony android application
+   
+   original source code from: https://github.com/sensepost/objection/blob/8974d37733d108762184bb41fe8d0a4f1fffb591/objection/hooks/android/pinning/disable.js
+   
 */
 
-setTimeout(function(){
-    Java.perform(function (){
-    	console.log("");
-	    console.log("[.] Cert Pinning Bypass/Re-Pinning");
+setTimeout(function() {
+    Java.perform(function() {
+        console.log("");
+        console.log("[.] Android Cert Pinning Bypass");
 
-	    var CertificateFactory = Java.use("java.security.cert.CertificateFactory");
-	    var FileInputStream = Java.use("java.io.FileInputStream");
-	    var BufferedInputStream = Java.use("java.io.BufferedInputStream");
-	    var X509Certificate = Java.use("java.security.cert.X509Certificate");
-	    var KeyStore = Java.use("java.security.KeyStore");
-	    var TrustManagerFactory = Java.use("javax.net.ssl.TrustManagerFactory");
-	    var SSLContext = Java.use("javax.net.ssl.SSLContext");
+        var CertificateFactory = Java.use("java.security.cert.CertificateFactory");
+        var FileInputStream = Java.use("java.io.FileInputStream");
+        var BufferedInputStream = Java.use("java.io.BufferedInputStream");
+        var X509Certificate = Java.use("java.security.cert.X509Certificate");
+        var KeyStore = Java.use("java.security.KeyStore");
+        var TrustManagerFactory = Java.use("javax.net.ssl.TrustManagerFactory");
+        var SSLContext = Java.use("javax.net.ssl.SSLContext");
+        var X509TrustManager = Java.use('javax.net.ssl.X509TrustManager');
+        //var is_android_n = 0;
 
-	    // Load CAs from an InputStream
-	    console.log("[+] Loading our CA...")
-	    var cf = CertificateFactory.getInstance("X.509");
-	    
-	    try {
-	    	var fileInputStream = FileInputStream.$new("/data/local/tmp/cert-der.crt");
-	    }
-	    catch(err) {
-	    	console.log("[o] " + err);
-	    }
-	    
-	    var bufferedInputStream = BufferedInputStream.$new(fileInputStream);
-	  	var ca = cf.generateCertificate(bufferedInputStream);
-	    bufferedInputStream.close();
+        //--------
+        console.log("[.] TrustManagerImpl Android 7+ detection...");
+        // Android 7+ TrustManagerImpl
+        // The work in the following NCC blogpost was a great help for this hook!
+        // hattip @AdriVillaB :)
+        // https://www.nccgroup.trust/uk/about-us/newsroom-and-events/blogs/2017/november/bypassing-androids-network-security-configuration/
+        try {
+            var TrustManagerImpl = Java.use('com.android.org.conscrypt.TrustManagerImpl');
+            // https://github.com/google/conscrypt/blob/c88f9f55a523f128f0e4dace76a34724bfa1e88c/platform/src/main/java/org/conscrypt/TrustManagerImpl.java#L650
+            TrustManagerImpl.verifyChain.implementation = function(untrustedChain, trustAnchorChain, host, clientAuth, ocspData, tlsSctData) {
+                console.log("[+] (Android 7+) TrustManagerImpl verifyChain() called. Not throwing an exception.");
+                // Skip all the logic and just return the chain again :P
+                //is_android_n = 1;
+                return untrustedChain;
+            }
 
-		var certInfo = Java.cast(ca, X509Certificate);
-	    console.log("[o] Our CA Info: " + certInfo.getSubjectDN());
+            PinningTrustManager.checkServerTrusted.implementation = function() {
+                console.log("[+] Appcelerator checkServerTrusted() called. Not throwing an exception.");
+            }
+        } catch (err) {
+            console.log("[-] TrustManagerImpl Not Found");
+        }
 
-	    // Create a KeyStore containing our trusted CAs
-	    console.log("[+] Creating a KeyStore for our CA...");
-	    var keyStoreType = KeyStore.getDefaultType();
-	    var keyStore = KeyStore.getInstance(keyStoreType);
-	    keyStore.load(null, null);
-	    keyStore.setCertificateEntry("ca", ca);
-	    
-	    // Create a TrustManager that trusts the CAs in our KeyStore
-	    console.log("[+] Creating a TrustManager that trusts the CA in our KeyStore...");
-	    var tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-	    var tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-	    tmf.init(keyStore);
-	    console.log("[+] Our TrustManager is ready...");
+        //if (is_android_n === 0) {
+        //--------
+        console.log("[.] TrustManager Android < 7 detection...");
+        // Implement a new TrustManager
+        // ref: https://gist.github.com/oleavr/3ca67a173ff7d207c6b8c3b0ca65a9d8
+        var TrustManager = Java.registerClass({
+            name: 'com.sensepost.test.TrustManager',
+            implements: [X509TrustManager],
+            methods: {
+                checkClientTrusted: function(chain, authType) {},
+                checkServerTrusted: function(chain, authType) {},
+                getAcceptedIssuers: function() {
+                    return [];
+                }
+            }
+        });
 
-	    console.log("[+] Hijacking SSLContext methods now...")
-	    console.log("[-] Waiting for the app to invoke SSLContext.init()...")
+        // Prepare the TrustManagers array to pass to SSLContext.init()
+        var TrustManagers = [TrustManager.$new()];
 
-	   	SSLContext.init.overload("[Ljavax.net.ssl.KeyManager;", "[Ljavax.net.ssl.TrustManager;", "java.security.SecureRandom").implementation = function(a,b,c) {
-	   		console.log("[o] App invoked javax.net.ssl.SSLContext.init...");
-	   		SSLContext.init.overload("[Ljavax.net.ssl.KeyManager;", "[Ljavax.net.ssl.TrustManager;", "java.security.SecureRandom").call(this, a, tmf.getTrustManagers(), c);
-	   		console.log("[+] SSLContext initialized with our custom TrustManager!");
-	   	}
+        // Get a handle on the init() on the SSLContext class
+        var SSLContext_init = SSLContext.init.overload(
+            '[Ljavax.net.ssl.KeyManager;', '[Ljavax.net.ssl.TrustManager;', 'java.security.SecureRandom');
+
+        try {
+            // Override the init method, specifying our new TrustManager
+            SSLContext_init.implementation = function(keyManager, trustManager, secureRandom) {
+                console.log("[+] Overriding SSLContext.init() with the custom TrustManager android < 7");
+                SSLContext_init.call(this, keyManager, TrustManagers, secureRandom);
+            };
+        } catch (err) {
+            console.log("[-] TrustManager Not Found");
+        }
+        //}
+
+        //-------
+        console.log("[.] OkHTTP 3.x detection...");
+        // OkHTTP v3.x
+        // Wrap the logic in a try/catch as not all applications will have
+        // okhttp as part of the app.
+        try {
+            var CertificatePinner = Java.use('okhttp3.CertificatePinner');
+            console.log("[+] OkHTTP 3.x Found");
+            CertificatePinner.check.overload('java.lang.String', 'java.util.List').implementation = function() {
+                console.log("[+] OkHTTP 3.x check() called. Not throwing an exception.");
+            };
+        } catch (err) {
+            // If we dont have a ClassNotFoundException exception, raise the
+            // problem encountered.
+            console.log("[-] OkHTTP 3.x Not Found")
+        }
+
+        //--------
+        console.log("[.] Appcelerator Titanium detection...");
+        // Appcelerator Titanium PinningTrustManager
+        // Wrap the logic in a try/catch as not all applications will have
+        // appcelerator as part of the app.
+        try {
+            var PinningTrustManager = Java.use('appcelerator.https.PinningTrustManager');
+            console.log("[+] Appcelerator Titanium Found");
+            PinningTrustManager.checkServerTrusted.implementation = function() {
+                console.log("[+] Appcelerator checkServerTrusted() called. Not throwing an exception.");
+            }
+
+        } catch (err) {
+            // If we dont have a ClassNotFoundException exception, raise the
+            // problem encountered.
+            console.log("[-] Appcelerator Titanium Not Found");
+        }
+
     });
-},0);
-
+}, 0);
