@@ -93,7 +93,6 @@ HighContrastOn()
 {
 	file := "C:\Windows\Resources\Ease of Access Themes\hc2.theme"
 	if FileExist(file) {
-		tooltip "grr"
 		Run "C:\Windows\Resources\Ease of Access Themes\hc2.theme"
 		sleep 1000
 		run "taskkill /im systemsettings.exe /f"
