@@ -2,6 +2,8 @@
 
 See also : https://github.com/freeload101/SCRIPTS/tree/master/Bash/CS_BADGER
 
+See also : https://github.com/freeload101/CrowdStrike_RTR_Powershell_Scripts check out RECON IR.ps1 there are a bunch of other cool things in there too  
+
 General Notes for CS:
 **use event_simpleName=DirectoryCreate FilePath=\*STRING\*     insted of process sourcetype because it takes way to long to search -7days ... it's also cross platform :P**
 
