@@ -3100,3 +3100,13 @@ snap set core experimental.refresh-app-awareness=false
 # https://www.youtube.com/watch?v=48AOOynnmqU
 
 # this broken because "security" (Get-Content "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Secure Preferences") -replace 'search\?q=', 'search\?q=qqq123' |   Out-File "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Secure Preferences"
+
+
+
+# uninstall app by DisplayName "SupportAssist" in add/remove programs via the MSI /qn method 
+Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall| Get-ItemProperty | Where-Object {$_.DisplayName -like "*SupportAssist*" } | Select-Object -ExpandProperty UninstallString| foreach {
+    $arguments = $_.substring(12) + " /qn "
+    echo "Running: " $_
+    (Start-Process "msiexec.exe" -ArgumentList $arguments -NoNewWindow -Wait -PassThru).ExitCode
+}
+
