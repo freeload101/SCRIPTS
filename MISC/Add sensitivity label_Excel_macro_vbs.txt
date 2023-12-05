@@ -1,0 +1,96 @@
+Sub ProcessFiles()
+Dim objFolder As Object
+Dim objFile As Object
+Dim objFSO As Object
+Dim MyPath As String
+Dim myExtension As String
+Dim FldrPicker As FileDialog
+
+    Set FldrPicker = Application.FileDialog(msoFileDialogFolderPicker)
+
+    With FldrPicker
+        .Title = "Select A Target Folder"
+        .AllowMultiSelect = False
+        If .Show <> -1 Then GoTo EmptyEnd
+        MyPath = .SelectedItems(1)
+    End With
+
+    Application.ScreenUpdating = False
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Call GetAllFiles(MyPath, objFSO)
+    Call GetAllFolders(MyPath, objFSO)
+    Application.ScreenUpdating = True
+
+    MsgBox "Complete."
+
+EmptyEnd:
+End Sub
+
+Sub GetAllFiles(ByVal strPath As String, ByRef objFSO As Object)
+Dim objFolder As Object
+Dim objFile As Object
+
+    Set objFolder = objFSO.GetFolder(strPath)
+    For Each objFile In objFolder.Files
+            DoWork objFile.Path
+    Next objFile
+End Sub
+
+Sub GetAllFolders(ByVal strFolder As String, ByRef objFSO As Object)
+Dim objFolder As Object
+Dim objSubFolder As Object
+
+    Set objFolder = objFSO.GetFolder(strFolder)
+    For Each objSubFolder In objFolder.subfolders
+        Call GetAllFiles(objSubFolder.Path, objFSO)
+        Call GetAllFolders(objSubFolder.Path, objFSO)
+    Next objSubFolder
+End Sub
+
+Sub DoWork(strFile As String)
+Debug.Print "Opening: " & strFile
+On Error Resume Next
+Dim wb As Workbook
+    If Right(strFile, 4) = "xlsx" Then
+        Set wb = Workbooks.Open(fileName:=strFile)
+        With wb
+            Set docSenseLabel = .SensitivityLabel
+            Set labelInfo = docSenseLabel.CreateLabelInfo()
+            With labelInfo
+                .AssignmentMethod = MsoAssignmentMethod.PRIVILEGED
+                .LabelId = "XXXXXXXXXXXXXXXXXXXXXX"
+                .LabelName = "Important or whatever label you saved earlier"
+                .SiteId = "XXXXXXXXXXXXXXXXXXXXXXXX"
+            End With
+            Debug.Print "Setting Document Sensitivity to Internal for: " & strFile
+            docSenseLabel.setlabel labelInfo, labelInfo
+             Application.DisplayAlerts = False
+            .SaveAs fileName:=strFile, FileFormat:=51
+             Application.DisplayAlerts = True
+            .Close True
+            Application.Wait (Now + TimeValue("0:00:2"))
+        End With
+    End If
+End Sub
+
+
+Sub getlabel()
+
+Dim myLabelInfo As Office.LabelInfo
+Dim labelpart1 As String
+Dim labelpart2 As String
+
+Set wb = ThisWorkbook
+
+Set myLabelInfo = wb.SensitivityLabel.getlabel()
+
+labelpart1 = myLabelInfo.LabelId
+labelpart2 = myLabelInfo.SiteId
+
+Sheets("Sheet1").Activate
+
+Range("A1").Value = labelpart1
+Range("A2").Value = labelpart2
+
+End Sub
+
