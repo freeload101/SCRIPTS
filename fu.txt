@@ -3112,6 +3112,8 @@ Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall| G
 
 
 # streams iptv 
+https://github.com/iptv-org/iptv/tree/master#Grouped%20by%20category
+
 replace whatever keywords you want in the grep ... https://rmccurdy.com/.scripts/github.com-iptv-org-RMcCurdyDOTcom.m3u
  
 echo 'EXTM3U' > github.com-iptv-org-RMcCurdyDOTcom.m3u & curl  'https://iptv-org.github.io/iptv/index.nsfw.m3u' | grep -Eia  --no-group-separator   "(\bswim|atlanta)"  -A 1 >> github.com-iptv-org-RMcCurdyDOTcom.m3u
