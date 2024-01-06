@@ -3110,3 +3110,11 @@ Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall| G
     (Start-Process "msiexec.exe" -ArgumentList $arguments -NoNewWindow -Wait -PassThru).ExitCode
 }
 
+
+# streams iptv 
+replace whatever keywords you want in the grep ... https://rmccurdy.com/.scripts/github.com-iptv-org-RMcCurdyDOTcom.m3u
+ 
+echo 'EXTM3U' > github.com-iptv-org-RMcCurdyDOTcom.m3u & curl  'https://iptv-org.github.io/iptv/index.nsfw.m3u' | grep -Eia  --no-group-separator   "(\bswim|atlanta)"  -A 1 >> github.com-iptv-org-RMcCurdyDOTcom.m3u
+
+ 
+
