@@ -12,7 +12,7 @@ Copy()
 }
 
 ; Paste
-!s::send "{LCtrl Down}v{LCtrl Up}"
+!s::Paste()
 
 ; Type Clipboard
 !z::{
@@ -74,6 +74,25 @@ Copy()
 			send "^c"
 		}
 	}
+
+;;;;;;;;;;;;;;;;;;;;
+; Paste Function Advanced
+;;;;;;;;;;;;;;;;;;;;
+
+Paste()
+	{
+		if WinActive("ahk_class TMobaXtermForm")
+		{
+			send "{LShift Down}{Ins}{LShift Up}"
+			tooltip "WTF"
+		}
+		else
+		{
+			;send "{LCtrl Down}v{LCtrl Up}"
+			tooltip "NOT MOVA"
+		}
+	}
+
 
 ;;;;;;;;;;;;;;;;;;;;
 ; Reloads the script so you don't have to rightclick reload etc
