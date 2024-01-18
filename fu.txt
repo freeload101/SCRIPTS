@@ -3120,3 +3120,5 @@ echo 'EXTM3U' > github.com-iptv-org-RMcCurdyDOTcom.m3u & curl  'https://iptv-org
 
  
 
+# parse JSON in bash with grep ? IDK.. breaks on , { and } 
+| grep -o '[^(,|{|})]*'  | grep -oP '(?<=precipRate":)\d+\.\d+'
