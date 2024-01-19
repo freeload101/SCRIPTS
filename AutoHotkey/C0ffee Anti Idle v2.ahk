@@ -84,12 +84,10 @@ Paste()
 		if WinActive("ahk_class TMobaXtermForm")
 		{
 			send "{LShift Down}{Ins}{LShift Up}"
-			tooltip "WTF"
 		}
 		else
 		{
-			;send "{LCtrl Down}v{LCtrl Up}"
-			tooltip "NOT MOVA"
+			send "{LCtrl Down}v{LCtrl Up}"
 		}
 	}
 
