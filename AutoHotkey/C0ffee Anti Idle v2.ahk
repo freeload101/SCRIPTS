@@ -69,6 +69,10 @@ Copy()
 		{
 			send "^{Ins}"
 		}
+		if WinActive("ahk_class VirtualConsoleClass")
+		{
+			send "^{Ins}"
+		}
 		else
 		{
 			send "^c"
