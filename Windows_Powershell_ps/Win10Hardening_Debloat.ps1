@@ -1,10 +1,14 @@
 ##########
+# Note this script is for personal use ... you may find that this script disables things you use ... Edge,Defendfer ,System restore etc .. use at your own risk 
 # UPDATED FOR WIN 11 WIP
 # Win10 / WinServer2016 Initial Setup Script
 # updated 2021 for https://github.com/freeload101 - rmccurdy.com
 # basicly  keeping SMB1 stuff but RemoveW10Bloat.bat , remove-default-apps.ps1 ,Win10Hardening.ps1 and windows_hardening.cmd all in one with settings I like
 # some dupes here but whatever
 #########
+
+# disable system restore
+Disable-ComputerRestore -Drive "C:\"
 
 
 ##   startup boost => Disabled https://github.com/RedAndBlueEraser/windows-10-enhance-2/blob/master/windows-10-enhance-privacy-and-control.ps1 
