@@ -7,6 +7,20 @@
 # some dupes here but whatever
 #########
 
+# disable signin with google chrome prompt ... 
+
+# Check if the Chrome policies key exists
+$chromePoliciesPath = "HKLM:\SOFTWARE\Policies\Google\Chrome"
+if (-Not (Test-Path $chromePoliciesPath)) {
+    # Create the Chrome policies key because it doesn't exist
+    New-Item -Path $chromePoliciesPath -Force
+}
+
+# Set the BrowserSignin policy to 0 to disable browser sign-in
+Set-ItemProperty -Path $chromePoliciesPath -Name "BrowserSignin" -Value 0
+
+
+
 # disable system restore
 Disable-ComputerRestore -Drive "C:\"
 
