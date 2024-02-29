@@ -1,4 +1,4 @@
-**FOR UPDATES SEE** : https://docs.google.com/spreadsheets/d/1S0DpwoPIODjs-hMN2gARtxC078SdvDkGqajmTluGiU4
+**FOR UPDATES SEE** :  https://docs.google.com/spreadsheets/d/18jnCMQWi23F4v41Jn2anWT-HvE2XqZWgf9xRXrS8NCA 
 
 See also : https://github.com/freeload101/SCRIPTS/tree/master/Bash/CS_BADGER
 
