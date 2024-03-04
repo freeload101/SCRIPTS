@@ -2997,6 +2997,28 @@ Get-Process | Sort CPU -descending | Select -first 5 -Property ID, ProcessName, 
 
 yt-dlp --external-downloader aria2c --external-downloader-args " -x 16 -s 16 -k 1M"    "https://www.youtube.com/c/kidzbop/playlists"  -o "%(channel_id)s/%(playlist_id)s/%(title)s %(id)s.%(ext)s"  -f 'ba' -x --audio-format mp3
 
+# with title 
+yt-dlp  -o "%(upload_date>%Y-%m-%d)s_%(title)s.%(ext)s" -a LIST.txt
+
+# without title...
+FOR /F "tokens=* delims=" %%a in ('type LIST.txt') do (
+    call :GetTimestamp
+    echo Timestamp in loop: %timestamp%
+	echo Url is:  "%%a"
+	yt-dlp.exe   -o ".\%timestamp%.mp4" "%%a"
+    timeout /t 1 >nul
+)
+goto :eof
+
+:GetTimestamp
+for /f "tokens=2 delims==" %%a in ('wmic OS Get localdatetime /value') do set "dt=%%a"
+set "YY=%dt:~2,2%" & set "MM=%dt:~4,2%" & set "DD=%dt:~6,2%"
+set "HH=%dt:~8,2%" & set "Min=%dt:~10,2%" & set "Sec=%dt:~12,2%"
+set "timestamp=%YY%%MM%%DD%-%HH%%Min%%Sec%"
+goto :eof
+
+
+
 
 
 This is a difficult problem that took me forever to figure out but once I show you the trick, you are going to kick yourself. You cannot stop map from doing this, but you can work around it; you need to use both a subsearch and a map like this:
