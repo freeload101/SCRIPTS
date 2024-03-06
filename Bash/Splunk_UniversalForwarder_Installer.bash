@@ -1,27 +1,23 @@
-# this script will auto install Splunk Universal Forwarder  universalforwarder in one of them rpm yum OS's 
-# tested on Windows10 WSL
+#!/bin/bash
 
-#wsl --update
-#wsl --list --online
-#wsl --unregister OracleLinux_9_1
-#wsl --shutdown -d OracleLinux_9_1
-#start /i cmd   /C "wsl --install -d OracleLinux_9_1 "
- 
-#CHOICE /T 5 /C y /CS /D y > %temp%/null
-#wsl -d OracleLinux_9_1 -u root -e bash -c "yum -y update"
-#wsl -d OracleLinux_9_1 -u root
-
-
-
-# yum yum ! to run in the vm
-
-yum update
+########################## FUNC 
+function UFYUM(){
 cd /tmp
 rpm -Uvh --nodeps `curl -s https://www.splunk.com/en_us/download/universal-forwarder.html\?locale\=en_us | grep -oP '"https:.*(?<=download).*x86_64.rpm"' |sed 's/\"//g' | head -n 1`
 yum -y install splunkforwarder.x86_64
 sleep 5
 
+}
 
+function UFDEB(){
+cd /tmp
+wget  `curl -s https://www.splunk.com/en_us/download/universal-forwarder.html\?locale\=en_us | grep -oP '"https:.*(?<=download).*amd64.deb"' |sed 's/\"//g' | head -n 1` -O amd64.deb
+dpkg -i amd64.deb
+sleep 5
+
+}
+
+function UFConf(){
 
 mkdir -p /opt/splunkforwarder/etc/apps/nwl_all_deploymentclient/local/
 cd /opt/splunkforwarder/etc/apps/nwl_all_deploymentclient/local/
@@ -42,15 +38,13 @@ cat <<EOF> /opt/splunkforwarder/etc/apps/nwl_all_deploymentclient/local/deployme
 [deployment-client]
 phoneHomeIntervalInSecs = 60
 [target-broker:deploymentServer]
-targetUri = XXXXXXXXXXXXXXXXXX:8089
+targetUri = XXXXXXXXXXXXXXXXXXXXXXX:8089
 EOF
-
-
 
 cat <<EOF> /opt/splunkforwarder/etc/system/local/user-seed.conf
 [user_info]
 USERNAME = admin
-PASSWORD = XXXXXXXXXXXXXXX
+PASSWORD = XXXXXXXXXXXXXXXXXXXXXXXX
 EOF
 
 
@@ -58,3 +52,28 @@ EOF
 /opt/splunkforwarder/bin/splunk cmd btool deploymentclient list --debug
 
 /opt/splunkforwarder/bin/splunk start --accept-license
+}
+
+######################################################### MAIN 
+
+
+# Check for RPM package managers
+if command -v yum > /dev/null; then
+	UFYUM
+	UFConf
+else
+    echo "No YUM package manager found."
+fi
+
+# Check for DEB package managers
+if command -v dpkg > /dev/null; then
+	UFDEB
+    UFConf
+else
+    echo "No DEB package manager found."
+fi
+
+
+ 
+ 
+ 
