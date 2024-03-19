@@ -159,7 +159,11 @@ choco upgrade all -y
 :: net start Chocolatey_Update
 :: choco install choco-upgrade-all-at-startup -y
 
-choco install choco-upgrade-all-at --params "'/TIME:23:00'"
+:: choco install choco-upgrade-all-at --params "'/TIME:23:00'"
+
+choco uninstall  choco-upgrade-all-at-startup
+choco uninstall  choco-upgrade-all-at 
+choco install choco-upgrade-all-at-startup
 
 EXIT /B %ERRORLEVEL%
 
