@@ -3150,3 +3150,15 @@ echo 'EXTM3U' > github.com-iptv-org-RMcCurdyDOTcom.m3u & curl  'https://iptv-org
 # poor mans logwatch tails all files that are open that have the word log in the path
 while true ;do lsof | grep 'log' |awk '{print $9}' | egrep -i "(warn|err|fail|unabl|can|not)"|awk '!x[$0]++' | xargs tail  | awk '!x[$0]++';sleep 5 ;done
 
+
+
+# tshark (tcpdump) connectivity 
+# Analyze the captured data with Wireshark, focusing on signs of retransmissions, high latency, and window size issues.
+# Apply filters and use the analysis tools within Wireshark to pinpoint the root cause of the network delays
+
+ 
+prompt: show me 25 tshark commands to show connectitivity issues
+ 
+tshark -i any -Y "(tcp.flags.syn==1 and tcp.flags.ack==0) or tcp.analysis.retransmission or tcp.analysis.fast_retransmission or tcp.analysis.out_of_order or tcp.analysis.zero_window or tcp.analysis.lost_segment or tcp.analysis.duplicate_ack or tcp.flags.reset==1 "
+ 
+it won't let me do tcp.connection.fin==1 and tcp.connection.rst==1
