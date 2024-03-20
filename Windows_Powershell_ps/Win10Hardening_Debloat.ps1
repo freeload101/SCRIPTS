@@ -7,6 +7,56 @@
 # some dupes here but whatever
 #########
 
+
+
+Write-Output "Downloading MSEdgeRedirect"
+$downloadUri = ((Invoke-RestMethod -Method GET -Uri "https://api.github.com/repos/rcmaehl/MSEdgeRedirect/releases/latest").assets | Where-Object name -like *.exe ).browser_download_url
+Invoke-WebRequest -Uri "$downloadUri" -OutFile "c:\windows\temp\MSEdgeRedirect.exe"
+
+
+
+Write-Output "Setting up MSEdgeRedirect Setup.ini"
+
+# DO NOT INDENT THIS PART
+$Setupini = @'
+[Config]
+Managed=True
+Mode=Active
+
+[Settings]
+Edges=Stable,Beta,Dev,Canary
+NoApps=True
+NoBing=True
+NoImgs=True
+NoMSN=True
+NoPDFs=True
+NoTray=True
+NoUpdates=True
+Images=Google
+News=DuckDuckGo
+PDFApp=C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
+Search=Custom
+SearchPath=https://kagi.com
+StartMenu=AppOnly
+Startup=False
+Weather=Weather.gov
+'@
+$Setupini | Out-File -Encoding Ascii -FilePath "c:\windows\temp\Setup.ini" -ErrorAction SilentlyContinue |Out-Null
+# DO NOT INDENT THIS PART
+
+Start-Process -FilePath "c:\windows\temp\MSEdgeRedirect.exe" -ArgumentList  "   /silentinstall `"c:\windows\temp\Setup.ini`" "  -NoNewWindow -Wait
+
+
+
+# https://github.com/AveYo/fox/raw/main/Edge_Removal.bat
+Write-Output "downloading https://github.com/AveYo/fox/raw/main/Edge_Removal.bat"
+Invoke-WebRequest -Uri "https://github.com/AveYo/fox/raw/main/Edge_Removal.bat" -OutFile "c:\windows\temp\Edge_Removal.bat"
+
+Start-Process -FilePath "c:\windows\temp\Edge_Removal.bat"   -NoNewWindow -Wait
+
+
+
+
 # disable signin with google chrome prompt ... 
 
 # Check if the Chrome policies key exists
