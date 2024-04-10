@@ -1,3 +1,5 @@
-$Action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-Command "Remove-Item -Path \'HKLM:\SOFTWARE\Policies\Google\Chrome\' -Recurse"'
-$Trigger = New-ScheduledTaskTrigger -AtStartup -RepetitionInterval (New-TimeSpan -Seconds 59) -RepetitionDuration (New-TimeSpan -Days (365 * 10))
-Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName "GTFO Policies Chrome" -Description "Removes GPO policies from registry every 59 seconds after startup"
+set-Variable -Name ErrorActionPreference -Value SilentlyContinue
+
+$Action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-Command "Remove-Item -Path HKLM:\SOFTWARE\Policies\Google\Chrome -Recurse -Force"'
+$Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 10) -RepetitionDuration  
+Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName "RemoveChromePolicy" -Description "Removes Chrome policy registry key every 10 minutes indefinitely."
