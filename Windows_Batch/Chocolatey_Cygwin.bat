@@ -11,8 +11,8 @@ SET DIR=%~dp0%
 reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f
 
 :: Installing Droid Sans Mono Font for MobaXterm
-%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/DroidSansMono/complete/Droid Sans Mono Nerd Font Complete Mono Windows Compatible.otf','c:\windows\fonts\Droid Sans Mono Nerd Font Complete Mono Windows Compatible.otf'))"
-REG add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" /v "DroidSandMono NF" /t REG_SZ /d "Droid Sans Mono Nerd Font Complete Mono Windows Compatible.otf" /f
+:: %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/DroidSansMono/complete/Droid Sans Mono Nerd Font Complete Mono Windows Compatible.otf','c:\windows\fonts\Droid Sans Mono Nerd Font Complete Mono Windows Compatible.otf'))"
+:: REG add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" /v "DroidSandMono NF" /t REG_SZ /d "Droid Sans Mono Nerd Font Complete Mono Windows Compatible.otf" /f
 
 :: Disable Sleep,Lid and Power stuff
 powercfg -restoredefaultschemes
@@ -130,6 +130,7 @@ for %%x in (
 	vlc	
 	7zip
 	mobaxterm
+	nerd-fonts-hack
 	notepadplusplus
 	filezilla
 	gimp
