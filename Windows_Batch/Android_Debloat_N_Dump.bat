@@ -28,6 +28,12 @@ cd "%~dp0"
  
 set PATH = %PATH%;"%~dp0platform-tools"
 
+echo [+] %date% %time% INFO: Installing ExplorerPatcher
+powershell -Command "$downloadUri = ((Invoke-RestMethod -Method GET -Uri 'https://api.github.com/repos/valinet/ExplorerPatcher/releases/latest').assets | Where-Object name -like '*.exe').browser_download_url; Invoke-WebRequest -Uri $downloadUri -OutFile 'C:\windows\ep_setup.exe'"
+"C:\windows\ep_setup.exe"
+
+
+
 echo [+] %date% %time% INFO: Checking for adb.exe
  if not exist "%~dp0platform-tools\adb.exe" (
 echo [+] %date% %time% INFO: Downloading adb.exe from "https://dl.google.com/android/repository/platform-tools-latest-windows.zip"
