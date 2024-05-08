@@ -24,6 +24,6 @@ Start-Sleep -Seconds 10
 Start-Process -FilePath "wpr.exe" -ArgumentList "-stop C:\windows\Output.etl" -NoNewWindow -Wait
 Start-Sleep -Seconds 10
 
-#Set-ItemProperty -Path "HKCU:\Software\Microsoft\WPA\" -Name "LoadSymbols" -Value 1 -Force
+#  need to find the way to check the enable "load symbols" "windows performance" in powershell ... 
 
-#Invoke-Item "C:\windows\Output.etl"
+Invoke-Item "C:\windows\Output.etl"
