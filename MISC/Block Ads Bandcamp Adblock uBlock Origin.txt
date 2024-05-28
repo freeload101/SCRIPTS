@@ -4,3 +4,19 @@
 bandcamp.com##li.fp.story > .track_play_hilite.collection-item-container.story-innards
 bandcamp.com##li.df.story > .track_play_hilite.collection-item-container.story-innards
 
+
+# block bandcamp ads bandcamp feed albums only show
+! 2022-09-07 https://bandcamp.com
+bandcamp.com##li.fp.story > .track_play_hilite.collection-item-container.story-innards
+bandcamp.com##li.df.story > .track_play_hilite.collection-item-container.story-innards
+bandcamp.com##li.np.story > .story-innards > .story-body
+bandcamp.com##li.np.story > .story-innards
+
+
+# Block Google Sign in to 
+||accounts.google.com/gsi/*$xhr,script,3p
+||smartlock.google.com^
+||id.google.com^
+||accounts.google.com/gsi/$3p
+
+
