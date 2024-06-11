@@ -1,5 +1,13 @@
 ; Complete rewrite for v2 ...
 
+; keep closing remote tabs !
+^w::
+{
+sleep 100
+return
+}
+
+
 ; Copy
 !a::Copy()
 
