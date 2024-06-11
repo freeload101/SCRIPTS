@@ -7,6 +7,12 @@ sleep 100
 return
 }
 
+^t::
+{
+sleep 100
+return
+}
+
 
 ; Copy
 !a::Copy()
