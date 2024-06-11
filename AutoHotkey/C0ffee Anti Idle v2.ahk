@@ -30,9 +30,15 @@ Copy()
 
 ; Type Clipboard
 !z::{
-Send A_Clipboard
-send "{Ctrl Up}{Alt Up}"
-} 
+    Send("{Ctrl Up}{Alt Up}")
+    clipboardContent := A_Clipboard
+    for char in StrSplit(clipboardContent) {
+        Send(char)
+        Sleep(100) ; Adjust the sleep time as needed
+    }
+
+    Send("{Ctrl Up}{Alt Up}")
+}
 
 ; common input
 !x::Send "Robert.mccurdy@newellco.com"
