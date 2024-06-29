@@ -6,6 +6,9 @@ echo This script will download and install a buncha stuff I use for base Windows
 echo ###############################################################################
 
 SET DIR=%~dp0%
+:: firewall popup nag removed 
+New-Item -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System'
+Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLgOnBoot' -Value '0'
 
 :: fix for stupid windows 11 context menu
 reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f
