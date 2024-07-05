@@ -3162,3 +3162,6 @@ prompt: show me 25 tshark commands to show connectitivity issues
 tshark -i any -Y "(tcp.flags.syn==1 and tcp.flags.ack==0) or tcp.analysis.retransmission or tcp.analysis.fast_retransmission or tcp.analysis.out_of_order or tcp.analysis.zero_window or tcp.analysis.lost_segment or tcp.analysis.duplicate_ack or tcp.flags.reset==1 "
  
 it won't let me do tcp.connection.fin==1 and tcp.connection.rst==1
+
+# pretty print JSON brah ... gezz .. 
+python -m json.tool out.json
