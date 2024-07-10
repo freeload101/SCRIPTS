@@ -37,8 +37,8 @@ systemctl restart docker
 echo "Run Copilot"
 docker compose up -d
 
-echo "Once Copilot has started up you can retrieve the admin password by running the following command (Only accessible the first time Copilot is started up)"
-docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:latest --format "{{.ID}}")" 2>&1 | grep "Admin user password" | sed -re 's/.*plain=.(.*).$/\1/g' > PASSWORD
 echo "Waiting for CoPilot to start to show password"
 sleep  20
+docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:latest --format "{{.ID}}")" 2>&1 | grep "Admin user password" | sed -re 's/.*plain=.(.*).$/\1/g' > PASSWORD
+
 cat PASSWORD
