@@ -12,7 +12,7 @@ echo "install docker"
 apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 echo "config docker DNS to default DNS"
-export ROUTE=ip route show default | awk '{print $3}' | head
+export ROUTE=`ip route show default | awk '{print $3}' | head`
 echo $ROUTE
 echo "{\"dns\":[\"`echo $ROUTE`\"],\"log-driver\":\"json-file\",\"log-opts\":{\"max-size\":\"10m\",\"max-file\":\"3\"},\"mtu\": 1450}" >  /etc/docker/daemon.json
 echo "install CoPilot"
