@@ -1,18 +1,15 @@
 ; Complete rewrite for v2 ...
 
-; keep closing remote tabs !
-^w::
+
+!d::
 {
-sleep 100
-return
+send "{LCtrl Down}t{LCtrl Up}"
 }
 
-^t::
+!f::
 {
-sleep 100
-return
+send "{LCtrl Down}w{LCtrl Up}"
 }
-
 
 ; Copy
 !a::Copy()
