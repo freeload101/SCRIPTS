@@ -30,6 +30,10 @@ echo "get internet IP and update .env with it "
 export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
 sed  -re "s/(ALERT_FORWARDING_IP=)0.0.0.0/\1$INTERNETIP/g"  .env.example > .env
 
+echo "restarting docker"
+systemctl daemon-reload
+systemctl restart docker
+
 echo "Run Copilot"
 docker compose up -d
 
