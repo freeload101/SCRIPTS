@@ -27,7 +27,7 @@ Copy()
     clipboardContent := A_Clipboard
     for char in StrSplit(clipboardContent) {
         Send(char)
-        Sleep(100) ; Adjust the sleep time as needed
+        Sleep(20) ; Adjust the sleep time as needed
     }
 }
 
