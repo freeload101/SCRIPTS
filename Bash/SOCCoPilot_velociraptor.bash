@@ -1,3 +1,6 @@
+apt update
+apt install curl -y
+
 export VAR_GITHUB=`curl -s https://api.github.com/repos/Velocidex/velociraptor/releases | grep -E "(.*download.*linux.*64)" | head -n 1 | awk '{print $2}'| sed -re 's/.*\"(.*).*\"/\1/g'`
  
 
