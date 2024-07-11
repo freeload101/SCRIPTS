@@ -6,10 +6,7 @@
 send "{LCtrl Down}t{LCtrl Up}"
 }
 
-!f::
-{
-send "{LCtrl Down}w{LCtrl Up}"
-}
+ 
 
 ; Copy
 !a::Copy()
