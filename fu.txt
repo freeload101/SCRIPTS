@@ -3038,6 +3038,14 @@ sc start "TrustedInstaller"
 sc config TrustedInstaller binPath= "Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WinDefend" /v Start /t reg_dword /d 4 /f"  
 sc config TrustedInstaller binPath= "C:\Windows\servicing\TrustedInstaller.exe"
 
+# in safe mode ... 
+Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Sense" /v Start /t reg_dword /d 4 /f
+Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WdNisDrv" /v Start /t reg_dword /d 4 /f
+Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WdNisSvc" /v Start /t reg_dword /d 4 /f
+Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WdBoot" /v Start /t reg_dword /d 4 /f
+Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WinDefend" /v Start /t reg_dword /d 4 /f
+Reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WdFilter" /v Start /t reg_dword /d 4 /f
+
 
 # block bandcamp ads bandcamp feed albums only show
 ! 2022-09-07 https://bandcamp.com
