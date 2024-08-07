@@ -6,7 +6,7 @@ export VAR_GITHUB_WINDOWS=`curl -s https://api.github.com/repos/Velocidex/veloci
 echo '[+] Downloading latests velociraptor Linux Binary'
 wget -q -O velociraptor.bin ${VAR_GITHUB_LINUX}
 echo '[+] Downloading latests velociraptor Windows Binary'
-wget -q -O velociraptor_ORIG.msi ${VAR_GITHUB_WINDOW}
+wget -q -O velociraptor_ORIG.msi "${VAR_GITHUB_WINDOW}"
 
 echo '[+] Running velociraptor config generate'
 echo '[+] I use port 80 insted of 8000 for reasons ...'
