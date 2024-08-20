@@ -26,3 +26,10 @@ done
 
 echo '[+] Because WSL has idle kickout ... '
 while true ; do date;sleep 10;done
+
+
+# NO SUB
+# https://www.youtube.com/watch?v=JLWXJqTC1Sk
+
+# SUBS
+# https://www.youtube.com/watch?v=QXDTkcEHvPA
