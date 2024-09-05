@@ -48,5 +48,5 @@ sleep 8
 
 
 echo '[+] Showing Service/Port LISTEN info'
-netstat -nape | grep -ia velociraptor|grep LISTEN
+netstat -ltpnd
 
