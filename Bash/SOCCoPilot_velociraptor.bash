@@ -51,5 +51,12 @@ echo '[+] Showing Service/Port LISTEN info'
 netstat -ltpnd
 
 '[+] Should be running on https://localhost:8889 with login root and password password ! '
+
  
+echo '[+] get internet IP and update api.config.yaml with it'
+export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
+sed  -re "s/localhost:8001/$INTERNETIP/g"  api.config.yaml > .env
+cp -R api.config.yaml /mnt/c/delete/ << /dev/null
+
+
 
