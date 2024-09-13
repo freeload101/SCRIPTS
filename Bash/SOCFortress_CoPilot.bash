@@ -21,9 +21,9 @@ echo '[+] Restarting docker'
 systemctl daemon-reload
 systemctl restart docker
 
-echo '[+] Setting port to 4433 from 433 because Wazuh uses 443'
+echo '[+] Setting port to 4433 from 433 and 80 to 800 because Wazuh uses 443 and 80'
 
-sed 's/443:443/4433:443/g' docker-compose.yml -i.bak
+sed 's/443:443/4433:443/g' -re 's/80:80/800:800/g' docker-compose.yml -i.bak
 
 
 echo '[+] Run Copilot'
