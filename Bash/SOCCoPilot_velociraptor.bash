@@ -50,3 +50,6 @@ sleep 8
 echo '[+] Showing Service/Port LISTEN info'
 netstat -ltpnd
 
+'[+] Open https://localhost:8889/'
+ 
+
