@@ -23,7 +23,7 @@ docker compose -f generate-indexer-certs.yml run --rm generator
 
 
 echo '[+] Starting Wazuh '
-docker-compose up
+docker compose up
 #docker-compose up -d
 
 
