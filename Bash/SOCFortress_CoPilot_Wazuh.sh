@@ -35,6 +35,6 @@ docker compose up
 
 echo admin and SecretPassword
 
-max_map_count
+ 
 
  
