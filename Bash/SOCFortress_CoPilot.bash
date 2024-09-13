@@ -1,29 +1,3 @@
-echo '[+] Add Dockers official GPG key'
-sudo apt-get update
-sudo apt-get install ca-certificates curl
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-echo '[+] Add the repository to Apt sources'
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
- 
- 
-echo '[+] Installing Docker'
-apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-
-echo '[+] Wipe docker images and volumes'
-cd ~
-docker stop $(docker ps -q)
-docker volume rm $(docker volume ls -q)
-docker rm -f $(docker ps -a -q)
-sleep  5
-docker rmi -f $(docker images -q)
-rm -Rf /opt/CoPilot
-
 echo '[+] config docker DNS to default DNS'
 export ROUTE=`ip route show default | awk '{print $3}' | head`
 echo $ROUTE
@@ -46,6 +20,11 @@ sed  -re "s/(ALERT_FORWARDING_IP=)0.0.0.0/\1$INTERNETIP/g"  .env.example > .env
 echo '[+] Restarting docker'
 systemctl daemon-reload
 systemctl restart docker
+
+echo '[+] Setting port to 4433 from 433 because Wazuh uses 443'
+
+sed 's/443:443/4433:443/g' docker-compose.yml -i.bak
+
 
 echo '[+] Run Copilot'
 docker compose up -d
