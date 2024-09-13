@@ -50,6 +50,6 @@ sleep 8
 echo '[+] Showing Service/Port LISTEN info'
 netstat -ltpnd
 
-'[+] Open https://localhost:8889/'
+'[+] Should be running on https://localhost:8889 with login root and password password ! '
  
 
