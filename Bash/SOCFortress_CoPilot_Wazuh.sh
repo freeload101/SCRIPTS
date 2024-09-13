@@ -3,6 +3,13 @@ apt update
 apt install curl -y
 
 
+
+echo '[+] It is recommended to configure the Docker host preferences to give at least 6GB of memory. setting vm.max_map_count=262144'
+echo vm.max_map_count=262144 >> /etc/sysctl.conf
+sysctl -w vm.max_map_count=262144
+
+
+
 echo '[+] Installing Docker'
 #curl -sSL https://get.docker.com/ | sh
 #systemctl restart  docker
@@ -21,11 +28,13 @@ cd wazuh-docker/single-node/
 docker compose -f generate-indexer-certs.yml run --rm generator
 
 
-
 echo '[+] Starting Wazuh '
 docker compose up
 #docker-compose up -d
 
 
 echo admin and SecretPassword
+
+max_map_count
+
  
