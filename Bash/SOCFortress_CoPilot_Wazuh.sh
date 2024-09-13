@@ -15,7 +15,7 @@
 
 echo '[+] Installing Curl'
 apt update
-apt install curl -y
+apt install curl net-tools -y
  
 curl -sSL https://get.docker.com/ | sh
  
