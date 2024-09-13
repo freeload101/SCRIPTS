@@ -1,6 +1,29 @@
+#dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+#dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+
+#wsl --update
+#wsl --set-default-version 2
+	
+
+
+#wsl --install 
+
 echo '[+] Installing Curl'
 apt update
 apt install curl -y
+ 
+curl -sSL https://get.docker.com/ | sh
+ 
+ 
+systemctl start docker
+systemctl enable docker
+
+
+curl -L "https://github.com/docker/compose/releases/download/1.28.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+docker-compose --version
+
 
 
 
@@ -9,32 +32,33 @@ echo vm.max_map_count=262144 >> /etc/sysctl.conf
 sysctl -w vm.max_map_count=262144
 
 
+git clone https://github.com/wazuh/wazuh-docker.git -b v4.2.6 --depth=1
 
-echo '[+] Installing Docker'
-curl -sSL https://get.docker.com/ | sh
-systemctl restart  docker
+cd ./wazuh-docker
 
-echo '[+] Installing docker-compose'
-curl -L "https://github.com/docker/compose/releases/download/v2.12.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
-
-echo '[+] Download Wazyh https://github.com/wazuh/wazuh-docker.git -b v4.8.2'
-git clone https://github.com/wazuh/wazuh-docker.git -b v4.8.2
-
-echo '[+] Setting up Wazuh certs'
-echo '[+] NOTE: using docker-compose per docs but docker compose '
-
-cd wazuh-docker/single-node/
-docker compose -f generate-indexer-certs.yml run --rm generator
+docker-compose -f generate-opendistro-certs.yml run --rm generator
 
 
-echo '[+] Starting Wazuh '
-docker compose up
-#docker-compose up -d
+bash ./production_cluster/kibana_ssl/generate-self-signed-cert.sh
 
 
-echo admin and SecretPassword
+bash ./production_cluster/nginx/ssl/generate-self-signed-cert.sh
 
- 
 
- 
+docker-compose -f production-cluster.yml up -d
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+s
