@@ -8,6 +8,13 @@
 
 #wsl --install 
 
+# fix if you have issues
+# wsl --shutdown
+# wsl --unregister Ubuntu
+# wsl --uninstall
+# wsl --update
+# wsl --install
+
 echo '[+] Installing Curl'
 apt update
 apt install curl -y
