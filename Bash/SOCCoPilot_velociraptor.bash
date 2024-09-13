@@ -1,3 +1,7 @@
+
+'[+] Should be setup on https://localhost:8889 with login root and password password from when you setup the conf wizard  ! '
+sleep 10
+
 apt update
 apt install curl -y
 
@@ -57,6 +61,7 @@ echo '[+] get internet IP and update api.config.yaml with it'
 export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
 sed  -re "s/localhost:8001/$INTERNETIP/g"  api.config.yaml > .env
 cp -R api.config.yaml /mnt/c/delete/ << /dev/null
+
 
 
 
