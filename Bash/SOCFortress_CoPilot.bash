@@ -23,7 +23,7 @@ systemctl restart docker
 
 echo '[+] Setting port to 4433 from 433 and 80 to 800 because Wazuh uses 443 and 80'
 
-sed 's/443:443/4433:443/g' -re 's/80:80/800:800/g' docker-compose.yml -i.bak
+sed -re 's/443:443/4433:443/g' -re 's/80:80/800:800/g' /opt/CoPilot/docker-compose.yml -i.bak
 
 
 echo '[+] Run Copilot'
@@ -34,5 +34,5 @@ sleep  20
 docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:latest --format "{{.ID}}")" 2>&1 | grep "Admin user password" | sed -re 's/.*plain=.(.*).$/\1/g' > PASSWORD
 sleep  20
 docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:latest --format "{{.ID}}")" 2>&1 | grep "Admin user password" | sed -re 's/.*plain=.(.*).$/\1/g' >> PASSWORD
-
+ 
 cat PASSWORD
