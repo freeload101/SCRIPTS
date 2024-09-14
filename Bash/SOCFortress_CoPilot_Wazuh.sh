@@ -18,7 +18,10 @@ apt update
 apt install curl net-tools -y
  
 curl -sSL https://get.docker.com/ | sh
- 
+
+export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
+
+
 systemctl start docker
 systemctl enable docker
 
@@ -43,6 +46,6 @@ bash ./production_cluster/nginx/ssl/generate-self-signed-cert.sh
 
 
 docker-compose -f production-cluster.yml up -d
-echo '[+] https://localhost for WEBUI login:password admin:SecretPassword and https://localhost:55000 for SOC Fortress CoPilot'
+echo '[+] https://localhost for WEBUI login:password admin:SecretPassword and https://$INTERNETIP:55000 for SOC Fortress CoPilot'
 # docker compose down --remove-orphans
 
