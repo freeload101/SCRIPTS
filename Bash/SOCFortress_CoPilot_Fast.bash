@@ -25,6 +25,16 @@ curl -sSL https://get.docker.com/ | sh
 systemctl start docker
 systemctl enable docker
 
+echo '[+] config docker DNS to default DNS'
+export ROUTE=`ip route show default | awk '{print $3}' | head`
+echo $ROUTE
+echo "{\"dns\":[\"`echo $ROUTE`\"],\"log-driver\":\"json-file\",\"log-opts\":{\"max-size\":\"10m\",\"max-file\":\"3\"},\"mtu\": 1450}" >  /etc/docker/daemon.json
+
+echo '[+] Restarting docker'
+systemctl daemon-reload
+systemctl restart docker
+
+
 echo '[+] Installing docker-compose binary'
 
 curl -L "https://github.com/docker/compose/releases/download/1.28.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -113,10 +123,7 @@ cp -R velociraptor_REPACKED.msi /mnt/c/delete/
 
 
 ##############################################################  CoPilot
-echo '[+] config docker DNS to default DNS'
-export ROUTE=`ip route show default | awk '{print $3}' | head`
-echo $ROUTE
-echo "{\"dns\":[\"`echo $ROUTE`\"],\"log-driver\":\"json-file\",\"log-opts\":{\"max-size\":\"10m\",\"max-file\":\"3\"},\"mtu\": 1450}" >  /etc/docker/daemon.json
+
 echo '[+] install CoPilot'
 mkdir /opt
 mkdir /opt/CoPilot
@@ -133,9 +140,7 @@ export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
 sed -re "s/(ALERT_FORWARDING_IP=)0.0.0.0/\1$INTERNETIP/g"  -re "s/WAZUH_INDEXER_URL=.*/WAZUH_INDEXER_URL=https:\/\/$INTERNETIP:9200/g" -re "s/WAZUH_INDEXER_PASSWORD=.*/WAZUH_INDEXER_PASSWORD=SecretPassword/g"   -re "s/WAZUH_MANAGER_URL=.*/WAZUH_MANAGER_URL=https:\/\/$INTERNETIP:55000/g" -re "s/WAZUH_MANAGER_USERNAME=.*/WAZUH_MANAGER_USERNAME=acme-user/g"  -re "s/WAZUH_MANAGER_PASSWORD=.*/WAZUH_MANAGER_PASSWORD=MyS3cr37P450r.*-/g" -re "s/VELOCIRAPTOR_URL=.*/VELOCIRAPTOR_URL=https:\/\/$INTERNETIP:8001/g" -re "s/VELOCIRAPTOR_API_KEY_PATH=.*/VELOCIRAPTOR_API_KEY_PATH=\/tmp\/api.config.yaml/g" .env.example > .env
 
 
-echo '[+] Restarting docker'
-systemctl daemon-reload
-systemctl restart docker
+
 
 echo '[+] Setting port to 4433 from 433 and 80 to 800 because Wazuh uses 443 and 80'
 
