@@ -8,12 +8,10 @@
 
 # fix if you have issues
 # wsl --shutdown
+# wsl --uninstall 
 # wsl --unregister Ubuntu
-# wsl --uninstall
 # wsl --update
 # wsl --install
-
-
 
 
 ##############################################################   wazuh-docker
@@ -89,18 +87,14 @@ echo '[+] Run Copilot'
 docker compose up -d
 
 echo '[+] Waiting for CoPilot to start to show password'
-sleep  20
+sleep  10
 docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:latest --format "{{.ID}}")" 2>&1 | grep "Admin user password" | sed -re 's/.*plain=.(.*).$/\1/g' > PASSWORD
-sleep  20
+sleep  10
 docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:latest --format "{{.ID}}")" 2>&1 | grep "Admin user password" | sed -re 's/.*plain=.(.*).$/\1/g' >> PASSWORD
  
  
  
 ##############################################################  Velociraptor
-
-'[+] Should be setup on https://localhost:8889 with login root and password password from when you setup the conf wizard  ! '
-sleep 10
-
 apt update
 apt install curl -y
 
@@ -112,8 +106,11 @@ echo '[+] Downloading latests velociraptor Windows Binary'
 wget -q -O velociraptor_ORIG.msi "${VAR_GITHUB_WINDOWS}"
 
 echo '[+] Running velociraptor config generate'
-echo '[+] I use port 80 insted of 8000 for reasons ...'
 chmod 777 velociraptor.bin
+
+echo '[+] ################### Use root:password for the Velociraptor setup!! ##########################'
+sleep 5
+
 ./velociraptor.bin config generate -i 
 # FIX FOR INO INTERACTIVE ./velociraptor.bin config generate> /tmp/config.yaml
 # FIX ./velociraptor.bin --config /tmp/config.yaml config show --merge '{"Client":{"server_urls":["https://thebeast.rmccurdy.com:8000/"]}}' > /tmp/new_config.yaml
@@ -146,35 +143,24 @@ echo '[+] get internet IP and update api.config.yaml with it'
 export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
 sed  -re "s/localhost:8001/$INTERNETIP:8001/g"  api.config.yaml -i.bak
 cp -R api.config.yaml /mnt/c/delete/
+cp -R velociraptor_REPACKED.msi /mnt/c/delete/
 
-
-echo '[+] Showing Service/Port info'
-grep -B 3 port *.y*
-
-
-sleep 8
-
+ 
 
 
 
 
 '[+] Should be running on https://localhost:8889 with login root and password password ! '
- 
+   
 
- 
- 
-##############################################################  END 
+##############################################################  END
 export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
-echo '[+] Wazuh Web UI:	https://localhost admin:SecretPassword Wazuh API for SOCFortress CoPilot'
-echo '[+] Wazuh API:	https://$INTERNETIP:55000  wazuh-wui:wazuh-wui Wazuh API for SOCFortress CoPilot '
-echo '[+] Velociraptor:	https://$INTERNETIP:8889  root:password  SOCFortress CoPilot: port 8001 check api.config.yaml '
-echo '[+] Velociraptor API: check api.config.yaml port 8001'
-echo "[+] SOCFortress CoPilot: https://$INTERNETIP:4433 admin:`cat PASSWORD` and https://$INTERNETIP:800 "
+echo "[+] Wazuh Web UI: https://$INTERNETIP admin:SecretPassword Wazuh API for SOCFortress CoPilot"
+echo "[+] Wazuh API:    https://$INTERNETIP:55000  acme-user:MyS3cr37P450r.*- Wazuh API for SOCFortress CoPilot"
+echo "[+] Velociraptor: https://$INTERNETIP:8889  root:password  SOCFortress CoPilot: port 8001 check api.config.yaml"
+echo "[+] Velociraptor API: check api.config.yaml port 8001"
+echo "[+] SOCFortress CoPilot: https://$INTERNETIP:4433 admin:`cat /opt/CoPilot/PASSWORD` and https://$INTERNETIP:800 "
 
-echo '[+] Showing Service/Port LISTEN info. It can take some time for Wazuh and everything to start!'
 netstat -ltpnd
 # docker compose down --remove-orphans
-
-
-
-
+ 
