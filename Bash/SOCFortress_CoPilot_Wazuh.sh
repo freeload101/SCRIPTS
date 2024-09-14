@@ -40,4 +40,7 @@ bash ./production_cluster/kibana_ssl/generate-self-signed-cert.sh
 
 bash ./production_cluster/nginx/ssl/generate-self-signed-cert.sh
 
+
+
 docker-compose -f production-cluster.yml up -d
+echo '[+] https://localhost and https://localhost:55000 for SOC Fortress CoPilot'
