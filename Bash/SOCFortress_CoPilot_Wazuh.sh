@@ -46,6 +46,6 @@ bash ./production_cluster/nginx/ssl/generate-self-signed-cert.sh
 
 
 docker-compose -f production-cluster.yml up -d
-echo '[+] https://localhost for WEBUI login:password admin:SecretPassword and https://$INTERNETIP:55000 for SOC Fortress CoPilot'
+echo '[+] https://localhost for WEBUI login:password admin:SecretPassword and https://$INTERNETIP:55000  with login wazuh-wui:wazuh-wui for SOC Fortress CoPilot'
 # docker compose down --remove-orphans
 
