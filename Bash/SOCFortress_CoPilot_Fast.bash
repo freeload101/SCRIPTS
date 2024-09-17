@@ -163,6 +163,7 @@ docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:l
 
 ##############################################################  END
 export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
+
 echo "[+] Wazuh Web UI: https://$INTERNETIP admin:SecretPassword "
 echo "[+] Wazuh Indexer API: https://172.29.137.13:9200 admin:SecretPassword"
 echo "[+] Wazuh Manager API: https://$INTERNETIP:55000  acme-user:MyS3cr37P450r.*- Wazuh API for SOCFortress CoPilot"
@@ -172,4 +173,6 @@ echo "[+] SOCFortress CoPilot: https://$INTERNETIP:4433 admin:`cat /opt/CoPilot/
 
 netstat -ltpnd
 # docker compose down --remove-orphans
-sleep 160
+read
+read
+read
