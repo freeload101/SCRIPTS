@@ -172,4 +172,4 @@ echo "[+] SOCFortress CoPilot: https://$INTERNETIP:4433 admin:`cat /opt/CoPilot/
 
 netstat -ltpnd
 # docker compose down --remove-orphans
- 
+sleep 160
