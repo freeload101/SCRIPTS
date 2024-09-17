@@ -173,12 +173,11 @@ echo "[+] SOCFortress CoPilot: https://$INTERNETIP:4433 admin:`cat /opt/CoPilot/
 
 netstat -ltpnd
 # docker compose down --remove-orphans
-read
-read
-read
-read
-read
-read
-read
-read
-read
+echo '[+] Waiting for CoPilot to start to show password'
+while true
+do
+ docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:latest --format "{{.ID}}")" 2>&1 | grep "Admin user password" | sed -re 's/.*plain=.(.*).$/\1/g' >> PASSWORD
+ uniq PASSWORD
+ sleep 60
+done
+
