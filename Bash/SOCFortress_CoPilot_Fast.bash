@@ -56,7 +56,7 @@ cd ./wazuh-docker
 
 
 echo '[+] Generating Certs wazuh-docker 4.2.6 !'
-docker-compose -f generate-opendistro-certs.yml run --rm generator
+bash -c "cd $PWD;docker-compose -f generate-opendistro-certs.yml run --rm generator"
 bash ./production_cluster/kibana_ssl/generate-self-signed-cert.sh
 bash ./production_cluster/nginx/ssl/generate-self-signed-cert.sh
 
