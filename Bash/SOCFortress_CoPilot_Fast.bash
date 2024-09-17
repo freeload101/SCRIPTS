@@ -17,7 +17,7 @@
 
 ##############################################################   wazuh-docker
 
-mkdir /opt
+mkdir /opt/
 cd /opt
 
 echo '[+] Installing Curl and Net-tools'
@@ -58,20 +58,17 @@ sysctl -w vm.max_map_count=262144
 
 echo '[+] Downloading wazuh-docker 4.2.6 !'
 git clone https://github.com/wazuh/wazuh-docker.git -b v4.2.6 --depth=1
-cd ./wazuh-docker
+cd /opt/wazuh-docker
 
 
 echo '[+] Generating Certs wazuh-docker 4.2.6 !'
-bash -c "cd $PWD;docker-compose -f generate-opendistro-certs.yml run --rm generator"
+docker-compose -f generate-opendistro-certs.yml run --rm generator
 bash ./production_cluster/kibana_ssl/generate-self-signed-cert.sh
 bash ./production_cluster/nginx/ssl/generate-self-signed-cert.sh
 
 
 echo '[+] Starting Wazuh production-cluster'
-docker-compose -f production-cluster.yml up -d
-
-
- 
+docker-compose -f production-cluster.yml up  -d 
  
 ##############################################################  Velociraptor
 apt update
