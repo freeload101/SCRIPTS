@@ -16,6 +16,7 @@
 
 
 ##############################################################   wazuh-docker
+export HOME=$PWD
 
 mkdir /opt/
 cd /opt
@@ -94,7 +95,6 @@ sleep 5
 # FIX FOR INO INTERACTIVE ./velociraptor.bin config generate> /tmp/config.yaml
 # FIX ./velociraptor.bin --config /tmp/config.yaml config show --merge '{"Client":{"server_urls":["https://thebeast.rmccurdy.com:8000/"]}}' > /tmp/new_config.yaml
 
-
  
 sleep 1
  
@@ -121,9 +121,8 @@ systemctl restart velociraptor_server
 echo '[+] get internet IP and update api.config.yaml with it'
 export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
 sed  -re "s/localhost:8001/$INTERNETIP:8001/g"  api.config.yaml -i.bak
-cp -R api.config.yaml /mnt/c/delete/
-cp -R api.config.yaml /tmp/
-cp -R velociraptor_REPACKED.msi /mnt/c/delete/
+cp -R api.config.yaml $HOME/
+cp -R velociraptor_REPACKED.msi $HOME/
 
  
 
@@ -170,12 +169,17 @@ docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:l
 ##############################################################  END
 export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
 netstat -ltpnd
+
 echo "[+] Wazuh Web UI: https://$INTERNETIP admin:SecretPassword "
+echo "[+] Velociraptor: https://$INTERNETIP:8889  root:password  SOCFortress CoPilot: port 8001 check api.config.yaml"
+echo "[+] SOCFortress CoPilot: https://$INTERNETIP:4433 admin:`cat /opt/CoPilot/PASSWORD` and https://$INTERNETIP:800 "
+echo "[+] Wazuh Windows Client :"
+echo "Invoke-WebRequest -Uri https://packages.wazuh.com/4.x/windows/wazuh-agent-4.2.6-1.msi -OutFile wazuh-agent-4.2.6.msi; ./wazuh-agent-4.2.6.msi /q WAZUH_MANAGER='$SHELL' WAZUH_REGISTRATION_SERVER='$SHELL'  "
+echo "[+] Velociraptor Windows Client and XML config file for CoPilot: $HOME/ "
+
 echo "[+] Wazuh Indexer API: https://172.29.137.13:9200 admin:SecretPassword"
 echo "[+] Wazuh Manager API: https://$INTERNETIP:55000  acme-user:MyS3cr37P450r.*- Wazuh API for SOCFortress CoPilot"
-echo "[+] Velociraptor: https://$INTERNETIP:8889  root:password  SOCFortress CoPilot: port 8001 check api.config.yaml"
-echo "[+] Velociraptor API: check api.config.yaml port 8001"
-echo "[+] SOCFortress CoPilot: https://$INTERNETIP:4433 admin:`cat /opt/CoPilot/PASSWORD` and https://$INTERNETIP:800 "
+
 
 
 # docker compose down --remove-orphans
