@@ -84,7 +84,10 @@ wget -q -O velociraptor_ORIG.msi "${VAR_GITHUB_WINDOWS}"
 echo '[+] Running velociraptor config generate'
 chmod 777 velociraptor.bin
 
+
+echo '[+] #############################################################################################'
 echo '[+] ################### Use root:password for the Velociraptor setup!! ##########################'
+echo '[+] #############################################################################################'
 sleep 5
 
 ./velociraptor.bin config generate -i 
@@ -166,7 +169,7 @@ docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:l
 
 ##############################################################  END
 export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
-
+netstat -ltpnd
 echo "[+] Wazuh Web UI: https://$INTERNETIP admin:SecretPassword "
 echo "[+] Wazuh Indexer API: https://172.29.137.13:9200 admin:SecretPassword"
 echo "[+] Wazuh Manager API: https://$INTERNETIP:55000  acme-user:MyS3cr37P450r.*- Wazuh API for SOCFortress CoPilot"
@@ -174,7 +177,7 @@ echo "[+] Velociraptor: https://$INTERNETIP:8889  root:password  SOCFortress CoP
 echo "[+] Velociraptor API: check api.config.yaml port 8001"
 echo "[+] SOCFortress CoPilot: https://$INTERNETIP:4433 admin:`cat /opt/CoPilot/PASSWORD` and https://$INTERNETIP:800 "
 
-netstat -ltpnd
+
 # docker compose down --remove-orphans
 echo '[+] Waiting for CoPilot to start to show password'
 while true
