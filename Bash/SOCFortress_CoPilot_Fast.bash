@@ -16,12 +16,18 @@
 
 
 ##############################################################   wazuh-docker
+
+mkdir /opt
+cd /opt
+
 echo '[+] Installing Curl and Net-tools'
 apt update
 apt install curl net-tools -y
 
 echo '[+] Installing Docker'
-curl -sSL https://get.docker.com/ | sh
+wget -O DockerInstall.sh https://get.docker.com/
+sed 's/sleep 20/sleep .5/g' DockerInstall.sh -i.bak
+bash DockerInstall.sh
 
 systemctl start docker
 systemctl enable docker
