@@ -12,6 +12,7 @@
 # wsl --unregister Ubuntu
 # wsl --update
 # wsl --install
+# wsl --set-default-version 2
 
 
 ##############################################################   wazuh-docker
