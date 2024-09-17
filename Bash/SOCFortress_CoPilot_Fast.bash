@@ -176,3 +176,9 @@ netstat -ltpnd
 read
 read
 read
+read
+read
+read
+read
+read
+read
