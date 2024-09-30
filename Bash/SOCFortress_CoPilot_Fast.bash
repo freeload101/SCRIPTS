@@ -110,7 +110,9 @@ sleep 5
 systemctl status velociraptor_server | tee out.txt
 
 echo '[+] Repacking MSI with client.config.yaml'
-echo "Please enter an IP address or Hostname for the clients:"
+echo '[+] #############################################################################################'
+echo "[+] # Please enter an IP address or Hostname for the clients to connect to:"
+echo '[+] #############################################################################################'
 read ip_address
 sed -re "s/https:\/\/(localhost)/http:\/\/${ip_address}/g" client.config.yaml  -i.bak
 
