@@ -75,6 +75,8 @@ docker-compose -f production-cluster.yml up  -d
 apt update
 apt install curl -y
 
+cd /opt/
+
 export   VAR_GITHUB_LINUX=`curl -s https://api.github.com/repos/Velocidex/velociraptor/releases/latest | grep -E "(.*download.*linux.*amd64\")" | tail -n 1 | awk '{print $2}'| sed -re 's/.*\"(.*).*\"/\1/g'`
 export VAR_GITHUB_WINDOWS=`curl -s https://api.github.com/repos/Velocidex/velociraptor/releases/latest | grep -E "(.*download.*velociraptor-.*-windows-amd64\.msi\")" | tail -n 1 | awk '{print $2}'| sed -re 's/.*\"(.*).*\"/\1/g'`
 echo '[+] Downloading latests velociraptor Linux Binary'
@@ -87,7 +89,7 @@ chmod 777 velociraptor.bin
 
 
 echo '[+] #############################################################################################'
-echo '[+] ################### Use root:password for the Velociraptor setup!! ##########################'
+echo '[+] ################### Use root:password and localhost Velociraptor setup!! ##########################'
 echo '[+] #############################################################################################'
 sleep 5
 
@@ -108,6 +110,10 @@ sleep 5
 systemctl status velociraptor_server | tee out.txt
 
 echo '[+] Repacking MSI with client.config.yaml'
+echo "Please enter an IP address or Hostname for the clients:"
+read ip_address
+sed -re "s/https:\/\/(localhost)/http:\/\/${ip_address}/g" client.config.yaml  -i.bak
+
 ./velociraptor.bin config repack --msi velociraptor_ORIG.msi client.config.yaml velociraptor_REPACKED.msi
 
 echo '[+] Creating api.config.yaml for SOCFortress'
