@@ -135,7 +135,7 @@ mkdir /opt
 mkdir /opt/CoPilot
 cd /opt/CoPilot
 
-wget https://raw.githubusercontent.com/socfortress/CoPilot/docker-compose.yml
+wget https://raw.githubusercontent.com/socfortress/CoPilot/main/docker-compose.yml
 mkdir data
 
 echo '[+] Create the .env file based on the .env.example'
