@@ -114,7 +114,7 @@ echo '[+] ######################################################################
 echo "[+] # Please enter an IP address or Hostname for the clients to connect to:"
 echo '[+] #############################################################################################'
 read ip_address
-sed -re "s/https:\/\/(localhost)/http:\/\/${ip_address}/g" client.config.yaml  -i.bak
+sed -re "s/https:\/\/(localhost)/https:\/\/${ip_address}/g" client.config.yaml  -i.bak
 
 ./velociraptor.bin config repack --msi velociraptor_ORIG.msi client.config.yaml velociraptor_REPACKED.msi
 
