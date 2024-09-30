@@ -154,13 +154,11 @@ sed -re 's/443:443/4433:443/g' -re 's/80:80/800:80/g' /opt/CoPilot/docker-compos
 
 
 echo '[+] Run Copilot'
+# set restart: always for CoPilot
+sed -re 's/    (copilot-minio|copilot-mysql|copilot-frontend|copilot-backend|copilot-nuclei-module):/    \1:\n        restart: always/g' docker-compose.yml -i.bak
 docker compose up -d
 
-echo '[+] Waiting for CoPilot to start to show password'
-sleep  10
-docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:latest --format "{{.ID}}")" 2>&1 | grep "Admin user password" | sed -re 's/.*plain=.(.*).$/\1/g' > PASSWORD
-sleep  10
-docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:latest --format "{{.ID}}")" 2>&1 | grep "Admin user password" | sed -re 's/.*plain=.(.*).$/\1/g' >> PASSWORD
+echo '[+] Waiting for CoPilot to start to show password this may take a long while on slower computer'
  
  
  
