@@ -179,8 +179,6 @@ netstat -ltpnd
 echo "[+] Wazuh Web UI: https://$INTERNETIP admin:SecretPassword "
 echo "[+] Velociraptor: https://$INTERNETIP:8889  root:password  SOCFortress CoPilot: port 8001 check api.config.yaml"
 echo "[+] SOCFortress CoPilot: https://$INTERNETIP:4433 admin:`cat /opt/CoPilot/PASSWORD` and https://$INTERNETIP:800 "
-echo "[+] Wazuh Windows Client :"
-echo "Invoke-WebRequest -Uri https://packages.wazuh.com/4.x/windows/wazuh-agent-4.2.6-1.msi -OutFile wazuh-agent-4.2.6.msi; ./wazuh-agent-4.2.6.msi /q WAZUH_MANAGER='$INTERNETIP' WAZUH_REGISTRATION_SERVER='$INTERNETIP'  "
 echo "[+] Velociraptor Windows Client and XML config file for CoPilot: $HOME/ "
 
 echo "[+] Wazuh Indexer API: https://172.29.137.13:9200 admin:SecretPassword"
