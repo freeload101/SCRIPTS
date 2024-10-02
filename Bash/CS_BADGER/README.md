@@ -5,6 +5,17 @@ This script will automate Splunk searches in CrowdStrike! So you can take a sear
 
 *Badgers are known as the gruff and grumpy residents of hillsides and prairies. These striped-faced mustelids are expert excavators, skilled at plucking out earthworms, grubs, insects and all sorts of other critters. Badgers often are portrayed in movies and popular literature as wise and practical.*
 
+
+
+## CS Reddit Posts 
+(https://www.reddit.com/user/rmccurdyDOTcom/search/?q=+crowdstrike)
+
+## CS RTR Scripts (powershell IR Scripts) 
+(https://github.com/freeload101/CrowdStrike_RTR_Powershell_Scripts )
+
+## CS and Splunk ES Hunting
+(https://github.com/freeload101/SCRIPTS/tree/master/CrowdStrike%20Threat%20Hunting)
+
 ## 1) Install Cygwin
 https://github.com/vegardit/cygwin-portable-installer/blob/main/cygwin-portable-installer.cmd
 
