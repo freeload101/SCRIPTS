@@ -1,7 +1,14 @@
+# This script aids in troubleshooting Windows system issues by implementing a white list of required processes and closing unnecessary ones, reducing CPU usage. For advanced assistance, consult the following resources:
+
+# https://github.com/freeload101/CrowdStrike_RTR_Powershell_Scripts/blob/main/srum_dump2.ps1
+# https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/WPS_WPR_Windows%20Performance%20Analyzer.ps1
+# https://github.com/freeload101/CrowdStrike_RTR_Powershell_Scripts
+
 # safe mode add/remove software 
 # REG ADD "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Minimal\MSIServer" /VE /T REG_SZ /F /D "Service"
 # REG ADD "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Network\MSIServer" /VE /T REG_SZ /F /D "Service"
 # net start msiserver
+
 
 Set-Variable -Name ErrorActionPreference -Value SilentlyContinue
 
