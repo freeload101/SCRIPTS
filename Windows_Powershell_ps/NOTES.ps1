@@ -282,3 +282,11 @@ return $Result
 }
 
 
+
+
+Unregister-ScheduledTask -TaskName "Daily Shutdown"  -Confirm:$false -ErrorAction SilentlyContinue |Out-Null
+Set-Content -Path "C:\ShutdownComputer.ps1" -Value "Stop-Computer -Force"
+$Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File C:\ShutdownComputer.ps1"
+$Trigger = New-ScheduledTaskTrigger -Daily -At 1:30AM
+$Settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -RunOnlyIfNetworkAvailable -WakeToRun
+Register-ScheduledTask -TaskName "Daily Shutdown" -Action $Action -Trigger $Trigger -Settings $Settings -User "System" -RunLevel Highest
