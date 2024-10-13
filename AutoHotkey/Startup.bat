@@ -13,3 +13,5 @@ if not exist "%USERPROFILE%\AutoHotkey.ps1" (
 )
 ::run installer
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& "%USERPROFILE%\AutoHotkey.ps1""
+
+copy /y "C:\Users\IY94349\AppData\Local\Google\Chrome\User Data\Default\Bookmarks" "C:\Users\internet\PortableAppsLauncher\PortableApps\GoogleChromePortable64\Data\profile\Default\Bookmarks" 
