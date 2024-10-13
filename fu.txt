@@ -3054,6 +3054,9 @@ bandcamp.com##li.df.story > .track_play_hilite.collection-item-container.story-i
 bandcamp.com##li.np.story > .story-innards > .story-body
 bandcamp.com##li.np.story > .story-innards
 
+! How to banish that stupid "Sign in with Google" pop up!
+||accounts.google.com/gsi/*$xhr,script,3p
+
 
 #setup find/Replace in burp for request  body
 LESSON_STATUS%3Dincomplete
