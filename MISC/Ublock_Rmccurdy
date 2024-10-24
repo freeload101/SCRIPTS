@@ -1,0 +1,11 @@
+! 2022-09-07 https://bandcamp.com block bandcamp ads bandcamp feed albums only show
+bandcamp.com##li.fp.story > .track_play_hilite.collection-item-container.story-innards
+bandcamp.com##li.df.story > .track_play_hilite.collection-item-container.story-innards
+bandcamp.com##li.np.story > .story-innards > .story-body
+bandcamp.com##li.np.story > .story-innards
+
+! How to banish that stupid "Sign in with Google" pop up!
+||accounts.google.com/gsi/*$xhr,script,3p
+
+! Block youtube annotations_  ( old )
+||youtube.com/annotations_ 
