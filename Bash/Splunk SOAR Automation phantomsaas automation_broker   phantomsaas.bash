@@ -48,6 +48,6 @@ docker pull phantomsaas/automation_broker:$LATEST
 mkdir /opt/splunk_data 
 
 docker run --env PHANTOM_BASE_URL="${PHANTOM_BASE_URL}" -v /opt/splunk_data -d phantomsaas/automation_broker:$LATEST
-
+sleep 20
 docker logs `docker ps | grep broker | awk '{print $1}'`  2> /dev/null | grep -A 2 -E "Key:|Code:"
 
