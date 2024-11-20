@@ -2629,7 +2629,9 @@ net use  z: "%~dp0."
 z:
 cd z:\
 #FOR /F "delims==" %%A IN ('DIR/B/S "%~dp0*.mp4"') DO ffmpeg.exe -i "%%A" -vcodec libx264 -acodec aac "%%A_enc.mp4"
-FOR /F "delims==" %%A IN ('DIR/B/S "%~dp0*.mp4"') DO ffmpeg.exe -hwaccel cuda -i "%%A" -vcodec libx265 -acodec aac "%%A_enc.mp4"
+#FOR /F "delims==" %%A IN ('DIR/B/S "%~dp0*.mp4"') DO ffmpeg.exe -hwaccel cuda -i "%%A" -vcodec libx265 -acodec aac "%%A_enc.mp4"
+FOR /F "delims==" %%A IN ('DIR/B/S "%~dp0*.mp4"') DO ffmpeg -i  "%%A" -c:v hevc_nvenc -preset slow -b:v 5M -metadata:s:v:0 handler_name="HEVC/H.265 video" "%%A_enc.mp4"
+ 
 
 # no GPU
 find .  -exec ffmpeg -i '{}'  -vcodec libx265 -acodec aac  '{}'.mp4 \;
