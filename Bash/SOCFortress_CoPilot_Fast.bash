@@ -1,7 +1,3 @@
-# TODO:
-# * update checks ?
-
-
 echo '[+] Credit:  dLoProdz and the SOCFortress Open Source SIEM Stack !'
 export HOME=$PWD
 
@@ -45,37 +41,31 @@ sysctl -w vm.max_map_count=262144
 echo '[+] clone https://github.com/socfortress/OSSIEM.git'
 git clone https://github.com/socfortress/OSSIEM.git
 cd /opt/OSSIEM/wazuh/
-chown 1100:1100 /opt/OSSIEM/graylog/*  
 
 echo '[+] Configuring Wazuh certs'
 docker-compose -f generate-indexer-certs.yml run --rm generator
 cp /opt/OSSIEM/wazuh/config/wazuh_indexer_ssl_certs/root-ca.pem /opt/OSSIEM/graylog/
-
+chown 1100:1100 /opt/OSSIEM/graylog/*
+ 
 echo '[+] #############################################################################################'
 echo "[+] # Please enter an IP address or Hostname for the Velociraptor and other remote (outside) clients to connect to:"
 echo '[+] #############################################################################################'
 read ip_address
 
-echo '[+] Starting docker stack logs located in /opt/OSSIEM/screenlog.0 '
+echo '[+] Starting docker stack '
 sleep 5
 cd /opt/OSSIEM 
-screen -fa -d -m -L -S DOCKER bash -c "docker compose up"
- 
+docker compose up -d
+# docker ps -q | xargs -L 1 docker logs --follow
 
-while [ $(docker ps -q | wc -l) -lt 12 ]; do sleep 1;echo '[+] Starting/Waiting for Docker Stack count of 12'; done
-sleep 60
- 
 echo '[+] Setting up Graylog certs '
+docker exec -it graylog /bin/bash -c "cp /opt/java/openjdk/lib/security/cacerts /usr/share/graylog/data/config/;cd /usr/share/graylog/data/config/;keytool -importcert -keystore cacerts -storepass changeit -alias wazuh_root_ca -file root-ca.pem -noprompt"
+sleep 5
+docker restart graylog
 
-docker exec -it graylog /bin/bash -c "cp /opt/java/openjdk/lib/security/cacerts /usr/share/graylog/data/config/;cd /usr/share/graylog/data/config/;cd /usr/share/graylog/data/config/;keytool -noprompt  -importcert -keystore cacerts -storepass changeit -alias wazuh_root_ca -file root-ca.pem"
+# echo '[+] Downloading/Installing SOCFortress Wazuh Rules'
+# docker exec -it wazuh.manager /bin/bash -c "dnf install git -y;curl -so ~/wazuh_socfortress_rules.sh https://raw.githubusercontent.com/socfortress/OSSIEM/main/wazuh_socfortress_rules.sh;sed '/while true/,/done/d' ~/wazuh_socfortress_rules.sh -i.bak;bash ~/wazuh_socfortress_rules.sh"
 
- 
-
-
-echo '[+] Downloading/Installing SOCFortress Wazuh Rules'
-docker exec -it wazuh.manager /bin/bash -c "dnf install git -y;curl -so ~/wazuh_socfortress_rules.sh https://raw.githubusercontent.com/socfortress/OSSIEM/main/wazuh_socfortress_rules.sh;sed '/while true/,/done/d' ~/wazuh_socfortress_rules.sh -i.bak;bash ~/wazuh_socfortress_rules.sh"
-
- 
 
 echo '[+] Building Velociraptor MSI for ${ip_address} '
 mkdir /opt/Velociraptor
@@ -96,7 +86,7 @@ sed -re "s/https:\/\/(Velociraptor)/https:\/\/${ip_address}/g" client.config.yam
 ./velociraptor.bin config repack --msi velociraptor_ORIG.msi client.config.yaml  "$HOME/velociraptor_REPACKED.msi"
  
 
-echo '[+] velociraptor Downloading/Installing SOCFortress Wazuh Rules'
+echo '[+] velociraptor Downloading/Installing '
 docker exec -it velociraptor /bin/bash -c "./velociraptor --config server.config.yaml config api_client --name admin --role administrator,api api.config.yaml" > api.config.yaml
 docker exec -it velociraptor /bin/bash -c "cat api.config.yaml" > "$HOME/api.config.yaml"
 sed -re "s/api_connection_string: 0.0.0.0:8001/api_connection_string: Velociraptor:8001/g" "$HOME/api.config.yaml" -i.bak
@@ -105,7 +95,7 @@ sed -re "s/api_connection_string: 0.0.0.0:8001/api_connection_string: Velocirapt
 export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
 netstat -ltpnd
 
-echo "[+] Graylog: https://$INTERNETIP:9000  admin:yourpassword"
+echo "[+] Graylog: http://$INTERNETIP:9000  admin:yourpassword"
 echo "[+] Wazuh Web UI: https://$INTERNETIP:5601 admin:SecretPassword"
 echo "[+] Velociraptor: https://$INTERNETIP:8889  root:password"
 echo "[+] Grafana: http://$INTERNETIP:3000  admin:admin"
