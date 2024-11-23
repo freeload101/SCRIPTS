@@ -57,9 +57,11 @@ echo "[+] # Please enter an IP address or Hostname for the Velociraptor and othe
 echo '[+] #############################################################################################'
 read ip_address
 
+echo '[+] Starting docker stack logs located in /opt/OSSIEM/screenlog.0 '
+sleep 5
 cd /opt/OSSIEM 
 screen -fa -d -m -L -S DOCKER bash -c "docker compose up"
-screen -r DOCKER 
+ 
 
 while [ $(docker ps -q | wc -l) -lt 12 ]; do sleep 1;echo '[+] Starting/Waiting for Docker Stack count of 12'; done
 sleep 60
