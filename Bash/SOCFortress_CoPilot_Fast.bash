@@ -1,3 +1,7 @@
+# TODO:
+# * update checks ?
+
+
 echo '[+] Credit:  dLoProdz and the SOCFortress Open Source SIEM Stack !'
 export HOME=$PWD
 
@@ -63,6 +67,7 @@ docker exec -it graylog /bin/bash -c "cp /opt/java/openjdk/lib/security/cacerts 
 sleep 5
 docker restart graylog
 
+# Going to wait on this untill I can get everything happy ...
 # echo '[+] Downloading/Installing SOCFortress Wazuh Rules'
 # docker exec -it wazuh.manager /bin/bash -c "dnf install git -y;curl -so ~/wazuh_socfortress_rules.sh https://raw.githubusercontent.com/socfortress/OSSIEM/main/wazuh_socfortress_rules.sh;sed '/while true/,/done/d' ~/wazuh_socfortress_rules.sh -i.bak;bash ~/wazuh_socfortress_rules.sh"
 
@@ -86,10 +91,10 @@ sed -re "s/https:\/\/(Velociraptor)/https:\/\/${ip_address}/g" client.config.yam
 ./velociraptor.bin config repack --msi velociraptor_ORIG.msi client.config.yaml  "$HOME/velociraptor_REPACKED.msi"
  
 
-echo '[+] velociraptor Downloading/Installing '
-docker exec -it velociraptor /bin/bash -c "./velociraptor --config server.config.yaml config api_client --name admin --role administrator,api api.config.yaml" > api.config.yaml
-docker exec -it velociraptor /bin/bash -c "cat api.config.yaml" > "$HOME/api.config.yaml"
-sed -re "s/api_connection_string: 0.0.0.0:8001/api_connection_string: Velociraptor:8001/g" "$HOME/api.config.yaml" -i.bak
+echo '[+] Setting up Velociraptor api.config.yaml '
+	docker exec -it velociraptor /bin/bash -c "./velociraptor --config server.config.yaml config api_client --name admin --role administrator,api api.config.yaml" > api.config.yaml
+	docker exec -it velociraptor /bin/bash -c "cat api.config.yaml" > "$HOME/api.config.yaml"
+	sed -re "s/api_connection_string: 0.0.0.0:8001/api_connection_string: Velociraptor:8001/g" "$HOME/api.config.yaml" -i.bak
  
 
 export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
