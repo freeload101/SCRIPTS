@@ -1,21 +1,8 @@
-#dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-#dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-
-#wsl --update
-#wsl --set-default-version 2
-
-#wsl --install 
-
-# fix if you have issues
-# wsl --shutdown
-# wsl --uninstall 
-# wsl --unregister Ubuntu
-# wsl --update
-# wsl --install
-# wsl --set-default-version 2
+# TODO:
+# * update checks ?
 
 
-##############################################################   wazuh-docker
+echo '[+] Credit:  dLoProdz and the SOCFortress Open Source SIEM Stack !'
 export HOME=$PWD
 
 mkdir /opt/
@@ -53,31 +40,46 @@ docker-compose --version
 echo '[+] It is recommended to configure the Docker host preferences to give at least 6GB of memory. setting vm.max_map_count=262144'
 echo vm.max_map_count=262144 >> /etc/sysctl.conf
 sysctl -w vm.max_map_count=262144
-
-
-
-
-echo '[+] Downloading wazuh-docker 4.2.6 !'
-git clone https://github.com/wazuh/wazuh-docker.git -b v4.2.6 --depth=1
-cd /opt/wazuh-docker
-
-
-echo '[+] Generating Certs wazuh-docker 4.2.6 !'
-docker-compose -f generate-opendistro-certs.yml run --rm generator
-bash ./production_cluster/kibana_ssl/generate-self-signed-cert.sh
-bash ./production_cluster/nginx/ssl/generate-self-signed-cert.sh
-
-
-echo '[+] Starting Wazuh production-cluster'
-docker-compose -f production-cluster.yml up  -d 
  
-##############################################################  Velociraptor
-apt update
-apt install curl -y
 
-cd /opt/
+echo '[+] clone https://github.com/socfortress/OSSIEM.git'
+git clone https://github.com/socfortress/OSSIEM.git
+cd /opt/OSSIEM/wazuh/
 
-export   VAR_GITHUB_LINUX=`curl -s https://api.github.com/repos/Velocidex/velociraptor/releases/latest | grep -E "(.*download.*linux.*amd64\")" | tail -n 1 | awk '{print $2}'| sed -re 's/.*\"(.*).*\"/\1/g'`
+echo '[+] Configuring Wazuh certs'
+docker-compose -f generate-indexer-certs.yml run --rm generator
+cp /opt/OSSIEM/wazuh/config/wazuh_indexer_ssl_certs/root-ca.pem /opt/OSSIEM/graylog/
+chown 1100:1100 /opt/OSSIEM/graylog/*
+
+
+echo '[+] #############################################################################################'
+echo "[+] # Please enter an IP address or Hostname for the Velociraptor and other remote (outside) clients to connect to:"
+echo '[+] #############################################################################################'
+read ip_address
+
+cd /opt/OSSIEM 
+screen -fa -d -m -L -S DOCKER bash -c "docker compose up"
+screen -r DOCKER 
+
+while [ $(docker ps -q | wc -l) -lt 12 ]; do sleep 1;echo '[+] Starting/Waiting for Docker Stack count of 12'; done
+sleep 60
+ 
+echo '[+] Setting up Graylog certs '
+docker exec -it graylog /bin/bash -c "cp /opt/java/openjdk/lib/security/cacerts /usr/share/graylog/data/config/;cd /usr/share/graylog/data/config/;cd /usr/share/graylog/data/config/;keytool -noprompt  -importcert -keystore cacerts -storepass changeit -alias wazuh_root_ca -file root-ca.pem"
+
+ 
+
+
+echo '[+] Downloading/Installing SOCFortress Wazuh Rules'
+docker exec -it wazuh.manager /bin/bash -c "dnf install git -y;curl -so ~/wazuh_socfortress_rules.sh https://raw.githubusercontent.com/socfortress/OSSIEM/main/wazuh_socfortress_rules.sh;sed '/while true/,/done/d' ~/wazuh_socfortress_rules.sh -i.bak;bash ~/wazuh_socfortress_rules.sh"
+
+ 
+
+echo '[+] Building Velociraptor MSI for ${ip_address} '
+mkdir /opt/Velociraptor
+cd /opt/Velociraptor
+
+export VAR_GITHUB_LINUX=`curl -s https://api.github.com/repos/Velocidex/velociraptor/releases/latest | grep -E "(.*download.*linux.*amd64\")" | tail -n 1 | awk '{print $2}'| sed -re 's/.*\"(.*).*\"/\1/g'`
 export VAR_GITHUB_WINDOWS=`curl -s https://api.github.com/repos/Velocidex/velociraptor/releases/latest | grep -E "(.*download.*velociraptor-.*-windows-amd64\.msi\")" | tail -n 1 | awk '{print $2}'| sed -re 's/.*\"(.*).*\"/\1/g'`
 echo '[+] Downloading latests velociraptor Linux Binary'
 wget -q -O velociraptor.bin ${VAR_GITHUB_LINUX}
@@ -87,111 +89,48 @@ wget -q -O velociraptor_ORIG.msi "${VAR_GITHUB_WINDOWS}"
 echo '[+] Running velociraptor config generate'
 chmod 777 velociraptor.bin
 
-
-echo '[+] #############################################################################################'
-echo '[+] ################### Use root:password and localhost Velociraptor setup!! ##########################'
-echo '[+] #############################################################################################'
-sleep 5
-
-./velociraptor.bin config generate -i 
-# FIX FOR INO INTERACTIVE ./velociraptor.bin config generate> /tmp/config.yaml
-# FIX ./velociraptor.bin --config /tmp/config.yaml config show --merge '{"Client":{"server_urls":["https://thebeast.rmccurdy.com:8000/"]}}' > /tmp/new_config.yaml
-
- 
-sleep 1
+docker exec -it velociraptor /bin/bash -c "cat client.config.yaml"  > client.config.yaml
+sed -re "s/https:\/\/(Velociraptor)/https:\/\/${ip_address}/g" client.config.yaml  -i.bak
+./velociraptor.bin config repack --msi velociraptor_ORIG.msi client.config.yaml  "$HOME/velociraptor_REPACKED.msi"
  
 
-echo '[+] Creating Deb package'
-./velociraptor.bin --config server.config.yaml debian server --binary velociraptor.bin --output velociraptor.deb
-
-echo '[+] Installing Deb package'
-dpkg -i velociraptor.deb
-sleep 5
-systemctl status velociraptor_server | tee out.txt
-
-echo '[+] Repacking MSI with client.config.yaml'
-echo '[+] #############################################################################################'
-echo "[+] # Please enter an IP address or Hostname for the clients to connect to:"
-echo '[+] #############################################################################################'
-read ip_address
-sed -re "s/https:\/\/(localhost)/https:\/\/${ip_address}/g" client.config.yaml  -i.bak
-
-./velociraptor.bin config repack --msi velociraptor_ORIG.msi client.config.yaml velociraptor_REPACKED.msi
-
-echo '[+] Creating api.config.yaml for SOCFortress'
-./velociraptor.bin --config server.config.yaml config api_client --name root --role administrator,api api.config.yaml
-
-echo '[+] Updating server.config.yaml to listen on 0.0.0.0'
-sed 's/bind_address: 127.0.0.1/bind_address: 0.0.0.0/g' /etc/velociraptor/server.config.yaml -ibak
-systemctl restart velociraptor-server
-systemctl restart velociraptor_server
-
-echo '[+] get internet IP and update api.config.yaml with it'
-export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
-sed  -re "s/localhost:8001/$INTERNETIP:8001/g"  api.config.yaml -i.bak
-cp -R api.config.yaml $HOME/
-cp -R velociraptor_REPACKED.msi $HOME/
-
+echo '[+] velociraptor Downloading/Installing SOCFortress Wazuh Rules'
+docker exec -it velociraptor /bin/bash -c "./velociraptor --config server.config.yaml config api_client --name admin --role administrator,api api.config.yaml" > api.config.yaml
+docker exec -it velociraptor /bin/bash -c "cat api.config.yaml" > "$HOME/api.config.yaml"
+sed -re "s/api_connection_string: 0.0.0.0:8001/api_connection_string: Velociraptor:8001/g" "$HOME/api.config.yaml" -i.bak
  
 
-
-
-##############################################################  CoPilot
-
-echo '[+] install CoPilot'
-mkdir /opt
-mkdir /opt/CoPilot
-cd /opt/CoPilot
-
-wget https://raw.githubusercontent.com/socfortress/CoPilot/main/docker-compose.yml
-mkdir data
-
-echo '[+] Create the .env file based on the .env.example'
-wget 'https://raw.githubusercontent.com/socfortress/CoPilot/main/.env.example'
-
-echo '[+] get internet IP and update .env with it'
-export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
-sed -re "s/(ALERT_FORWARDING_IP=)0.0.0.0/\1$INTERNETIP/g"  -re "s/WAZUH_INDEXER_URL=.*/WAZUH_INDEXER_URL=https:\/\/$INTERNETIP:9200/g" -re "s/WAZUH_INDEXER_PASSWORD=.*/WAZUH_INDEXER_PASSWORD=SecretPassword/g"   -re "s/WAZUH_MANAGER_URL=.*/WAZUH_MANAGER_URL=https:\/\/$INTERNETIP:55000/g" -re "s/WAZUH_MANAGER_USERNAME=.*/WAZUH_MANAGER_USERNAME=acme-user/g"  -re "s/WAZUH_MANAGER_PASSWORD=.*/WAZUH_MANAGER_PASSWORD=MyS3cr37P450r.*-/g" -re "s/VELOCIRAPTOR_URL=.*/VELOCIRAPTOR_URL=https:\/\/$INTERNETIP:8001/g" -re "s/VELOCIRAPTOR_API_KEY_PATH=.*/VELOCIRAPTOR_API_KEY_PATH=\/tmp\/api.config.yaml/g" .env.example > .env
-
-
-
-
-echo '[+] Setting port to 4433 from 433 and 80 to 800 because Wazuh uses 443 and 80'
-
-sed -re 's/443:443/4433:443/g' -re 's/80:80/800:80/g' /opt/CoPilot/docker-compose.yml -i.bak
-
-
-echo '[+] Run Copilot'
-# set restart: always for CoPilot
-sed -re 's/    (copilot-minio|copilot-mysql|copilot-frontend|copilot-backend|copilot-nuclei-module):/    \1:\n        restart: always/g' docker-compose.yml -i.bak
-docker compose up -d
-
-echo '[+] Waiting for CoPilot to start to show password this may take a long while on slower computer'
- 
- 
- 
-   
-
-##############################################################  END
 export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
 netstat -ltpnd
 
-echo "[+] Wazuh Web UI: https://$INTERNETIP admin:SecretPassword "
-echo "[+] Velociraptor: https://$INTERNETIP:8889  root:password  SOCFortress CoPilot: port 8001 check api.config.yaml"
-echo "[+] SOCFortress CoPilot: https://$INTERNETIP:4433 admin:`cat /opt/CoPilot/PASSWORD` and https://$INTERNETIP:800 "
+echo "[+] Greylog: https://$INTERNETIP:9000  admin:yourpassword"
+echo "[+] Wazuh Web UI: https://$INTERNETIP:5601 admin:SecretPassword"
+echo "[+] Velociraptor: https://$INTERNETIP:8889  root:password"
+echo "[+] Grafana: http://$INTERNETIP:3000  admin:admin"
+
+echo "[+] Velociraptor Windows Client and XML config file for CoPilot: $HOME/ "
 echo "[+] Velociraptor Windows Client and XML config file for CoPilot: $HOME/ "
 
-echo "[+] Wazuh Indexer API: https://172.29.137.13:9200 admin:SecretPassword"
-echo "[+] Wazuh Manager API: https://$INTERNETIP:55000  acme-user:MyS3cr37P450r.*- Wazuh API for SOCFortress CoPilot"
+echo "[+] Wazuh Indexer API: https://$INTERNETIP:9200 admin:SecretPassword"
+echo "[+] Wazuh Manager API: https://$INTERNETIP:55000  wazuh-wui:MyS3cr37P450r.*- Wazuh API for SOCFortress CoPilot"
 
-
+echo "[+]  "
 
 # docker compose down --remove-orphans
 echo '[+] Waiting for CoPilot to start to show password'
-while true
-do
- docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:latest --format "{{.ID}}")" 2>&1 | grep "Admin user password" | sed -re 's/.*plain=.(.*).$/\1/g' >> PASSWORD
- uniq PASSWORD
- sleep 5
+while true; do
+  output=$(docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:latest --format "{{.ID}}")" 2>&1 | grep "Admin user password")
+  [ -n "$output" ] && echo "[+] SOCFortress https://$INTERNETIP admin : ${output}" && break
+  sleep 2
 done
 
+echo '[+] #############################################################################################'
+echo "[+] # In SOCFortress Verify all Configured connectors and then click the Stack Provisioning button then click deploy. Press enter to restart greylog and wazuh.manager"
+echo '[+] #############################################################################################'
+read yolo
+
+sleep 5
+
+docker restart wazuh.manager
+docker restart graylog
+echo '[+] I had to do full docker compose down;sleep 10; docker compose up to get graylog happy...'
