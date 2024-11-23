@@ -45,12 +45,11 @@ sysctl -w vm.max_map_count=262144
 echo '[+] clone https://github.com/socfortress/OSSIEM.git'
 git clone https://github.com/socfortress/OSSIEM.git
 cd /opt/OSSIEM/wazuh/
+chown 1100:1100 /opt/OSSIEM/graylog/*  
 
 echo '[+] Configuring Wazuh certs'
 docker-compose -f generate-indexer-certs.yml run --rm generator
 cp /opt/OSSIEM/wazuh/config/wazuh_indexer_ssl_certs/root-ca.pem /opt/OSSIEM/graylog/
-chown 1100:1100 /opt/OSSIEM/graylog/*
-
 
 echo '[+] #############################################################################################'
 echo "[+] # Please enter an IP address or Hostname for the Velociraptor and other remote (outside) clients to connect to:"
@@ -67,6 +66,7 @@ while [ $(docker ps -q | wc -l) -lt 12 ]; do sleep 1;echo '[+] Starting/Waiting 
 sleep 60
  
 echo '[+] Setting up Graylog certs '
+
 docker exec -it graylog /bin/bash -c "cp /opt/java/openjdk/lib/security/cacerts /usr/share/graylog/data/config/;cd /usr/share/graylog/data/config/;cd /usr/share/graylog/data/config/;keytool -noprompt  -importcert -keystore cacerts -storepass changeit -alias wazuh_root_ca -file root-ca.pem"
 
  
@@ -105,7 +105,7 @@ sed -re "s/api_connection_string: 0.0.0.0:8001/api_connection_string: Velocirapt
 export INTERNETIP=`ip route get 1.1.1.1  | awk '{print $7}' | head -n 1`
 netstat -ltpnd
 
-echo "[+] Greylog: https://$INTERNETIP:9000  admin:yourpassword"
+echo "[+] Graylog: https://$INTERNETIP:9000  admin:yourpassword"
 echo "[+] Wazuh Web UI: https://$INTERNETIP:5601 admin:SecretPassword"
 echo "[+] Velociraptor: https://$INTERNETIP:8889  root:password"
 echo "[+] Grafana: http://$INTERNETIP:3000  admin:admin"
@@ -126,7 +126,7 @@ while true; do
 done
 
 echo '[+] #############################################################################################'
-echo "[+] # In SOCFortress Verify all Configured connectors and then click the Stack Provisioning button then click deploy. Press enter to restart greylog and wazuh.manager"
+echo "[+] # In SOCFortress Verify all Configured connectors and then click the Stack Provisioning button then click deploy. Press enter to restart graylog and wazuh.manager"
 echo '[+] #############################################################################################'
 read yolo
 
