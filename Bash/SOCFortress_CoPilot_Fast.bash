@@ -109,7 +109,6 @@ echo "[+] Velociraptor: https://$INTERNETIP:8889  root:password"
 echo "[+] Grafana: http://$INTERNETIP:3000  admin:admin"
 
 echo "[+] Velociraptor Windows Client and XML config file for CoPilot: $HOME/ "
-echo "[+] Velociraptor Windows Client and XML config file for CoPilot: $HOME/ "
 
 echo "[+] Wazuh Indexer API: https://$INTERNETIP:9200 admin:SecretPassword"
 echo "[+] Wazuh Manager API: https://$INTERNETIP:55000  wazuh-wui:MyS3cr37P450r.*- Wazuh API for SOCFortress CoPilot"
