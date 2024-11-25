@@ -102,7 +102,7 @@ netstat -ltpnd
 
 echo "[+] Graylog: http://$INTERNETIP:9000  admin:yourpassword"
 echo "[+] Wazuh Web UI: https://$INTERNETIP:5601 admin:SecretPassword"
-echo "[+] Velociraptor: https://$INTERNETIP:8889  root:password"
+echo "[+] Velociraptor: https://$INTERNETIP:8889  admin:admin"
 echo "[+] Grafana: http://$INTERNETIP:3000  admin:admin"
 
 echo "[+] Velociraptor Windows Client and XML config file for CoPilot: $HOME/ "
