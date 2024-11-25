@@ -41,7 +41,7 @@ echo '[+] It is recommended to configure the Docker host preferences to give at 
 echo vm.max_map_count=262144 >> /etc/sysctl.conf
 sysctl -w vm.max_map_count=262144
  
-
+	
 echo '[+] clone https://github.com/socfortress/OSSIEM.git'
 git clone https://github.com/socfortress/OSSIEM.git
 cd /opt/OSSIEM/wazuh/
@@ -59,6 +59,7 @@ read ip_address
 echo '[+] Starting docker stack '
 sleep 5
 cd /opt/OSSIEM 
+
 docker compose up -d
 # docker ps -q | xargs -L 1 docker logs --follow
 
