@@ -116,7 +116,7 @@ echo "[+]  "
 # docker compose down --remove-orphans
 echo '[+] Waiting for CoPilot to start to show password'
 while true; do
-  output=$(docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:latest --format "{{.ID}}")" 2>&1 | grep "Admin user password")
+  output=$(docker logs "$(docker ps --filter ancestor=ghcr.io/socfortress/copilot-backend:latest --format "{{.ID}}")" 2>&1 | grep "Admin user password") | grep -oP "(?<=plain=\')(.*\b)"
   [ -n "$output" ] && echo "[+] SOCFortress https://$INTERNETIP admin : ${output}" && break
   sleep 2
 done
