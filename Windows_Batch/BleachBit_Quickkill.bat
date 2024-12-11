@@ -7,8 +7,8 @@ echo '--------------------------------------------------------------------------
 
 CALL :INIT
 
-CALL :QUICKKILL
-CALL :CATCH
+REM BLUE SCREEN CALL :QUICKKILL
+REM BLUE SCREEN CALL :CATCH
 
 CALL :DELALLUSERS
 CALL :CATCH
@@ -35,7 +35,7 @@ CALL :THEEND
 :CATCH
 IF %ERRORLEVEL% NEQ 0 (
 echo %date% %time% ERROR: Something went wrong
-pause
+pausecmd
 )
 EXIT /B %ERRORLEVEL%
 
@@ -60,7 +60,17 @@ echo %date% %time% INFO: Running windows cleanmgr first
 FOR /F "tokens=* delims=" %%A in ('reg QUERY "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches"') do (
 REG ADD "%%A"  /v StateFlags0777 /t REG_DWORD /d 00000002 /f  1>> output.log 2>&1
 )
-cleanmgr /sagerun:777
+cleanmgr /sagerun:777 &
+echo Press any key after clean manager is complete !
+pause
+echo Press any key after clean manager is complete !
+pause
+
+taskkill /F /IM "cleanmgr.exe"  1>> output.log 2>&1
+taskkill /F /IM "cleanmgr.exe"  1>> output.log 2>&1
+taskkill /F /IM "cleanmgr.exe"  1>> output.log 2>&1
+
+
 EXIT /B %ERRORLEVEL%
 
 
