@@ -37,8 +37,8 @@ echo '[+] Waiting 45 seconds for Ollama'
 sleep 45
 
 echo '[+] Pulling dolphin-llama3 '
-# ollama pull gemma2-27b
-ollama pull dolphin-llama3
+# ollama pull gemma2:27b
+ollama pull hillct/dolphin-llama-3.1
 # ollama pull deepseek-coder-v2
 # ollama pull HammerAI/openhermes-2.5-mistral
 # https://huggingface.co/TheBloke/LLaMA2-13B-Psyfighter2-GGUF/blob/main/llama2-13b-psyfighter2.Q4_K_M.gguf
