@@ -1142,6 +1142,15 @@ $trigger = New-ScheduledTaskTrigger -Daily -At "5:00PM"
 $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount
 Register-ScheduledTask -Action $action -Trigger $trigger -Principal $principal -TaskName "Fix Mount" 
 
+# shutdown at 12AM 
+$Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -Command Stop-Computer -Force"
+$Trigger = New-ScheduledTaskTrigger -Daily -At "12:00AM"
+$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
+Register-ScheduledTask -TaskName "ShutdownAtMidnight" -Action $Action -Trigger $Trigger -Settings $Settings -Description "Shuts down the computer daily at 12:00 AM"
+
+
+
+
 
 # armitage script for fvwm-crystal / PTF 
 cat /usr/local/sbin/armitage 
