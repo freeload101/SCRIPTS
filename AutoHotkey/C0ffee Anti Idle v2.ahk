@@ -24,12 +24,18 @@ Copy()
 
 ; Type Clipboard
 !z::{
-    clipboardContent := A_Clipboard
-    for char in StrSplit(clipboardContent) {
-        Send(char)
-        Sleep(20) ; Adjust the sleep time as needed
+    Sleep 1000
+    ; Store clipboard content
+    text := A_Clipboard
+
+    ; Send each character with 1 second delay
+    for char in StrSplit(text)
+    {
+        Send char
+        Sleep 50
     }
 }
+
 
 ; common input
 !x::Send "Robert.mccurdy@newellco.com"
