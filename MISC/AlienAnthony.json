@@ -3,11 +3,11 @@
 
 "model": {
   "api": "ollama",
-  "model": "deepseek-coder-v2:latest"
+  "model": "gemma2:27b"
 },
 "embedding": {
   "api": "ollama",
-  "model": "deepseek-coder-v2:latest"
+  "model": "gemma2:27b"
 },
   "cooldown": 3000,
 
