@@ -40,7 +40,7 @@ sleep 45
 
 echo '[+] Pulling base model '
 # ollama pull gemma2:27b
-ollama pul dorian2b/vera
+ollama pull dorian2b/vera
 # ollama pull CognitiveComputations/dolphin-llama3.1
 # ollama pull deepseek-coder-v2
 # ollama pull HammerAI/openhermes-2.5-mistral
