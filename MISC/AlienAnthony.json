@@ -3,11 +3,11 @@
 
 "model": {
   "api": "ollama",
-  "model": "gemma2:27b"
+  "model": "dorian2b/vera:latest"
 },
 "embedding": {
   "api": "ollama",
-  "model": "gemma2:27b"
+  "model": "dorian2b/vera:latest"
 },
   "cooldown": 3000,
 
