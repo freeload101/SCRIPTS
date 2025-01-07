@@ -28,12 +28,14 @@ echo '[+] Restarting docker'
 systemctl daemon-reload
 systemctl restart docker
 
+command -v ollama >/dev/null 2>&1 || OLLAMACHECK=0
 
-
+if [[ ($OLLAMACHECK == 0 ) ]]
+then
 echo '[+] Installing Ollama'
 curl -fsSL https://ollama.com/install.sh | sh
 
-echo '[+] Waiting 45 seconds for Ollama'
+echo '[+] Waiting 45 seconds for Ollama to start'
 sleep 45
 
 echo '[+] Pulling base model '
@@ -43,6 +45,12 @@ ollama pul dorian2b/vera
 # ollama pull deepseek-coder-v2
 # ollama pull HammerAI/openhermes-2.5-mistral
 # https://huggingface.co/TheBloke/LLaMA2-13B-Psyfighter2-GGUF/blob/main/llama2-13b-psyfighter2.Q4_K_M.gguf
+
+else
+echo "[+] Ollama installed already"
+fi
+
+
 
 echo '[+] Installing nvidia-container-toolkit'
 sudo apt-get install -y nvidia-container-toolkit
