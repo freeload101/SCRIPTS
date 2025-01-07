@@ -45,7 +45,10 @@ ollama pull dorian2b/vera
 # ollama pull deepseek-coder-v2
 # ollama pull HammerAI/openhermes-2.5-mistral
 # https://huggingface.co/TheBloke/LLaMA2-13B-Psyfighter2-GGUF/blob/main/llama2-13b-psyfighter2.Q4_K_M.gguf
-
+echo '[+] Setting up Ollama systemd to start listening on 0.0.0.0 '
+sed -i '/ExecStart/a Environment="OLLAMA_HOST=0.0.0.0"' /etc/systemd/system/ollama.service
+systemctl daemon-reload
+sudo systemctl restart ollama.service
 else
 echo "[+] Ollama installed already"
 fi
