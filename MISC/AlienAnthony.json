@@ -3,6 +3,7 @@
 
 "model": {
   "api": "ollama",
+  "url": "http://localhost:11434",
   "model": "dorian2b/vera:latest"
 },
 "embedding": {
