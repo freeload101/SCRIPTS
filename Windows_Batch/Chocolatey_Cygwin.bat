@@ -126,6 +126,7 @@ choco list -lo
 
 for %%x in (
 	chocolateygui
+	winmerge
 	chromium
 	irfanview
 	irfanview-shellextension
