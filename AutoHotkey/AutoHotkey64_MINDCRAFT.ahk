@@ -1,41 +1,55 @@
 VarBotName := InputBox("Bot Name", "")
+ 
+
 global VarBotName
 SetKeyDelay 75, 25
- 
+
 MCSendKey(VarCommand) {
 		send "{esc}"
 		sleep 100
-
-		send "t"
+		send "/"
 		sleep 100
-		send "/msg " VarBotName.value " {!}stop"
+		send "{esc}"
 		sleep 100
-		send "{enter}"
-		sleep 100
-
-		send "t"
-		sleep 100
-		send "/msg " VarBotName.value " {!}endGoal"
-		sleep 100
-		send "{enter}"
-		sleep 100
-
-
-		send "t"
-		sleep 100
-		send "/msg " VarBotName.value " {!}stfu"
-		sleep 100
-		send "{enter}"
-		sleep 100
-
-		send "t"
-		sleep 100
-		send "/msg " VarBotName.value " {!}" VarCommand
-		sleep 100
-		send "{enter}"
-
 		
+		send "/"
+		sleep 100
+		send "msg " VarBotName.value " {!}stop"
+		sleep 100
+		send "{enter}"
+		sleep 100
+
+		send "/"
+		sleep 100
+		send "msg " VarBotName.value " {!}endGoal"
+		sleep 100
+		send "{enter}"
+		sleep 100
+
+
+		send "/"
+		sleep 100
+		send "msg " VarBotName.value " {!}stfu"
+		sleep 100
+		send "{enter}"
+		sleep 100
+
+		send "/"
+		sleep 100
+		send "msg " VarBotName.value " {!}inventory"
+		sleep 100
+		send "{enter}"
+		sleep 100
+
+
+		send "/"
+		sleep 100
+		send "msg " VarBotName.value " {!}" VarCommand
+		sleep 100
+		send "{enter}"
+
 }
+
 f1::{
 		VarCommand := InputBox("Command", "")
 		global VarCommand
@@ -44,34 +58,14 @@ f1::{
 
 f2::{
 
-		send "t"
-		sleep 100
-		send "/msg " VarBotName.value " {!}stop"
-		sleep 100
-		send "{enter}"
-		sleep 100
-
-		send "t"
-		sleep 100
-		send "/msg " VarBotName.value " {!}endGoal"
-		sleep 100
-		send "{enter}"
-		sleep 100
-
-
-		send "t"
-		sleep 100
-		send "/msg " VarBotName.value " {!}stfu"
-		sleep 100
-		send "{enter}"
-		sleep 100
-
+	MCSendKey('!stop' )
 	}
-
  
+ 
+
 Strings := [
    ; Array[1] contains the caption used in the Switch/Case section, Array[2] contains the text displayed in the Menu
-   ["MenuTitle" ,    "* * * OneNote Quick Access Menu * * *" ],
+   ["MenuTitle" ,    "* * * Mineflayer Actions * * *" ],
    ["Command1"  ,    "FollowPlayer"],
    ["Command2",    "Search For Block"],
    ["Command3"  ,    "searchForEntity"],
@@ -129,7 +123,7 @@ MenuHandler(ItemName, ItemPos, ThisMenu) {
 	case "Command4":
 		VarBlock := InputBox("collectBlocks", "")
 		global VarBlock
-		MCSendKey('collectBlocks("' VarBlock.value '",32)' )
+		MCSendKey('collectBlocks("' VarBlock.value '",999)' )
 
     default: 
     }
