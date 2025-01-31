@@ -3,7 +3,7 @@
 "model": {
    "api": "ollama",
    "url": "http://localhost:11434",
-   "model": "Sweaterdog/Andy-3.5"
+   "model": "Sweaterdog/Andy-3.5",
    "embedding": "nomic-embed-text"
 },
 "cooldown": 3000,
