@@ -1,3 +1,9 @@
+# prompts ... 
+# !goal("in the following order Craft a wooden_pickaxe, stone_pickaxe , iron_pickaxe and finaly a diamond_pickaxe")
+ 
+ 
+# !goal("use !nearbyBlocks to find resouces needed to Craft a wooden_pickaxe")
+
 
 # ollama 
 # ollama pull Sweaterdog/Andy-3.5
