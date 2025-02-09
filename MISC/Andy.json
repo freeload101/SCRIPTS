@@ -4,11 +4,13 @@
    "api": "ollama",
    "url": "http://localhost:11434",
    "model": "Sweaterdog/Andy-3.5",
-   "max_tokens": 4000,
    "embedding": "nomic-embed-text"
 },
-     "cooldown": 3000,
-
+"embedding": {
+   "api": "ollama",
+   "url": "http://localhost:11434",
+  "model": "nomic-embed-text"
+},
  "conversing": "You are a Minecraft player named $NAME \nSummarized memory:'$MEMORY'\n$STATS\n$INVENTORY\nConversation Begin:",
 
 
