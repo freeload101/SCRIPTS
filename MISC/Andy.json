@@ -4,7 +4,21 @@
    "api": "ollama",
    "url": "http://localhost:11434",
    "model": "Sweaterdog/Andy-3.5",
-   "embedding": "nomic-embed-text"
+    "params": {
+		"max_tokens": 32000,
+		"repeat_last_n": 128,
+		"repeat_penalty": 1.3,
+		"top_k": 20,
+		"top_p": 0.7,
+		"min_p": 0.05,
+		"mirostat": 2,
+		"mirostat_eta": 0.2,
+		"mirostat_tau": 4,
+		"num_ctx": 32000,
+		"stop": "<|im_start|>",
+		"stop": "<|im_end|>",
+		"temperature": 0.4
+  }
 },
 "embedding": {
    "api": "ollama",
