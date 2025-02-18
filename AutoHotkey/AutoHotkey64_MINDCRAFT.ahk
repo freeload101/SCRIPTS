@@ -1,6 +1,28 @@
+SetTimer AntiIdleUnknown, 58000, 0
+
+;;;;;;;;;;;;;;;;;;;;;
+;Sends F22 to anti idle
+;;;;;;;;;;;;;;;;;;;;
+
+SendF22()
+{
+send "{F22}"
+}
+
+AntiIdleUnknown()
+{
+	if (A_TimeIdle > 58000)
+	{
+		SendF22()
+	}
+}
+
+
+
 VarBotName := InputBox("Bot Name", "")
  
 
+ 
 global VarBotName
 SetKeyDelay 75, 25
 
@@ -19,36 +41,34 @@ MCSendKey(VarCommand) {
 		send "{enter}"
 		sleep 100
 
-		send "/"
-		sleep 100
-		send "msg " VarBotName.value " {!}endGoal"
-		sleep 100
-		send "{enter}"
-		sleep 100
-
-
-		send "/"
-		sleep 100
-		send "msg " VarBotName.value " {!}stfu"
-		sleep 100
-		send "{enter}"
-		sleep 100
-
-		send "/"
-		sleep 100
-		send "msg " VarBotName.value " {!}inventory"
-		sleep 100
-		send "{enter}"
-		sleep 100
-
+  
 
 		send "/"
 		sleep 100
 		send "msg " VarBotName.value " {!}" VarCommand
 		sleep 100
 		send "{enter}"
+		sleep 100
 
 }
+
+
+MCSendKeyNonBot(VarCommand) {
+		send "{esc}"
+		sleep 100
+		send "/"
+		sleep 100
+		send "{esc}"
+		sleep 100
+
+		send "/"
+		sleep 100
+		send VarCommand
+		sleep 100
+		send "{enter}"
+		sleep 100
+}
+
 
 f1::{
 		VarCommand := InputBox("Command", "")
@@ -61,17 +81,16 @@ f2::{
 	MCSendKey('!stop' )
 	}
  
- 
-
 Strings := [
    ; Array[1] contains the caption used in the Switch/Case section, Array[2] contains the text displayed in the Menu
-   ["MenuTitle" ,    "* * * Mineflayer Actions * * *" ],
+   ["MenuTitle" ,    "Quick Access Menu" ],
    ["Command1"  ,    "FollowPlayer"],
    ["Command2",    "Search For Block"],
    ["Command3"  ,    "searchForEntity"],
    ["Command4"   ,    "collectBlocks"],
-   ["TrackerLog",    "Tracker Log Section"],
-   ["MasterHK"  ,    "Master HotKeys and Hotstrings"]
+   ["Command5"   ,    "Spectate / Follow Bot"],
+   ["Command6"   ,    "goToCoordinates"],
+
 ]
 
 ; Create the menu ----------------------------------------------------------------------------------
@@ -124,6 +143,15 @@ MenuHandler(ItemName, ItemPos, ThisMenu) {
 		VarBlock := InputBox("collectBlocks", "")
 		global VarBlock
 		MCSendKey('collectBlocks("' VarBlock.value '",999)' )
+	case "Command5":
+		MCSendKeyNonBot("gamemode spectator desk509")
+		MCSendKeyNonBot('tp desk509 ' VarBotName.value )
+		MCSendKeyNonBot('gamerule doDaylightCycle false' )
+		MCSendKeyNonBot('time set 6000' )
+	case "Command6":
+		VarBlock := InputBox("x,y,z", "")
+		global VarBlock
+		MCSendKey('goToCoordinates("' VarBlock.value '",1)' )
 
     default: 
     }
