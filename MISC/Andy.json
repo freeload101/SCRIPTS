@@ -3,7 +3,7 @@
 "model": {
    "api": "ollama",
    "url": "http://localhost:11434",
-   "model": "Sweaterdog/Andy-3.5",
+   "model": "hf.co/Sweaterdog/Andy-3.6:Q4_K_M",
     "params": {
 		"max_tokens": 32000,
 		"repeat_last_n": 128,
