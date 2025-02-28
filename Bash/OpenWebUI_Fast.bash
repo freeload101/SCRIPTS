@@ -66,3 +66,6 @@ sudo systemctl restart docker
 
 echo '[+] Installing open-webui:dev-cuda Docker '
 docker run -d -p 3000:8080 --network=host  --gpus all --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data -e OLLAMA_BASE_URL=http://0.0.0.0:11434  --name open-webui --restart always ghcr.io/open-webui/open-webui:dev-cuda
+
+echo '[+] Auto updates '
+echo '0,12 */4 * * * /usr/bin/docker run --rm --volume /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --run-once open-webui' >> /etc/crontab
