@@ -6,6 +6,10 @@ echo This script will download and install a buncha stuff I use for base Windows
 echo ###############################################################################
 
 SET DIR=%~dp0%
+:: Set account lockout policy (locks account after 5 failed attempts for 30 minutes)
+net accounts /lockoutthreshold:5 /lockoutduration:30 /lockoutwindow:30
+
+
 :: firewall popup nag removed 
 New-Item -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System'
 Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLgOnBoot' -Value '0'
