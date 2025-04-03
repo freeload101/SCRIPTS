@@ -162,7 +162,7 @@ HighContrastOff()
 
 Split3()
 {
-	tooltip "WTF"
+	 
 	Send "{LWin down}"
 	sleep 200
 	send "z"
