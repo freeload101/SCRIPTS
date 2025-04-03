@@ -38,8 +38,8 @@ Copy()
 
 
 ; common input
-!x::Send "Robert.mccurdy@newellco.com"
-!c::Send "Refine the following message to make it more clear and concise:"
+!x::Split3()
+!c::Send " Refine the following message to make it more clear and concise using the personality MBTI Myers-Brigg personality ENFJ and tritype Enneagram 729. Be sure not to use any emojis at all in your response :"
 !v::Send "https://calendly.com/rmccurdy1 to setup a call any time"
 
 ; Reload
@@ -153,4 +153,25 @@ HighContrastOff()
 		run "taskkill /im systemsettings.exe /f"
 	}
 	
+}
+
+
+;;;;;;;;;;;;;;;;;;;;
+; Split into 3 and make the current window the center panel and reset whatever ... 
+;;;;;;;;;;;;;;;;;;;;
+
+Split3()
+{
+	tooltip "WTF"
+	Send "{LWin down}"
+	sleep 200
+	send "z"
+	sleep 200
+	Send "{LWin Up}"
+	send "z"
+	sleep 200
+	send "6"
+	sleep 200
+	send "2"
+	return
 }
