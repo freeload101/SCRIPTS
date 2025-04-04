@@ -1,5 +1,5 @@
 ; Complete rewrite for v2 ...
-
+InstallKeybdHook 
 
 !d::
 {
