@@ -170,7 +170,7 @@ Split3()
 	Send "{LWin Up}"
 	send "z"
 	sleep 200
-	send "6"
+	send "9"
 	sleep 200
 	send "2"
 	return
