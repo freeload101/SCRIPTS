@@ -57,7 +57,7 @@ Copy()
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP 
-SetTimer AntiIdleUnknown, 58000, 0
+SetTimer AntiIdleUnknown, 65000, 0
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;Sends F22 to anti idle
@@ -70,7 +70,7 @@ send "{F22}"
 
 AntiIdleUnknown()
 {
-	if (A_TimeIdle > 58000)
+	if (A_TimeIdle > 65000)
 	{
 		SendF22()
 	}
