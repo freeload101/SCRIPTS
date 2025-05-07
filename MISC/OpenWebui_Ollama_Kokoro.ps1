@@ -3,15 +3,15 @@ $process1 = Start-Process -FilePath "wsl" -ArgumentList "-d OpenWebUI_WSL_MASTER
 
 # Wait for the first process to start and get its PID
 Start-Sleep -Seconds 2  # Adjust the sleep time if necessary
-$pid1 = $process1.Id
+#$pid1 = $process1.Id
 
 # Start the second WSL process hidden, using the PID of the first one
-$dockerArgs = "-d OpenWebUI_WSL_MASTER -u root docker run --gpus all -p 8880:8880 ghcr.io/remsky/kokoro-fastapi-gpu:v0.2.2"
-$process2 = Start-Process -FilePath "wsl" -ArgumentList $dockerArgs -WindowStyle Hidden -PassThru
+#$dockerArgs = "-d OpenWebUI_WSL_MASTER -u root docker run --gpus all -p 8880:8880 ghcr.io/remsky/kokoro-fastapi-gpu:v0.2.2"
+#$process2 = Start-Process -FilePath "wsl" -ArgumentList $dockerArgs -WindowStyle Hidden -PassThru
 
 # Wait for the second process to start and get its PID
-Start-Sleep -Seconds 2  # Adjust the sleep time if necessary
-$pid2 = $process2.Id
+#Start-Sleep -Seconds 2  # Adjust the sleep time if necessary
+#$pid2 = $process2.Id
 
 
 $env:OLLAMA_HOST = "0.0.0.0"
