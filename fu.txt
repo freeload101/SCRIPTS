@@ -3198,3 +3198,8 @@ it won't let me do tcp.connection.fin==1 and tcp.connection.rst==1
 
 # pretty print JSON brah ... gezz .. 
 python -m json.tool out.json
+
+
+# WSL local bins .local/bin
+mkdir ~/.local; mkdir ~/.local/bin; echo 'find / -path /mnt -prune -o -name "${1}" -print 2> /dev/null' > ~/.local/bin/FINDWSL ; chmod 755 ~/.local/bin/FINDWSL ;cp  ~/.local/bin/FINDWSL  /usr/local/sbin;chmod 755 /usr/local/sbin/FINDWSL
+
