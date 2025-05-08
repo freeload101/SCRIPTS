@@ -4,9 +4,10 @@ InstallKeybdHook
 
 ; 1. Create a CSV file C:\backup\data.csv Example: https://raw.githubusercontent.com/freeload101/SCRIPTS/refs/heads/master/AutoHotkey/data.csv
 ; 2. Open and for the field "Select the Week Ending Date of your work search" select the date range you like to submit 
-; 3. Press F2 to run the macro!
+; 3. Press F2 to run the macro! 
 
 ; Issues:
+; Video: https://youtu.be/LMj0pwGzVrE 
 ; Report https://github.com/freeload101/SCRIPTS/issues/new?template=bug_report.md
 ; Make sure your State code or State full name is correct
 ; Make sure your City name is correct
