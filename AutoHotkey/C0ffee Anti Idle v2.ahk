@@ -204,8 +204,6 @@ ResizeAllWindowsHeight()
 
 Split3()
 {
-tooltip "WTF"
-
 delay1 := "300"
 ResizeAllWindowsHeight()
 
