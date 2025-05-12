@@ -155,6 +155,48 @@ HighContrastOff()
 	
 }
 
+;;;;;;;;;;;;;;;;;;;;
+; Cycle through all windows and set their height to 1400
+;;;;;;;;;;;;;;;;;;;;
+
+
+ResizeAllWindowsHeight()
+{
+    ; Get list of all windows
+    windowList := WinGetList()
+    resizedCount := 0
+
+    for hwnd in windowList
+    {
+        try
+        {
+            ; Skip if window doesn't exist or is minimized/maximized
+            if !WinExist("ahk_id " hwnd) || WinGetMinMax("ahk_id " hwnd) != 0
+                continue
+
+            ; Skip windows with no title (usually system/special windows)
+            if !WinGetTitle("ahk_id " hwnd)
+                continue
+
+            ; Get current position and size
+            WinGetPos &x, &y, &width, &height, "ahk_id " hwnd
+
+            ; Skip windows with no dimensions
+            if !height || !width
+                continue
+
+            ; Resize window (maintain width, change height to 1400)
+            WinMove x, y, width, 1400, "ahk_id " hwnd
+            resizedCount++
+        }
+        catch as e
+        {
+            ; Skip windows that can't be resized
+            continue
+        }
+    }
+}
+
 
 ;;;;;;;;;;;;;;;;;;;;
 ; Split into 3 and make the current window the center panel and reset whatever ... 
@@ -162,16 +204,23 @@ HighContrastOff()
 
 Split3()
 {
-	 
+tooltip "WTF"
+
+delay1 := "300"
+ResizeAllWindowsHeight()
+
+sleep delay1
+
 	Send "{LWin down}"
-	sleep 200
+	sleep delay1
 	send "z"
-	sleep 200
+	sleep delay1
 	Send "{LWin Up}"
-	send "z"
-	sleep 200
-	send "9"
-	sleep 200
+	sleep delay1
+	send "6"
+	sleep delay1
 	send "2"
+	sleep delay1
+	Send "{enter}"
 	return
 }
