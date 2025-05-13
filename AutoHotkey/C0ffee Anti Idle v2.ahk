@@ -215,7 +215,7 @@ sleep delay1
 	sleep delay1
 	Send "{LWin Up}"
 	sleep delay1
-	send "6"
+	send "9"
 	sleep delay1
 	send "2"
 	sleep delay1
