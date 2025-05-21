@@ -12,6 +12,10 @@
 ############## TO FIX EDGE RERUN REDIRECT WITH THE /UNINSTALL , REBOOT, RUN THE  Edge_Removal.bat , REBOOT  AND RUN ://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/6d376ab4-4a07-4679-8918-e0dc3c0735c8/MicrosoftEdgeWebView2RuntimeInstallerX64.exe 
 ####################################################################################
 
+# diable MS signin ..
+Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "NoMicrosoftAccount" -Value 1 -Type DWord
+
+
 Write-Output "Downloading MSEdgeRedirect"
 $downloadUri = ((Invoke-RestMethod -Method GET -Uri "https://api.github.com/repos/rcmaehl/MSEdgeRedirect/releases/latest").assets | Where-Object name -like *.exe ).browser_download_url
 Invoke-WebRequest -Uri "$downloadUri" -OutFile "c:\windows\temp\MSEdgeRedirect.exe"
