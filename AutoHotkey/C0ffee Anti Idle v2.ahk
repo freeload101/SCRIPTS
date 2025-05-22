@@ -185,8 +185,8 @@ ResizeAllWindowsHeight()
             if !height || !width
                 continue
 
-            ; Resize window (maintain width, change height to 1400)
-            WinMove x, 0, width, 1400, "ahk_id " hwnd
+            ; Resize window (maintain width, change height to 1440)
+            WinMove x, 0, width, 1440, "ahk_id " hwnd
             resizedCount++
         }
         catch as e
