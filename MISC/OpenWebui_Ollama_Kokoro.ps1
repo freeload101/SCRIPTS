@@ -19,6 +19,8 @@ $env:OLLAMA_HOST = "0.0.0.0"
 # $env:OLLAMA_MAX_LOADED_MODELS = 3
 #$env:OLLAMA_KEEP_ALIVE = "60m"
 $env:OLLAMA_KEEP_ALIVE = "-1"
+$env:OLLAMA_FLASH_ATTENTION = "1" 
+
 	
 	
 # Start the third process hidden, using the PIDs of the first two processes (if needed)
