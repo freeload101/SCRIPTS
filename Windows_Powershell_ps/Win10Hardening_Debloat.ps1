@@ -9,7 +9,14 @@
 
 
 ############################################ WARNING #################################
-############## TO FIX EDGE RERUN REDIRECT WITH THE /UNINSTALL , REBOOT, RUN THE  Edge_Removal.bat , REBOOT  AND RUN ://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/6d376ab4-4a07-4679-8918-e0dc3c0735c8/MicrosoftEdgeWebView2RuntimeInstallerX64.exe 
+############## TO FIX EDGE ( may not need all ) :
+# RERUN REDIRECT WITH THE /UNINSTALL , REBOOT, 
+# RUN THE  Edge_Removal.bat , REBOOT 
+# enable webview install ...
+#Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate" -Name "Install{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" -Value 1 -Type DWord -Force
+# enable microsoft store
+# Get-AppxPackage -allusers Microsoft.WindowsStore | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"};wsreset -i;Get-AppxPackage -allusers Microsoft.MicrosoftEdge* | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
+# RUN ://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/6d376ab4-4a07-4679-8918-e0dc3c0735c8/MicrosoftEdgeWebView2RuntimeInstallerX64.exe 
 ####################################################################################
 
 # diable MS signin ..
