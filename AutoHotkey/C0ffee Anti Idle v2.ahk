@@ -68,6 +68,21 @@ SendF22()
 send "{F22}"
 }
 
+
+;Setup keyboard state
+;;;;;;;;;;;;;;;;;;;;
+
+WipeKbdState()
+{
+send "{alt up}"
+send "{ctrl up}"
+SetNumLockState False
+SetNumLockState false
+}
+
+ 
+
+
 AntiIdleUnknown()
 {
 	if (A_TimeIdle > 65000)
@@ -204,6 +219,9 @@ ResizeAllWindowsHeight()
 
 Split3()
 {
+tooltip "SPLIT3"
+WipeKbdState
+
 delay1 := "300"
 ResizeAllWindowsHeight()
 
@@ -220,5 +238,7 @@ sleep delay1
 	send "2"
 	sleep delay1
 	Send "{enter}"
+	tooltip ""
 	return
+
 }
