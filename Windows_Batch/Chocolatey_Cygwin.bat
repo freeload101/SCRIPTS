@@ -9,6 +9,9 @@ SET DIR=%~dp0%
 :: Set account lockout policy (locks account after 5 failed attempts for 30 minutes)
 net accounts /lockoutthreshold:5 /lockoutduration:30 /lockoutwindow:30
 
+:: enable time sync EST
+w32tm /config /manualpeerlist:"time.windows.com,0x1" /syncfromflags:manual /reliable:yes /update;net stop w32time;net start w32time;w32tm /resync;Set-TimeZone -Id "Eastern Standard Time"
+
 
 :: firewall popup nag removed 
 New-Item -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System'
