@@ -21,10 +21,93 @@ write-host "About to kill: " $_.ProcessName
 Stop-Process  $_.Id -Force 
 }
  
+Start-Sleep -Seconds 10
 
 $countafter = (Get-Process).Count
 $countkilled = $countb4-$countafter
 write-host "Killed $countkilled Processes"
 
+
+
+# --- Start of Configuration ---
+
+# Define the list of your approved service name patterns (using regular expressions).
+# '.*' is a regex wildcard that matches any sequence of characters.
+# Patterns are automatically anchored to match the full service name.
+$approvedServicePatterns = @(
+    'BrokerInfrastructure', 'DcomLaunch', 'PlugPlay', 'Power', 'SystemEventsBroker',
+    'RpcEptMapper', 'RpcSs', 'LSM', 'HvHost', 'TermService', 'lmhosts', 'BthAvctpSvc',
+    'NcbService', 'TimeBrokerSvc', 'hidserv', 'nsi', 'netprofm', 'UmRdpService',
+    'camsvc', 'CertPropSvc', 'Winmgmt', 'Schedule', 'Dnscache', 'LanmanWorkstation',
+    'ProfSvc', 'UserManager', 'SessionEnv', 'Dhcp', 'CoreMessagingRegistrar',
+    'WinHttpAutoProxySvc', 'HNS', 'EventLog', 'EventSystem', 'Themes', 'SENS',
+    'nvagent', 'AudioEndpointBuilder', 'BFE', 'mpssvc', 'StateRepository',
+    'DispBrokerDesktopSvc', 'SharedAccess', 'IKEEXT', 'PolicyAgent', 'Audiosrv',
+    'TextInputManagementService', 'DusmSvc', 'Wcmsvc', 'WlanSvc', 'ShellHWDetection',
+    'iphlpsvc', 'DeviceAssociationService', 'CryptSvc', 'DPS', 'SstpSvc', 'StiSvc',
+    'TapiSrv', 'LanmanServer', 'RasMan', 'StorSvc', 'LicenseManager', 'SSDPSRV',
+    'FontCache', 'DeviceInstall', 'webthreatdefsvc', 'InstallService', 'CDPSvc',
+    'Appinfo', 'WdiSystemHost', 'UsoSvc', 'wscsvc', 'WpnService', 'RmSvc', 'fdPHost',
+    'wcncsvc', 'DsSvc', 'DisplayEnhancementService', 'AppXSvc', 'gpsvc', 'NgcCtnrSvc',
+    'TokenBroker',
+    # Patterns for user-specific services (wildcard '.*' used)
+    'CDPUserSvc_.*',
+    'webthreatdefusersvc_.*',
+    'WpnUserService_.*',
+    'cbdhsvc_.*',
+    'OneSyncSvc_.*',
+    'PimIndexMaintenanceSvc_.*',
+    'UnistoreSvc_.*',
+    'UserDataSvc_.*',
+    'NPSMSvc_.*',
+    'DevicesFlowUserSvc_.*',
+    'UdkUserSvc_.*'
+)
+
+# --- End of Configuration ---
+
+# Combine all patterns into a single regex string.
+# The '^' and '$' anchor the match to the beginning and end of the service name,
+# ensuring that 'svc' doesn't accidentally match 'myservice'.
+$combinedRegex = '^(' + ($approvedServicePatterns -join '|') + ')$'
+
+
+# Get all svchost.exe processes
+$svchostProcesses = Get-CimInstance -ClassName Win32_Process -Filter "Name = 'svchost.exe'"
+
+# Loop through each svchost process
+foreach ($process in $svchostProcesses) {
+    # Get all services hosted by this specific process
+    $hostedServices = Get-CimInstance -ClassName Win32_Service -Filter "ProcessId = $($process.ProcessId)"
+
+    if (-not $hostedServices) {
+        continue
+    }
+
+    # Find any services whose names DO NOT MATCH the combined regex pattern.
+    $unapprovedServices = $hostedServices | Where-Object { $_.Name -notmatch $combinedRegex }
+
+    # If we found at least one unapproved service, terminate the process
+    if ($unapprovedServices) {
+        Write-Host "--------------------------------------------------" -ForegroundColor Red
+        Write-Host "Found svchost process (PID: $($process.ProcessId)) with unapproved services."
+
+        Write-Host "Unapproved Service(s) Found:" -ForegroundColor Yellow
+        $unapprovedServices | ForEach-Object { Write-Host "  - $($_.Name) ($($_.DisplayName))" }
+        Write-Host ""
+
+        # --- ACTION ---
+        # The -WhatIf parameter prevents the command from running. It just shows what would happen.
+        # REMOVE "-WhatIf" TO ACTUALLY TERMINATE THE PROCESS.
+        write-host "About to kill: " $process.ProcessId
+        Start-Sleep -Seconds 1
+        Stop-Process -Id $process.ProcessId -Force  
+    }
+}
+ 
+
 write-host "`DONE`n"
 Start-Sleep -Seconds 10
+
+
+
