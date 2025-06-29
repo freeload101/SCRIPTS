@@ -7,4 +7,13 @@ termux-setup-storage
 echo "cd ~/storage/downloads" >> ~/.bashrc
 source ~/.bashrc
 
-pkg install yt-dlp -y
+pip install --break-system-packages pipenv
+npm install -g n
+# curl -fsSL https://get.docker.com | sh
+
+
+pkg install -y git
+pkg install -y curl
+pkg install -y wget
+pkg install -y yt-dlp
+ 
