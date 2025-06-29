@@ -49,7 +49,7 @@ $approvedServicePatterns = @(
     'FontCache', 'DeviceInstall', 'webthreatdefsvc', 'InstallService', 'CDPSvc',
     'Appinfo', 'WdiSystemHost', 'UsoSvc', 'wscsvc', 'WpnService', 'RmSvc', 'fdPHost',
     'wcncsvc', 'DsSvc', 'DisplayEnhancementService', 'AppXSvc', 'gpsvc', 'NgcCtnrSvc',
-    'TokenBroker',
+    'TokenBroker', 'wlidsvc', 'ClipSVC', 'XblAuthManager',
     # Patterns for user-specific services (wildcard '.*' used)
     'CDPUserSvc_.*',
     'webthreatdefusersvc_.*',
