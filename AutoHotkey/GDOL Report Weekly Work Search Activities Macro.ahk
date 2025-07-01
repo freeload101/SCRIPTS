@@ -2,9 +2,10 @@ InstallKeybdHook
 ; Requirements:
 ; * Autohotkey v2
 
-; 1. Create a CSV file C:\backup\data.csv Example: https://raw.githubusercontent.com/freeload101/SCRIPTS/refs/heads/master/AutoHotkey/data.csv
-; 2. Open and for the field "Select the Week Ending Date of your work search" select the date range you like to submit 
-; 3. Press F2 to run the macro! 
+; * Create a CSV file C:\backup\data.csv Example: https://raw.githubusercontent.com/freeload101/SCRIPTS/refs/heads/master/AutoHotkey/data.csv
+; * Make sure the date,zip code is all correct and you don't have any required fields with wrong info! example date format 11/12/25 insted of 11/21/2025 or zip code of 9333 insted of 09333
+; * Open and for the field "Select the Week Ending Date of your work search" select the date range you like to submit 
+; * Press F2 to run the macro! 
 
 ; Issues:
 ; Video: https://youtu.be/LMj0pwGzVrE 
@@ -166,6 +167,8 @@ sleep delayBetweenFields
 			
 	tooltip field
 	sleep 200
+			; Remove all CR and LF in one line
+			field := StrReplace(StrReplace(field, "`r", ""), "`n", "")
 
 			; Type the field
 			SendInput "{Text}" field
