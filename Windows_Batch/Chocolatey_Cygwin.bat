@@ -59,6 +59,8 @@ reg add "HKCU\Control Panel\Desktop" /v "WaitToKillAppTimeout" /t REG_SZ /d "100
 reg add "HKLM\System\CurrentControlSet\Control" /v "WaitToKillServiceTimeout" /t REG_SZ /d "1000" /f
 reg add "HKCU\Control Panel\Desktop" /v "WaitToKillApp" /t REG_SZ /d "1000" /f
 reg add "HKLM\System\CurrentControlSet\Control" /v "WaitToKillServiceTimeout" /t REG_SZ /d "1000" /f
+reg add "HKCU\Control Panel\Desktop" /v "AutoEndTasks" /t REG_SZ /d "1" /f
+
 
 
 CHOICE /C YN /N /T 5 /D N /M "Install Cygwin and optional Windows apps ? Y/N"
