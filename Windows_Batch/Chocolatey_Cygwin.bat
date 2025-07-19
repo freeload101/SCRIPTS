@@ -151,7 +151,6 @@ for %%x in (
 	filezilla
 	gimp
 	teracopy
-	beyondcompare
 	yt-dlp
 	ffmpeg
 ) do (
