@@ -12,7 +12,6 @@ net accounts /lockoutthreshold:5 /lockoutduration:30 /lockoutwindow:30
 :: enable time sync EST
 w32tm /config /manualpeerlist:"time.windows.com,0x1" /syncfromflags:manual /reliable:yes /update;net stop w32time;net start w32time;w32tm /resync;Set-TimeZone -Id "Eastern Standard Time"
 
-
 :: firewall popup nag removed 
 New-Item -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System'
 Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLgOnBoot' -Value '0'
@@ -95,7 +94,7 @@ CALL :theEnd
 :DEBLOAT
 echo [+] Downloading/Installing Win10Hardening_Debloat.ps1
 ::download install.ps1
-%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://github.com/freeload101/SCRIPTS/raw/master/Windows_Powershell_ps/Win10Hardening_Debloat.ps1','%DIR%Win10Hardening_Debloat.ps1'))"
+%systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "((new-object net.webclient).DownloadFile('https://github.com/freeload101/SCRIPTS/raw/master/Windows_Powershell_ps/Win10_11_Hardening_Debloat.ps1','%DIR%Win10Hardening_Debloat.ps1'))"
 ::run installer
 %systemroot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%DIR%Win10Hardening_Debloat.ps1' %*"
 EXIT /B %ERRORLEVEL%
