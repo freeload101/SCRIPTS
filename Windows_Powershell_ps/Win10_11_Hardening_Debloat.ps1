@@ -108,6 +108,122 @@ Reg Add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Feeds" /T R
 # Disable "Meet Now" because it's not nuff to disable Skype ...
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "HideSCAMeetNow" -Value 1
 
+
+# 1. Remove the Store apps that ship with Win11 but were NOT in Win10
+$Provisioned = @(
+    'Clipchamp.Clipchamp'
+    'MicrosoftTeams'
+    'Microsoft.GamingApp'
+    'Microsoft.GetHelp'
+    'Microsoft.Getstarted'
+    'Microsoft.MicrosoftOfficeHub'
+    'Microsoft.MixedReality.Portal'
+    'Microsoft.People'
+    'Microsoft.PowerAutomateDesktop'
+    'Microsoft.Todos'
+    'Microsoft.Windows.Photos'      # optional – keep if you use it
+    'Microsoft.WindowsAlarms'
+    'Microsoft.WindowsCamera'
+    'Microsoft.WindowsFeedbackHub'
+    'Microsoft.WindowsMaps'
+    'Microsoft.WindowsSoundRecorder'
+    'Microsoft.Xbox.TCUI'
+    'Microsoft.XboxApp'
+    'Microsoft.XboxGameOverlay'
+    'Microsoft.XboxGamingOverlay'
+    'Microsoft.XboxIdentityProvider'
+    'Microsoft.XboxSpeechToTextOverlay'
+    'Microsoft.ZuneMusic'
+    'Microsoft.ZuneVideo'
+    'MicrosoftCorporationII.MicrosoftFamily'
+    'MicrosoftCorporationII.QuickAssist'
+    'SpotifyAB.SpotifyMusic'
+)
+foreach ($App in $Provisioned) {
+    Get-AppxPackage -AllUsers | Where-Object {$_.PackageFullName -like "*$App*"} |
+        Remove-AppxPackage -ErrorAction SilentlyContinue
+    Get-AppxProvisionedPackage -Online | Where-Object {$_.PackageName -like "*$App*"} |
+        Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+}
+
+# 2. Disable Copilot + AI features
+# 2a. Remove the Copilot app package
+Get-AppxPackage *Windows.Copilot* | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
+
+# 2b. Block Copilot via registry
+$RegPaths = @(
+    'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot'
+    'HKCU:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot'
+)
+foreach ($Path in $RegPaths) {
+    if (!(Test-Path $Path)) { New-Item -Path $Path -Force | Out-Null }
+    Set-ItemProperty -Path $Path -Name 'TurnOffWindowsCopilot' -Value 1 -Type DWord -Force
+}
+
+# 2c. Disable Recall (AI snapshots) – only on 24H2+
+$RecallPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI'
+if (!(Test-Path $RecallPath)) { New-Item -Path $RecallPath -Force | Out-Null }
+Set-ItemProperty -Path $RecallPath -Name 'DisableAIDataAnalysis' -Value 1 -Type DWord -Force
+
+# 3. Turn off ads, promos, tracking
+$AdKeys = @{
+    'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' = @(
+        'SilentInstalledAppsEnabled', 'SystemPaneSuggestionsEnabled',
+        'SubscribedContent-338393Enabled', 'SubscribedContent-353694Enabled',
+        'SubscribedContent-353696Enabled', 'SubscribedContent-338388Enabled',
+        'SubscribedContent-88000313Enabled', 'SubscribedContent-88000314Enabled'
+    )
+    'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent' = @(
+        'DisableWindowsConsumerFeatures'
+    )
+}
+foreach ($Key in $AdKeys.Keys) {
+    foreach ($Value in $AdKeys[$Key]) {
+        Set-ItemProperty -Path $Key -Name $Value -Value 0 -Type DWord -Force
+    }
+}
+
+
+# AI notepad Windows 11 ... 
+
+# 1. Remove the AI-packing UWP Notepad
+Get-AppxPackage *WindowsNotepad* | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
+
+# 2. Download & install the classic Notepad from the Win10 inbox package
+#    (tiny ~200 KB standalone, no AI hooks)
+$url = 'https://github.com/pbatard/notepad2/releases/download/v4.22.05r4280/Notepad2.exe'
+$out = "$env:ProgramFiles\Notepad2\Notepad2.exe"
+New-Item -ItemType Directory -Path (Split-Path $out) -Force | Out-Null
+Invoke-WebRequest -Uri $url -OutFile $out
+
+# 3. Make it the default handler for .txt (optional)
+Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.txt\UserChoice' `
+                 -Name 'ProgId' -Value 'Applications\Notepad2.exe' -Force
+
+Write-Host "Classic Notepad installed; AI Notepad removed." -ForegroundColor Green
+
+
+
+# 4. Disable telemetry & diagnostics
+Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection' `
+                 -Name 'AllowTelemetry' -Value 0 -Type DWord -Force
+Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection' `
+                 -Name 'AllowTelemetry' -Value 0 -Type DWord -Force
+Stop-Service -Name 'DiagTrack' -Force
+Set-Service -Name 'DiagTrack' -StartupType Disabled
+
+Write-Host "Done. Reboot to finish cleaning up." -ForegroundColor Green
+
+# Replace Notepad with the legacy inbox version
+takeown /f "%windir%\System32\Notepad.exe"
+icacls "%windir%\System32\Notepad.exe" /grant administrators:F
+ren "%windir%\System32\Notepad.exe" Notepad.exe.new
+ren "%windir%\System32\Notepad.exe.old" Notepad.exe
+
+
+
+
+
 # Default preset
 $tweaks = @(
 	### Require administrator privileges ###
