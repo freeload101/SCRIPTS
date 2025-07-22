@@ -10,25 +10,7 @@ $env:LOCALAPPDATA = Join-Path $scriptPath "Users\Moba_Data\AppData\Local"
 $env:TEMP = Join-Path $scriptPath "Users\Moba_Data\AppData\Local\Temp"
 $env:TMP = Join-Path $scriptPath "Users\Moba_Data\AppData\Local\Temp"
 $env:USERPROFILE = Join-Path $scriptPath "Users\Moba_Data"
-
-# Remove the AppData directory and all its contents
-$appDataPath = Join-Path $scriptPath "Users\Moba_Data\AppData"
-if (Test-Path $appDataPath) {
-    Remove-Item -Path $appDataPath -Recurse -Force -ErrorAction SilentlyContinue
-}
-
-# Create directory structure
-$directories = @(
-    $env:USERPROFILE,
-    (Join-Path $env:USERPROFILE "AppData"),
-    (Join-Path $env:USERPROFILE "AppData\Local"),
-    (Join-Path $env:USERPROFILE "AppData\Local\Temp"),
-    (Join-Path $env:USERPROFILE "AppData\Roaming")
-)
-
-foreach ($dir in $directories) {
-    New-Item -ItemType Directory -Path $dir -Force -ErrorAction SilentlyContinue | Out-Null
-}
+ 
 
 
 ############# downloadFile
@@ -64,11 +46,26 @@ function downloadFile($url, $targetFile)
 
 ############# CHECK Moba
 Function CheckMoba {
-   if (-not(Test-Path -Path "$scriptPath\home" )) {
+   if (-not(Test-Path -Path "$scriptPath\Users" )) {
+            # Create directory structure
+            $directories = @(
+            $env:USERPROFILE,
+            (Join-Path $env:USERPROFILE "AppData"),
+            (Join-Path $env:USERPROFILE "AppData\Local"),
+            (Join-Path $env:USERPROFILE "AppData\Local\Temp"),
+            (Join-Path $env:USERPROFILE "AppData\Roaming")
+            (Join-Path $env:USERPROFILE "Users")
+            )
+
+            foreach ($dir in $directories) {
+                New-Item -ItemType Directory -Path $dir -Force -ErrorAction SilentlyContinue | Out-Null
+            }
+
+
         try {
 			$downloadUri = (Invoke-RestMethod -Method GET -Uri "https://mobaxterm.mobatek.net/download-home-edition.html")    -split '\n' -match '.*_Portable.*zip.*' | ForEach-Object {$_ -ireplace '.* href="','' -ireplace  '".*',''}| select -first 1
      
-            downloadFile $downloadUri "$scriptPath\MobaXterm_Portable.zip"
+            downloadFile $downloadUri  "$scriptPath\MobaXterm_Portable.zip"
 
             Expand-Archive -Path "$scriptPath\MobaXterm_Portable.zip" -DestinationPath "."
 
