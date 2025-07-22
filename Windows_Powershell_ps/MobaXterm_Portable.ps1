@@ -2,6 +2,9 @@
 $scriptPath = (Get-Location)
 Set-Location -Path "$scriptPath"
 
+# install nerd fonts
+# & ([scriptblock]::Create((iwr 'https://to.loredo.me/Install-NerdFont.ps1'))) -Name hack, heavy-data
+
 # Set environment variables
 $env:HOMEDRIVE = Split-Path -Qualifier $scriptPath
 $env:APPDATA = Join-Path $scriptPath "Users\Moba_Data\AppData\Roaming"
