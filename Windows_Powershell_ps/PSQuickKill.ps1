@@ -16,7 +16,7 @@ $countb4 = (Get-Process).Count
  
  
 Get-Process   | Where{!($_.UserName -match "NT AUTHORITY\\(?:SYSTEM|(?:LOCAL|NETWORK) SERVICE)") -and !($_.ProcessName -eq "explorer") -and !($_.ProcessName -eq "smss")  -and !($_.ProcessName -eq "conhost")  -and !($_.ProcessName -eq "powershell") -and !($_.ProcessName -eq "smartscreen") -and !($_.ProcessName -eq "sihost")  -and !($_.ProcessName -eq "CSFalconService") -and !($_.ProcessName -eq "CSFalconContainer") -and !($_.ProcessName -eq "SecurityHealthService") -and !($_.ProcessName -eq "SecurityHealthSystray") -and !($_.ProcessName -eq "cmd.exe") -and !($_.ProcessName -eq "explorer") -and !($_.ProcessName -eq "taskmgr") -and !($_.ProcessName -eq "svchost") -and !($_.ProcessName -eq "lsass") -and !($_.ProcessName -eq "dwm") -and !($_.ProcessName -eq "fontdrvhost") -and !($_.ProcessName -eq "ctfmon") -and !($_.ProcessName -eq "tasklist") -and !($_.ProcessName -eq "Winlogon") -and !($_.ProcessName -eq "dllhost") -and !($_.ProcessName -eq "lsaiso") -and !($_.ProcessName -eq "pwsh") -and !($_.ProcessName -eq "powershell_ise")  } | select -Unique | foreach { 
-write-host "About to kill: " $_.ProcessName
+write-host "About to kill: "$_.ProcessName
 # DEBUG Start-Sleep -Seconds 10
 Stop-Process  $_.Id -Force 
 }
@@ -49,7 +49,7 @@ $approvedServicePatterns = @(
     'FontCache', 'DeviceInstall', 'webthreatdefsvc', 'InstallService', 'CDPSvc',
     'Appinfo', 'WdiSystemHost', 'UsoSvc', 'wscsvc', 'WpnService', 'RmSvc', 'fdPHost',
     'wcncsvc', 'DsSvc', 'DisplayEnhancementService', 'AppXSvc', 'gpsvc', 'NgcCtnrSvc',
-    'TokenBroker', 'wlidsvc', 'ClipSVC', 'XblAuthManager',
+    'TokenBroker', 'wlidsvc', 'ClipSVC', 'XblAuthManager', 'BDESVC',
     # Patterns for user-specific services (wildcard '.*' used)
     'CDPUserSvc_.*',
     'webthreatdefusersvc_.*',
@@ -89,18 +89,9 @@ foreach ($process in $svchostProcesses) {
 
     # If we found at least one unapproved service, terminate the process
     if ($unapprovedServices) {
-        Write-Host "--------------------------------------------------" -ForegroundColor Red
-        Write-Host "Found svchost process (PID: $($process.ProcessId)) with unapproved services."
-
-        Write-Host "Unapproved Service(s) Found:" -ForegroundColor Yellow
-        $unapprovedServices | ForEach-Object { Write-Host "  - $($_.Name) ($($_.DisplayName))" }
-        Write-Host ""
-
-        # --- ACTION ---
-        # The -WhatIf parameter prevents the command from running. It just shows what would happen.
-        # REMOVE "-WhatIf" TO ACTUALLY TERMINATE THE PROCESS.
-        write-host "About to kill: " $process.ProcessId
-        Start-Sleep -Seconds 1
+ 
+        $unapprovedServices | ForEach-Object {
+        Write-Host "About to kill: Service $($_.Name) ($($_.DisplayName))" }
         Stop-Process -Id $process.ProcessId -Force  
     }
 }
