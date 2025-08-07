@@ -49,7 +49,7 @@ $approvedServicePatterns = @(
     'FontCache', 'DeviceInstall', 'webthreatdefsvc', 'InstallService', 'CDPSvc',
     'Appinfo', 'WdiSystemHost', 'UsoSvc', 'wscsvc', 'WpnService', 'RmSvc', 'fdPHost',
     'wcncsvc', 'DsSvc', 'DisplayEnhancementService', 'AppXSvc', 'gpsvc', 'NgcCtnrSvc',
-    'TokenBroker', 'wlidsvc', 'ClipSVC', 'XblAuthManager', 'BDESVC',
+    'TokenBroker', 'wlidsvc', 'ClipSVC', 'XblAuthManager', 'BDESVC', 'wuauserv', 'BITS',
     # Patterns for user-specific services (wildcard '.*' used)
     'CDPUserSvc_.*',
     'webthreatdefusersvc_.*',
@@ -99,6 +99,7 @@ foreach ($process in $svchostProcesses) {
 
 write-host "`DONE`n"
 Start-Sleep -Seconds 10
+
 
 
 
