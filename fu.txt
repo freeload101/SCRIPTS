@@ -3207,3 +3207,11 @@ python -m json.tool out.json
 # WSL local bins .local/bin
 mkdir ~/.local; mkdir ~/.local/bin; echo 'find / -path /mnt -prune -o -name "${1}" -print 2> /dev/null' > ~/.local/bin/FINDWSL ; chmod 755 ~/.local/bin/FINDWSL ;cp  ~/.local/bin/FINDWSL  /usr/local/sbin;chmod 755 /usr/local/sbin/FINDWSL
 
+
+
+
+ripgrep !!!
+rg  -C 3 -H   --max-columns=1000 '(\bpass|key\b|\bs3\b|\bhttp)' ./*  > RIP_GREP.txt
+
+Disk usage
+du -h --max-depth=4 | sort -rh | grep G
