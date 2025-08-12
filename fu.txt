@@ -3215,3 +3215,78 @@ rg  -C 3 -H   --max-columns=1000 '(\bpass|key\b|\bs3\b|\bhttp)' ./*  > RIP_GREP.
 
 Disk usage
 du -h --max-depth=4 | sort -rh | grep G
+
+################################ POSTGRES MOUNT make sure to match postgres VERSOIN ! 
+
+
+
+docker run --rm -it \
+  -v /XXXXXXXXXXXXX/storage/db/vpostgres:/var/lib/postgresql/data  \
+  -v /XXXXXXXXXXXXX/storage/seat:/seat   \
+  -v /tmp:/tmp:rw \
+  -e POSTGRES_HOST_AUTH_METHOD=trust \
+  postgres:14 \
+bash
+
+
+
+
+
+cat > /var/lib/postgresql/data/postgresql.conf <<EOF
+shared_preload_libraries = ''
+ssl = off
+logging_collector = off
+EOF
+
+apt update;apt install -y psmisc vim
+ 
+mkdir -p /storage/seat/vpostgres
+for tblsp in alarmtblsp eventtblsp hs1tblsp hs2tblsp hs3tblsp hs4tblsp tasktblsp; do
+ln -s /seat/vpostgres/$tblsp /storage/seat/vpostgres/$tblsp
+done
+ 
+ 
+################# AS POSTEERESLR SUSER 
+
+gosu postgres bash
+
+find / -iname postmaster.pid -exec rm '{}' \; 2> /dev/null
+
+pg_resetwal -f /var/lib/postgresql/data
+
+
+ 
+
+	
+	
+cat > /var/lib/postgresql/data/pg_hba.conf <<EOF
+local   all   all                trust
+host    all   all  127.0.0.1/32  trust
+host    all   all  ::1/128       trust
+EOF
+
+
+
+for ts in /seat/vpostgres/*tblsp; do
+[ -d "$ts" ] || continue
+cp -a "$ts"/* /var/lib/postgresql/data/base/
+done
+	
+	
+pg_ctl -D /var/lib/postgresql/data   start
+ 
+pg_dumpall -U postgres -f /tmp/vcsa_dump.sql
+
+# exit to root
+exit
+dol
+docker cp <container_id>:/tmp/vcsa_dump.sql /tmp/vcsa_dump.sql
+
+
+docker cp `docker ps | awk '{print $1}' | grep -v CON`:/tmp/vcsa_dump.sql /tmp/vcsa_dump.sql
+Successfully copied 762MB to /tmp/vcsa_dump.sql
+
+
+
+
+
