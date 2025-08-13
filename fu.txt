@@ -3286,6 +3286,8 @@ docker cp <container_id>:/tmp/vcsa_dump.sql /tmp/vcsa_dump.sql
 docker cp `docker ps | awk '{print $1}' | grep -v CON`:/tmp/vcsa_dump.sql /tmp/vcsa_dump.sql
 Successfully copied 762MB to /tmp/vcsa_dump.sql
 
+# dump all files with path
+find . -iname "*password*" -exec sh -c 'rsync -R "$1" /extract/' _ {} \;
 
 
 
