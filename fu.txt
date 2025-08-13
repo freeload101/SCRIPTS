@@ -3291,4 +3291,10 @@ find . -iname "*password*" -exec sh -c 'rsync -R "$1" /extract/' _ {} \;
 
 
 
+# SCREEN MOUSE WHEEL MOUSEWHEEL
+sudo echo "mousetrack on" >> /etc/screenrc
+sudo echo "defscrollback 1000000" >> /etc/screenrc 
+echo "mousetrack on" >> ~/.screenrc
+echo "defscrollback 1000000" >> ~/.screenrc
+
 
