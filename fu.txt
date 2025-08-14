@@ -3291,10 +3291,37 @@ find . -iname "*password*" -exec sh -c 'rsync -R "$1" /extract/' _ {} \;
 
 
 
-# SCREEN MOUSE WHEEL MOUSEWHEEL
+# SCREEN MOUSE WHEEL MOUSEWHEEL 
 sudo echo "mousetrack on" >> /etc/screenrc
 sudo echo "defscrollback 1000000" >> /etc/screenrc 
 echo "mousetrack on" >> ~/.screenrc
 echo "defscrollback 1000000" >> ~/.screenrc
+
+################## LOG ALL THE THINGS PS1 
+
+# make bash defualt shell for root
+sed -i -re 's/(^root.*).*zsh/\1bash/g'  /etc/passwd
+
+# add to both /root/.bashrc and ~/.bashrc 
+ 
+# DUMB PS1 add timestamp to your shell
+PS1='\n$(date "+%Y-%m-%d %I:%M:%S %p"):[\w]\n\u: '
+
+# log input and output per ENV
+
+# log input and output per ENV
+if [[ -t 0 ]] && [[ -z "$IN_TTYREC" ]]; then
+  mkdir -p ~/ttylogs
+  export IN_TTYREC=1
+  TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+  LOGFILE=~/ttylogs/$TIMESTAMP.tty
+  # exec replaces the shell with ttyrec running your shell
+  script -q $LOGFILE
+fi
+
+
+
+
+
 
 
