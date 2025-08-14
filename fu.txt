@@ -3210,8 +3210,8 @@ mkdir ~/.local; mkdir ~/.local/bin; echo 'find / -path /mnt -prune -o -name "${1
 
 
 
-ripgrep !!!
-rg  -C 3 -H   --max-columns=1000 '(\bpass|key\b|\bs3\b|\bhttp)' ./*  > RIP_GREP.txt
+# Rip Grep RipGrep -uuu to include hidden and bins etc 
+rg  -uuu -C 3 -H   --max-columns=1000 '(\bpass|key\b|\bs3\b|\bhttp)' ./*  > RIP_GREP.txt
 
 Disk usage
 du -h --max-depth=4 | sort -rh | grep G
@@ -3318,10 +3318,4 @@ if [[ -t 0 ]] && [[ -z "$IN_TTYREC" ]]; then
   # exec replaces the shell with ttyrec running your shell
   script -q $LOGFILE
 fi
-
-
-
-
-
-
 
