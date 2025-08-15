@@ -3319,3 +3319,7 @@ if [[ -t 0 ]] && [[ -z "$IN_TTYREC" ]]; then
   script -q $LOGFILE
 fi
 
+
+
+# zip up with PW
+7z a -tzip -p'AAAAAAAAAAAAAAAAAAAAA' -mx=1 -mmt=on -mm=Deflate -mfb=8  /home/bob/backup1.7z /mnt/backup
