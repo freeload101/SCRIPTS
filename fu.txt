@@ -3323,3 +3323,32 @@ fi
 
 # zip up with PW
 7z a -tzip -p'AAAAAAAAAAAAAAAAAAAAA' -mx=1 -mmt=on -mm=Deflate -mfb=8  /home/bob/backup1.7z /mnt/backup
+
+
+# LOOT WIP 
+# i like using fdfind personally.  I like to search for web.config files, *.ps1, *.kdbx, *.bat, *.txt.  searching for *.tif can also be beneficial and *.pdf (but you have to sift through them)
+find . -type f \( \
+  -ipath "*/Users/*/AppData/Roaming/Microsoft/Credentials/*" -o \
+  -ipath "*/Users/*/AppData/Local/Microsoft/Credentials/*" -o \
+  -ipath "*/Users/*/AppData/Roaming/Microsoft/Protect/*" -o \
+  -ipath "*/Users/*/AppData/Local/Microsoft/Vault/*" -o \
+  -ipath "*/Users/*/AppData/Local/Microsoft/Windows/Vault/*" -o \
+  -ipath "*/Users/*/AppData/Roaming/Microsoft/SystemCertificates/My/*" -o \
+  -ipath "*/Users/*/AppData/Roaming/Microsoft/Windows/Recent/*" -o \
+  -ipath "*/Users/*/AppData/Roaming/Microsoft/Windows/PowerShell/PSReadLine/ConsoleHost_history.txt" -o \
+  -ipath "*/ProgramData/Microsoft/Vault/*" -o \
+  -ipath "*/Windows/System32/config/SAM" -o \
+  -ipath "*/Windows/System32/config/SECURITY" -o \
+  -ipath "*/Windows/System32/config/SYSTEM" -o \
+  -ipath "*/Windows/System32/config/SOFTWARE" -o \
+  -ipath "*/Windows/System32/config/RegBack/*" -o \
+  -ipath "*/Users/*/AppData/Local/Google/Chrome/User Data/*/Login Data" -o \
+  -ipath "*/Users/*/AppData/Local/Google/Chrome/User Data/*/Cookies" -o \
+  -ipath "*/Users/*/AppData/Roaming/Mozilla/Firefox/Profiles/*/cookies.txt" -o \
+  -ipath "*/Users/*/ntuser.dat" -o \
+  -ipath "*/Users/*/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/*" -o \
+  -ipath "*/ProgramData/Microsoft/Windows/Start Menu/Programs/Startup/*" -o \
+  -ipath "*/Users/*/Desktop/*.rdp" -o \
+  -ipath "*/Users/*/Documents/*.rdp" -o \
+  -ipath "*/Users/*/AppData/Local/Microsoft/Terminal Server Client/Cache/*" \
+\) -ls 2>/dev/null
