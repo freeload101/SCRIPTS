@@ -3352,3 +3352,23 @@ find . -type f \( \
   -ipath "*/Users/*/Documents/*.rdp" -o \
   -ipath "*/Users/*/AppData/Local/Microsoft/Terminal Server Client/Cache/*" \
 \) -ls 2>/dev/null
+
+
+
+# root vnc vncserver 
+apt-get update && apt-get install -y tightvncserver
+vncpasswd
+vncserver :1 -geometry 1920x1080 -depth 24 
+
+vi /root/.vnc/xstartup
+
+
+#!/bin/bash
+xrdb $HOME/.Xresources
+startxfce4 &
+
+chmod +x /root/.vnc/xstartup
+
+vncserver -kill :1
+vncserver :1 -geometry 1920x1080 -depth 24
+
