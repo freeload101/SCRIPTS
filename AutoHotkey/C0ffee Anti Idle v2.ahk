@@ -47,7 +47,7 @@ Copy()
 
 ;;;;;;; ADMIN / CONFIG 
 ; hibernate
-!0::Run "C:\Windows\System32\shutdown.exe -h"
+!0::Run "C:\Windows\System32\shutdown.exe -h -f"
 !F11::HighContrastOn()
 !F12::HighContrastOff()
 
