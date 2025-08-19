@@ -574,7 +574,23 @@ cd /tmp
 rm -Rf /tmp/nmap
 git clone https://github.com/nmap/nmap.git
 cd nmap
-./configure && make install
+apt install -y build-essential libssl-dev libssh2-1-dev \
+               libpcap-dev libpcre3-dev liblua5.4-dev \
+               subversion flex bison
+
+
+./configure \
+  --with-openssl=/usr \
+  --with-libssh2=/usr \
+  --with-liblua=/usr \
+  --without-zenmap  
+
+make -j$(nproc)
+make install
+
+
+
+
 
 
 # dns hijack that does not work
@@ -3371,4 +3387,5 @@ chmod +x /root/.vnc/xstartup
 
 vncserver -kill :1
 vncserver :1 -geometry 1920x1080 -depth 24
+
 
