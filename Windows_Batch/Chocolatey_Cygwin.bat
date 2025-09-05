@@ -152,6 +152,7 @@ for %%x in (
 	teracopy
 	yt-dlp
 	ffmpeg
+	audacity
 ) do (
 	echo Installing:	%%x
 	choco install %%x
