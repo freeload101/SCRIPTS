@@ -73,9 +73,7 @@ IF ERRORLEVEL 2 SET DEBLOAT=NO
  
 SET ERRORLEVEL=0
 
-IF "%DEBLOAT%" == "YES" (
-CALL :DEBLOAT
-) 
+
 
 echo [+] Checking powershell version...
 @powershell if ($PSVersionTable.PSVersion.Major -eq 5) {    Write-Host " [+] You are running PowerShell version 5"}else {    Write-Host " [+] This is version $PSVersionTable.PSVersion.Major Please update!!!";Start-Sleep -s 99 }
@@ -212,7 +210,9 @@ cmd /c cygwin-portable-installer.cmd
 EXIT /B %ERRORLEVEL%
 
 :theEnd
-
+IF "%DEBLOAT%" == "YES" (
+CALL :DEBLOAT
+) 
 echo [+] All done!
 pause
 exit
