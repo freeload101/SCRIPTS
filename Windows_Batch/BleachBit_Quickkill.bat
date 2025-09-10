@@ -87,8 +87,8 @@ EXIT /B %ERRORLEVEL%
 
 :DLBB
 echo %date% %time% INFO: Downloading BleachBit
-powershell "(New-Object Net.WebClient).DownloadFile('https://download.bleachbit.org/BleachBit-4.4.2-portable.zip', '.\BleachBit-4.4.2-portable.zip')"  1>> output.log 2>&1
-powershell "(Expand-Archive .\BleachBit-4.4.2-portable.zip -DestinationPath . -Force)"
+powershell "(New-Object Net.WebClient).DownloadFile('https://download.bleachbit.org/BleachBit-5.0.0-portable.zip', '.\BleachBit-5.0.0-portable.zip')"  1>> output.log 2>&1
+powershell "(Expand-Archive .\BleachBit-5.0.0-portable.zip -DestinationPath . -Force)"
 EXIT /B %ERRORLEVEL%
 
 
