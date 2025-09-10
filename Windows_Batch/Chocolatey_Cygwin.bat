@@ -148,7 +148,6 @@ for %%x in (
 	filezilla
 	gimp
 	teracopy
-	yt-dlp
 	ffmpeg
 	audacity
 ) do (
@@ -178,6 +177,73 @@ choco upgrade all -y
 choco uninstall  choco-upgrade-all-at-startup
 choco uninstall  choco-upgrade-all-at 
 choco install choco-upgrade-all-at-startup
+
+
+:: download and copy yt-dlp to each user path so that you can update it ..
+# Get all user profiles
+$allUsers = Get-WmiObject -Class Win32_UserProfile | Where-Object { 
+    $_.Special -eq $false -and $_.LocalPath -notlike "*\Administrator*" 
+}
+
+# Download yt-dlp.exe to temp location first
+$tempPath = "$env:TEMP\yt-dlp.exe"
+$downloadUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe"
+
+Write-Host "Downloading yt-dlp..."
+Invoke-WebRequest -Uri $downloadUrl -OutFile $tempPath
+
+# Process each user profile
+foreach ($user in $allUsers) {
+    $userPath = $user.LocalPath
+    $targetDir = Join-Path $userPath "AppData\Local\Microsoft\WindowsApps"
+    $targetFile = Join-Path $targetDir "yt-dlp.exe"
+
+    Write-Host "Processing user: $userPath"
+
+    # Create directory if it doesn't exist
+    if (!(Test-Path $targetDir)) {
+        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+    }
+
+    # Copy the binary
+    Copy-Item -Path $tempPath -Destination $targetFile -Force
+
+    # Set permissions: Full control for Everyone
+    $acl = Get-Acl $targetFile
+    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+        "Everyone", "FullControl", "Allow"
+    )
+    $acl.SetAccessRule($accessRule)
+
+    # Set owner to Everyone (use Administrators group instead as Everyone can't own files)
+    $adminsSid = New-Object System.Security.Principal.SecurityIdentifier("S-1-5-32-544")
+    $acl.SetOwner($adminsSid)
+
+    # Apply the ACL
+    Set-Acl -Path $targetFile -AclObject $acl
+
+    # Set directory permissions too
+    $dirAcl = Get-Acl $targetDir
+    $dirAcl.SetAccessRule($accessRule)
+    $dirAcl.SetOwner($adminsSid)
+    Set-Acl -Path $targetDir -AclObject $dirAcl
+
+    Write-Host "Installed to: $targetFile"
+}
+
+# Clean up temp file
+Remove-Item $tempPath -Force
+
+Write-Host "yt-dlp installation completed for all users"
+
+# Verify installation for current user
+$currentUserPath = "$env:USERPROFILE\AppData\Local\Microsoft\WindowsApps\yt-dlp.exe"
+if (Test-Path $currentUserPath) {
+    Write-Host "Verification - Current user version:"
+    & $currentUserPath --version
+}
+
+
 
 EXIT /B %ERRORLEVEL%
 
