@@ -87,8 +87,8 @@ EXIT /B %ERRORLEVEL%
 
 :DLBB
 echo %date% %time% INFO: Downloading BleachBit
-powershell "(New-Object Net.WebClient).DownloadFile('https://download.bleachbit.org/BleachBit-5.0.0-portable.zip', '.\BleachBit-5.0.0-portable.zip')"  1>> output.log 2>&1
-powershell "(Expand-Archive .\BleachBit-5.0.0-portable.zip -DestinationPath . -Force)"
+#powershell "(New-Object Net.WebClient).DownloadFile('https://download.bleachbit.org/BleachBit-5.0.0-portable.zip', '.\BleachBit-5.0.0-portable.zip')"  1>> output.log 2>&1
+#powershell "(Expand-Archive .\BleachBit-5.0.0-portable.zip -DestinationPath . -Force)"
 EXIT /B %ERRORLEVEL%
 
 
@@ -97,7 +97,9 @@ echo %date% %time% INFO: Running Secure BleachBit/Updating INI file
 cd .\BleachBit-Portable
 echo %date% %time% INFO: Running BleachBit
 BleachBit_console.exe  --update-winapp2 1>> output.log 2>&1
-powershell  -command "& {$BBList = cmd /c BleachBit_console.exe -l ; $BBcmd = ".\BleachBit_console.exe -o --no-uac --debug -c $BBList" }"
+::powershell  -command "& {$BBList = cmd /c BleachBit_console.exe -l ; $BBcmd = ".\BleachBit_console.exe -o --no-uac --debug -c $BBList" }"
+powershell -command "& {$BBList = cmd /c BleachBit_console.exe -l; $BBList -split '\r?\n' | ForEach-Object { if ($_.Trim()) { Start-Process powershell -ArgumentList '-NoExit', '-Command', \".\BleachBit_console.exe -o --no-uac --debug -c '$_'\" } }}"
+
 EXIT /B %ERRORLEVEL%
 
 
@@ -130,4 +132,8 @@ reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\Curr
 reg delete "HKCU\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\TrayNotify" /v PastIconsStream /f 
 start "Shell Restarter" /d "%systemroot%" /i /normal explorer.exe
 
- exit
+ 
+Echo 'All Done!'
+pause
+pause
+exit
