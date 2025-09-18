@@ -194,7 +194,7 @@ popularity-contest popularity-contest/participate boolean false
             "-boot", "order=cdn",
             "-machine", "pc,kernel-irqchip=off",
             "-nographic",
-            "-accel", "whpx"
+            "-accel", "$Global:bestAccel"
         )
 
         Write-Host "Starting QEMU with TFTP server..." -ForegroundColor Green
