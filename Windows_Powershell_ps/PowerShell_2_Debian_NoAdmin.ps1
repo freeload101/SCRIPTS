@@ -1,9 +1,9 @@
 # without local admin this script will download and install Debian 12
 # todo: 
 # * fix gpu check
-# auto mount HOST c:\
-# auto rev tunnel if conf file
- 
+# * auto mount HOST c:\
+# * auto rev tunnel if conf file
+# * disable screensaver lock bpytop etc
 # Stop any existing jobs and processes
 Get-Job | Stop-Job -PassThru | Remove-Job
 Stop-Process -Name powershell -Force -ErrorAction SilentlyContinue 2>$null
