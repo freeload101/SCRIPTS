@@ -291,7 +291,7 @@ $diskPath = ".\$VMName.qcow2"
         )
 
 Write-Host "Starting QEMU with $qemuArgs" -ForegroundColor Green
- 
+Write-Host "Connect to the host with VNC on localhost:5901" -ForegroundColor Yellow
 
 
  
