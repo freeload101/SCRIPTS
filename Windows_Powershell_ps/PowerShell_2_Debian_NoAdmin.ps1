@@ -6,11 +6,11 @@
 # * disable screensaver lock bpytop etc
 # check for UVNC https://uvnc.eu/download/1640/UltraVNC_1640.zip 
 # Stop any existing jobs and processes
-Get-Job | Stop-Job -PassThru | Remove-Job
-Stop-Process -Name powershell -Force -ErrorAction SilentlyContinue 2>$null
-Stop-Process -Name qemu-system-x86_64 -Force -ErrorAction SilentlyContinue 2>$null
 
-Start-Sleep 3
+#Get-Job | Stop-Job -PassThru | Remove-Job
+#Stop-Process -Name powershell -Force -ErrorAction SilentlyContinue 2>$null
+#Stop-Process -Name qemu-system-x86_64 -Force -ErrorAction SilentlyContinue 2>$null
+#Start-Sleep 3
 
 # Create working directory
 $workDir = "C:\QEMU-Debian"
@@ -293,14 +293,7 @@ $diskPath = ".\$VMName.qcow2"
 
 Write-Host "Starting QEMU with $qemuArgs" -ForegroundColor Green
 Write-Host "Connect to the host with VNC on localhost:5901" -ForegroundColor Yellow
-
-
- 
-        & .\qemu\qemu-system-x86_64.exe @qemuArgs
- 
-
-$vmScriptNoISO | Out-File -FilePath "$workDir\start-debian-vm-installed.bat" -Encoding ASCII
-
+$qemuProcess = Start-Process -FilePath ".\qemu\qemu-system-x86_64.exe" -ArgumentList $qemuArgs -WindowStyle hidden -PassThru
 }
 
 
