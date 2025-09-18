@@ -4,6 +4,7 @@
 # * auto mount HOST c:\
 # * auto rev tunnel if conf file
 # * disable screensaver lock bpytop etc
+# check for UVNC https://uvnc.eu/download/1640/UltraVNC_1640.zip 
 # Stop any existing jobs and processes
 Get-Job | Stop-Job -PassThru | Remove-Job
 Stop-Process -Name powershell -Force -ErrorAction SilentlyContinue 2>$null
