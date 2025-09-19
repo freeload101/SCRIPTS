@@ -40,6 +40,7 @@ $debianIso = "$workDir\debian-12.7.0-amd64-netinst.iso"
 if (Test-Path $debianIso) {
     Write-Host "Debian ISO exists" -ForegroundColor Yellow
 } else {
+     Write-Host "Downloading Debian ISO..." -ForegroundColor Yellow
     downloadFile $debianUrl $debianIso
 }
 
