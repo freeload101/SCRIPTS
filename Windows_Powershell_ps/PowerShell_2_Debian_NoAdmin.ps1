@@ -1,9 +1,8 @@
 # without local admin this script will download and install Debian 12
 # todo: 
-# * fix gpu check
 # * auto mount HOST c:\
 # * auto rev tunnel if conf file
-# * disable screensaver lock bpytop etc
+# * disable screensaver lock install bpytop screen 
 # check for UVNC https://uvnc.eu/download/1640/UltraVNC_1640.zip 
 # Stop any existing jobs and processes
 
@@ -23,16 +22,36 @@ $env:PATH += ";$qemuPath"
 
 # User-specified download function
 function downloadFile($url, $file) {
-    $req = [System.Net.HttpWebRequest]::Create($url)
-    $res = $req.GetResponse().GetResponseStream()
-    $fs = [System.IO.FileStream]::new($file, 'Create')
-    $buf = [byte[]]::new(10KB)
-    while (($c = $res.Read($buf, 0, $buf.Length)) -gt 0) {
-        $fs.Write($buf, 0, $c)
-    }
-    $fs.Close()
-    $res.Close()
+    $request = [System.Net.HttpWebRequest]::Create($url)
+
+    # Set current User-Agent (Chrome on Windows)
+    $request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+
+    # Set Referrer
+    $request.Referer = "https://qemu.weilnetz.de/w64/"
+
+    # Use properties for restricted headers instead of Headers.Add()
+    $request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+    $request.KeepAlive = $true  # Use property instead of Connection header
+
+    # Safe headers that can be added
+    $request.Headers.Add("Accept-Language", "en-US,en;q=0.5")
+    $request.Headers.Add("Accept-Encoding", "gzip, deflate")
+    $request.Headers.Add("DNT", "1")
+    $request.Headers.Add("Upgrade-Insecure-Requests", "1")
+
+    $response = $request.GetResponse()
+    $responseStream = $response.GetResponseStream()
+    $fileStream = [System.IO.FileStream]::new($file, 'Create')
+
+    $responseStream.CopyTo($fileStream)
+
+    $fileStream.Close()
+    $responseStream.Close()
+    $response.Close()
 }
+
+
 
 # Download Debian ISO
 $debianUrl = "https://cloud.debian.org/images/archive/12.7.0/amd64/iso-cd/debian-12.7.0-amd64-netinst.iso"
