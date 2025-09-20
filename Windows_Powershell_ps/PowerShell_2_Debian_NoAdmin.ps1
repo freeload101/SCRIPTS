@@ -289,6 +289,8 @@ $diskPath = ".\$VMName.qcow2"
             "-machine", "pc,kernel-irqchip=off",
             "-vga", "std",
             "-vnc", "localhost:1",
+            "-device", "usb-ehci",
+			"-device", "usb-tablet",
             "-accel", "$Global:bestAccel" 
         )
 
