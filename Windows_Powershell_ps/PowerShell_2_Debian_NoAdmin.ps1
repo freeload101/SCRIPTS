@@ -2,17 +2,11 @@
 # todo: 
 # * auto mount HOST c:\
 # * auto rev tunnel if conf file
-# * disable screensaver lock install bpytop screen 
-# check for UVNC https://uvnc.eu/download/1640/UltraVNC_1640.zip 
-# Stop any existing jobs and processes
-
-#Get-Job | Stop-Job -PassThru | Remove-Job
-#Stop-Process -Name powershell -Force -ErrorAction SilentlyContinue 2>$null
-#Stop-Process -Name qemu-system-x86_64 -Force -ErrorAction SilentlyContinue 2>$null
-#Start-Sleep 3
+# * disable screensaver lock   etc
+ 
 
 # Create working directory
-$workDir = "C:\QEMU-Debian"
+$workDir = (Get-Location)
 New-Item -ItemType Directory -Path $workDir -Force | Out-Null
 Set-Location $workDir
 
@@ -147,10 +141,9 @@ d-i partman/confirm_nooverwrite boolean true
 d-i base-installer/install-recommends boolean true
 d-i base-installer/kernel/image string linux-image-amd64
 
-############################################################################################################################################################################################################################################################
 ### Package Selection - Standard with XFCE Desktop
 tasksel tasksel/first multiselect standard, desktop, xfce-desktop, ssh-server
-d-i pkgsel/include string openssh-server curl wget vim nano htop net-tools sudo build-essential git xfce4 xfce4-goodies lightdm firefox-esr thunar-archive-plugin
+d-i pkgsel/include string openssh-server curl wget vim nano htop net-tools sudo build-essential git xfce4 xfce4-goodies lightdm firefox-esr thunar-archive-plugin screen xclip bpytop
 d-i pkgsel/upgrade select full-upgrade
 d-i pkgsel/update-policy select unattended-upgrades
 
@@ -160,14 +153,29 @@ d-i grub-installer/with_other_os boolean true
 d-i grub-installer/bootdev string default
 
 ### Post-Installation Commands
-##########d-i preseed/late_command string \
-##########in-target usermod -aG sudo internet ; \
-##########in-target systemctl enable ssh ; \
-##########in-target systemctl enable lightdm ; \
-##########in-target sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config ; \
-##########in-target sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config ; \
-##########in-target echo 'internet ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers.d/internet
-############################################################################################################################################################################################################################################################
+d-i preseed/late_command string \
+in-target usermod -aG sudo internet ; \
+in-target systemctl enable ssh ; \
+in-target systemctl enable lightdm ; \
+in-target sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config ; \
+in-target sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config ; \
+in-target echo 'internet ALL=(ALL:ALL) NOPASSWD:ALL' > /etc/sudoers.d/internet ; \
+in-target mkdir -p /home/internet/.config/xfce4/xfconf/xfce-perchannel-xml ; \
+in-target chown -R internet:internet /home/internet/.config ; \
+in-target echo '<?xml version="1.0" encoding="UTF-8"?><channel name="xfce4-power-manager" version="1.0"><property name="xfce4-power-manager" type="empty"><property name="power-button-action" type="uint" value="4"/><property name="sleep-button-action" type="uint" value="4"/><property name="hibernate-button-action" type="uint" value="4"/><property name="lid-action-on-battery" type="uint" value="4"/><property name="lid-action-on-ac" type="uint" value="4"/><property name="brightness-on-ac" type="uint" value="9"/><property name="brightness-on-battery" type="uint" value="9"/><property name="dpms-enabled" type="bool" value="false"/><property name="dpms-on-ac-sleep" type="uint" value="0"/><property name="dpms-on-ac-off" type="uint" value="0"/><property name="dpms-on-battery-sleep" type="uint" value="0"/><property name="dpms-on-battery-off" type="uint" value="0"/><property name="lock-screen-suspend-hibernate" type="bool" value="false"/><property name="logind-handle-lid-switch" type="bool" value="false"/><property name="logind-handle-power-key" type="bool" value="false"/><property name="logind-handle-suspend-key" type="bool" value="false"/><property name="logind-handle-hibernate-key" type="bool" value="false"/></property></channel>' > /home/internet/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml ; \
+in-target echo '<?xml version="1.0" encoding="UTF-8"?><channel name="xfce4-screensaver" version="1.0"><property name="saver" type="empty"><property name="enabled" type="bool" value="false"/><property name="idle-activation" type="empty"><property name="enabled" type="bool" value="false"/></property></property></channel>' > /home/internet/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml ; \
+in-target chown internet:internet /home/internet/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml ; \
+in-target chown internet:internet /home/internet/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml ; \
+in-target systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target ; \
+in-target echo 'HandleLidSwitch=ignore' >> /etc/systemd/logind.conf ; \
+in-target echo 'HandlePowerKey=ignore' >> /etc/systemd/logind.conf ; \
+in-target echo 'HandleSuspendKey=ignore' >> /etc/systemd/logind.conf ; \
+in-target echo 'HandleHibernateKey=ignore' >> /etc/systemd/logind.conf ; \
+in-target echo 'xset s off -dpms' >> /home/internet/.xprofile ; \
+in-target chown internet:internet /home/internet/.xprofile ; \
+in-target sed -i 's/#autologin-user=/autologin-user=internet/' /etc/lightdm/lightdm.conf ; \
+in-target sed -i 's/#autologin-user-timeout=0/autologin-user-timeout=0/' /etc/lightdm/lightdm.conf ; \
+in-target sed -i 's/#autologin-session=/autologin-session=xfce/' /etc/lightdm/lightdm.conf
 
 ### Finish Installation
 d-i finish-install/reboot_in_progress note
@@ -177,6 +185,7 @@ d-i debian-installer/exit/poweroff boolean true
 d-i hw-detect/load_firmware boolean true
 popularity-contest popularity-contest/participate boolean false
 "@
+
 
     # Save preseed to TFTP directory
     $preseedPath = "$tftpDir\preseed.cfg"
@@ -200,6 +209,7 @@ popularity-contest popularity-contest/participate boolean false
         & .\qemu\qemu-img.exe create -f qcow2 $diskPath $VMSize
 
         # QEMU arguments with TFTP server and network boot                    
+
         $qemuArgs = @(
             "-name", $VMName,
             "-m", $Memory,
@@ -223,15 +233,14 @@ popularity-contest popularity-contest/participate boolean false
 
         & .\qemu\qemu-system-x86_64.exe @qemuArgs
 
-        #Write-Host "Installation completed! VM disk created at: $diskPath" -ForegroundColor Green
-        #Write-Host "SSH access: ssh -p 2222 internet@localhost" -ForegroundColor Yellow
-        #Write-Host "Password: password" -ForegroundColor Yellow
+        Write-Host "Connect to the host with VNC on localhost:5901" -ForegroundColor Yellow
+		start-sleep 10
 
     } else {
         Write-Error "Failed to mount ISO file"
     }
 }
- ################################################################################################################################################################ 
+  
 
 function CheckAccel {
 # Create script to start VM without ISO (after installation)
@@ -296,7 +305,7 @@ function StartQEMU {
     )
 
 $diskPath = ".\$VMName.qcow2"
-        $qemuArgs = @(
+		$qemuArgs = @(
             "-name", $VMName,
             "-m", $Memory,
             "-smp", $CPUs,
@@ -315,16 +324,75 @@ $diskPath = ".\$VMName.qcow2"
 
 Write-Host "Starting QEMU with $qemuArgs" -ForegroundColor Green
 Write-Host "Connect to the host with VNC on localhost:5901" -ForegroundColor Yellow
+start-sleep 10
 $qemuProcess = Start-Process -FilePath ".\qemu\qemu-system-x86_64.exe" -ArgumentList $qemuArgs -WindowStyle hidden -PassThru
 }
 
 
+function CHECKUVNC {
+    # Check if UVNC directory exists
+    $uvncPath = "$workDir\UVNC"
 
- ################################################################################################################################################################ 
+    if (!(Test-Path $uvncPath)) {
+        Write-Host "UltraVNC not found. Downloading and installing..." -ForegroundColor Yellow
+
+        # Create directory structure
+        New-Item -Path "$workDir\UVNC" -ItemType Directory -Force | Out-Null
+
+        # Download the zip file
+        $zipFile = "$workDir\UltraVNC_1640.zip"
+        $downloadUrl = "https://uvnc.eu/download/1640/UltraVNC_1640.zip"
+
+        try {
+            downloadFile $downloadUrl $zipFile
+            Write-Host "Download completed successfully." -ForegroundColor Green
+
+            # Extract the zip file
+            Expand-Archive -Path $zipFile -DestinationPath "$workDir\temp_uvnc" -Force
+
+            # Create UVNC directory
+            New-Item -Path $uvncPath -ItemType Directory -Force | Out-Null
+
+            # Find and copy the executable files (portable installation)
+            $tempPath = "$workDir\temp_uvnc"
+            $executableFiles = Get-ChildItem -Path $tempPath -Recurse -Include "*.exe", "*.dll" -ErrorAction SilentlyContinue
+
+            foreach ($file in $executableFiles) {
+                Copy-Item $file.FullName -Destination $uvncPath -Force
+            }
+
+            # Clean up
+            Remove-Item $zipFile -Force -ErrorAction SilentlyContinue
+            Remove-Item "$workDir\temp_uvnc" -Recurse -Force -ErrorAction SilentlyContinue
+
+            & "C:\QEMU-Debian\UVNC\vncviewer.exe" localhost::5901  
+
+        } catch {
+            Write-Error "Failed to download or extract UltraVNC: $($_.Exception.Message)"
+            exit 1
+        }
+    } else {
+	Write-Host "Waiting 20 seconds to connect to QEMU VM" -ForegroundColor Yellow
+	start-sleep 20
+    & "C:\QEMU-Debian\UVNC\vncviewer.exe" localhost::5901  
+    }
+}
+
+function CheckAndStartQEMU {
+    if (-not (Get-Process -Name "qemu-system-x86_64" -ErrorAction SilentlyContinue)) {
+        Write-Host "QEMU is not running. Starting QEMU..." -ForegroundColor Yellow
+        StartQEMU
+    } else {
+        Write-Host "QEMU is already running." -ForegroundColor Green
+    }
+}
+
+
+
+Main ################################################################################################################################################################ 
 
 # check accel
 CheckAccel
-
 
 # Search for .qcow2 files in current directory
 $qcowFiles = Get-ChildItem -Path "." -Filter "*.qcow2"
@@ -334,13 +402,21 @@ if ($qcowFiles.Count -gt 0) {
     foreach ($file in $qcowFiles) {
         Write-Host "Found: $($file.Name)"
     }
-    StartQEMU
-    exit
+    CheckAndStartQEMU
+	CHECKUVNC
 } else {
     Write-Host "No QCOW2 files found in current directory installing" -ForegroundColor Yellow
-    Install-DebianVM  
-
+    Install-DebianVM
+	start-sleep 10
+	CHECKUVNC
 }
+
+
+
+
+
+
+
 
  
 
