@@ -7,12 +7,12 @@ nmap -v -T5 -oA 192 -sV --top-ports 40 --open --randomize-hosts --defeat-rst-rat
 
 # scan 10 and 172 just  1,2,3,10,20,30,100,254 
 echo `date` INFO: Starting 172.
-nmap --max-retries 1 --min-parallelism 100 -oA 172_GUESS --top-ports 20 -T5 --randomize-hosts --defeat-rst-ratelimit  172.16-31.0-255.1,2,3,10,20,30,100,254 -v 
+nmap --max-retries 1 --min-parallelism 100 -oA 172_GUESS -sn -T5 --randomize-hosts 172.16-31.0-255.1,2,3,10,20,30,100,254 -v 
 grep Up 172_GUESS.gnmap | awk '{print $2}'  | sed -r  's/(.*\..*\..*\.).*/\10\/24/'g | sort -u > 172_NETWORKS
 nmap -v -T5 -oA 172_NETWORKS -sV  --top-ports 40 --open --randomize-hosts --defeat-rst-ratelimit -iL 172_NETWORKS
 
 echo `date` INFO: Starting 10.
-nmap --max-retries 1 --min-parallelism 100 -oA 10_GUESS --top-ports 20 -T5 --randomize-hosts --defeat-rst-ratelimit 10.0-255.0-255.1,254 -v 
+nmap --max-retries 1 --min-parallelism 100 -oA 10_GUESS -sn -T5 --randomize-hosts 10.0-255.0-255.1,254 -v 
 grep Up 10_GUESS.gnmap | awk '{print $2}'  | sed -r  's/(.*\..*\..*\.).*/\10\/24/'g | sort -u > 10_NETWORKS
 nmap -v -T5 -oA 10_NETWORKS -sV  --top-ports 40 --open --randomize-hosts --defeat-rst-ratelimit  -iL 10_NETWORKS 
 
