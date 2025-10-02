@@ -1,18 +1,24 @@
 # without local admin this script will download and install Debian 12
 # todo: 
-# * auto mount HOST c:\
-# * auto rev tunnel if conf file
-# * disable screensaver lock   etc
- 
+# DEBUG -RedirectStandardOutput RedirectStandardOutput.txt -RedirectStandardError RedirectStandardError.txt
 
 # Create working directory
 $workDir = (Get-Location)
 New-Item -ItemType Directory -Path $workDir -Force | Out-Null
 Set-Location $workDir
+  
+# Download Debian ISO
+$Global:debianUrl = "https://cloud.debian.org/images/archive/12.7.0/amd64/iso-cd/debian-12.7.0-amd64-netinst.iso"
+$Global:debianIso = "$workDir\debian-12.7.0-amd64-netinst.iso"
+$Global:qemuUrl = "https://qemu.weilnetz.de/w64/2021/qemu-w64-setup-20210208.exe"
+$Global:Memory = "4096"
+
+#################################################
+# don't mess with anything below this line !!!!
+#################################################
 
 # Add QEMU to PATH for current session
-$qemuPath = "$workDir\qemu"
-$env:PATH += ";$qemuPath"
+$env:PATH += ";$workDir\qemu"
 
 # User-specified download function
 function downloadFile($url, $file) {
@@ -45,45 +51,36 @@ function downloadFile($url, $file) {
     $response.Close()
 }
 
-
-
-# Download Debian ISO
-$debianUrl = "https://cloud.debian.org/images/archive/12.7.0/amd64/iso-cd/debian-12.7.0-amd64-netinst.iso"
-$debianIso = "$workDir\debian-12.7.0-amd64-netinst.iso"
 if (Test-Path $debianIso) {
-    Write-Host "Debian ISO exists" -ForegroundColor Yellow
+    Write-Host "Debian ISO exists" -ForegroundColor Green
 } else {
      Write-Host "Downloading Debian ISO..." -ForegroundColor Yellow
     downloadFile $debianUrl $debianIso
 }
 
 # Download QEMU for Windows 5.2.0 circa 2021 seems to work best with WHPX
-$qemuUrl = "https://qemu.weilnetz.de/w64/2021/qemu-w64-setup-20210208.exe"
-$qemuInstaller = "$workDir\qemu-installer.exe"
-
 if (Test-Path .\qemu\qemu-system-x86_64.exe) {
-    Write-Host "QEMU Exists" -ForegroundColor Yellow
+    Write-Host "QEMU Exists" -ForegroundColor Green
 } else {
     Write-Host "Downloading QEMU" -ForegroundColor Yellow
-    downloadFile $qemuUrl $qemuInstaller
+    downloadFile $Global:qemuUrl "$workDir\qemu-w64-setup.exe"
 
     Write-Host "Installing QEMU..." -ForegroundColor Green
     $env:__COMPAT_LAYER = "RUNASINVOKER"
-    Start-Process -FilePath $qemuInstaller -ArgumentList "/S", "/D=$workDir\qemu\" -Wait -NoNewWindow  
+    Start-Process -FilePath  "$workDir\qemu-w64-setup.exe" -ArgumentList "/S", "/D=$workDir\qemu\" -Wait -NoNewWindow  
 }
 
 function Install-DebianVM {
     param(
         [string]$VMName = "debian-vm",
         [string]$VMSize = "200G",
-        [int]$Memory = 6144,
-        [int]$CPUs = 2,
-        [string]$ISOPath = ".\debian-12.7.0-amd64-netinst.iso"
+        [int]$Memory = $Global:Memory,
+        [int]$CPUs = 1,
+        [string]$ISOPath = "$Global:debianIso"
     )
-
-    # Create TFTP directory for QEMU
-    $tftpDir = "$workDir\tftp"
-    New-Item -ItemType Directory -Path $tftpDir -Force | Out-Null
+	# Create TFTP directory for QEMU
+   
+    New-Item -ItemType Directory -Path "$workDir\tftp" -Force | Out-Null
 
     # Completely rewritten preseed content with modern practices
     $preseedContent = @"
@@ -159,6 +156,7 @@ in-target systemctl enable ssh ; \
 in-target systemctl enable lightdm ; \
 in-target sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config ; \
 in-target sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config ; \
+in-target mkdir -p /etc/sudoers.d ; \
 in-target echo 'internet ALL=(ALL:ALL) NOPASSWD:ALL' > /etc/sudoers.d/internet ; \
 in-target mkdir -p /home/internet/.config/xfce4/xfconf/xfce-perchannel-xml ; \
 in-target chown -R internet:internet /home/internet/.config ; \
@@ -188,8 +186,8 @@ popularity-contest popularity-contest/participate boolean false
 
 
     # Save preseed to TFTP directory
-    $preseedPath = "$tftpDir\preseed.cfg"
-    $preseedContent | Out-File -FilePath $preseedPath -Encoding UTF8
+ 
+    $preseedContent | Out-File -FilePath "$workDir\tftp\preseed.cfg" -Encoding UTF8
 
     # Extract kernel and initrd from ISO for network boot
     Write-Host "Extracting boot files from ISO..." -ForegroundColor Green
@@ -199,43 +197,35 @@ popularity-contest popularity-contest/participate boolean false
     $driveLetter = ($mountResult | Get-Volume).DriveLetter
 
     if ($driveLetter) {
-        Copy-Item "${driveLetter}:\install.amd\vmlinuz" "$tftpDir\vmlinuz" -Force
-        Copy-Item "${driveLetter}:\install.amd\initrd.gz" "$tftpDir\initrd.gz" -Force
+        Copy-Item "${driveLetter}:\install.amd\vmlinuz" "$workDir\tftp\vmlinuz" -Force
+        Copy-Item "${driveLetter}:\install.amd\initrd.gz" "$workDir\tftp\initrd.gz" -Force
         Dismount-DiskImage -ImagePath (Resolve-Path $ISOPath).Path
 
         # Create virtual disk
-        $diskPath = ".\$VMName.qcow2"
-        Write-Host "Creating virtual disk ($VMSize)..." -ForegroundColor Green
-        & .\qemu\qemu-img.exe create -f qcow2 $diskPath $VMSize
+        Write-Host "Creating virtual disk ($VMSize)..." -ForegroundColor Yellow
+        & .\qemu\qemu-img.exe create -f qcow2 "$workDir\$VMName.qcow2" $VMSize
 
         # QEMU arguments with TFTP server and network boot                    
-
+ 
         $qemuArgs = @(
             "-name", $VMName,
-            "-m", $Memory,
+            "-m", $Global:Memory,
             "-smp", $CPUs,
-            "-drive", "file=$diskPath,format=qcow2,if=virtio",
-            "-cdrom", $ISOPath,
-            "-netdev", "user,id=net0,tftp=$tftpDir,hostfwd=tcp::2222-:22",
+            "-drive", "`"file=$workDir\$VMName.qcow2,format=qcow2,if=virtio`"",
+            "-cdrom", "`"$Global:debianIso`"",
+            "-netdev", "user,id=net0,tftp=..\tftp,hostfwd=tcp::3388-:3389",
             "-device", "virtio-net,netdev=net0",
-            "-kernel", "$tftpDir\vmlinuz",
-            "-initrd", "$tftpDir\initrd.gz",
-            "-append", "auto=true priority=critical url=tftp://10.0.2.2/preseed.cfg interface=auto netcfg/dhcp_timeout=60 debian-installer/allow_unauthenticated_ssl=true console=ttyS0,115200n8 --- quiet",
-            "-boot", "order=cdn",
+            "-kernel", "`"$workDir\tftp\vmlinuz`"",
+            "-initrd", "`"$workDir\tftp\initrd.gz`"",
+            "-append", "`"auto=true priority=critical url=tftp://10.0.2.2/preseed.cfg interface=auto netcfg/dhcp_timeout=60 debian-installer/allow_unauthenticated_ssl=true --- quiet `" ",
+            "-boot", "order=dc",
             "-machine", "pc,kernel-irqchip=off",
-            "-nographic",
             "-accel", "$Global:bestAccel"
         )
-
-        Write-Host "Starting QEMU with TFTP server..." -ForegroundColor Green
-        Write-Host "TFTP Directory: $tftpDir" -ForegroundColor Cyan
-        Write-Host "Preseed available at: tftp://10.0.2.2/preseed.cfg" -ForegroundColor Cyan
-
-        & .\qemu\qemu-system-x86_64.exe @qemuArgs
-
-        Write-Host "Connect to the host with VNC on localhost:5901" -ForegroundColor Yellow
-		start-sleep 10
-
+		Write-Host "Starting QEMU with qemu-system-x86_64.exe $qemuArgs" -ForegroundColor Green
+		Write-Host "Installing Debian with ISO $Global:debianIso and Image $workDir\$VMName.qcow2 " -ForegroundColor Green
+		Start-Process -FilePath ".\qemu\qemu-system-x86_64.exe" -ArgumentList $qemuArgs -WorkingDirectory ".\qemu\" -RedirectStandardOutput RedirectStandardOutput.txt -RedirectStandardError RedirectStandardError.txt -NoNewWindow -wait
+		Write-Host "Debian Install Complete! Run this script again to start the image!" -ForegroundColor Green
     } else {
         Write-Error "Failed to mount ISO file"
     }
@@ -268,7 +258,7 @@ Write-Host "Checking QEMU acceleration support..." -ForegroundColor Yellow
             }
         }
 
-        Write-Host "Available accelerators: $($availableAccels -join ', ')" -ForegroundColor Cyan
+        Write-Host "Available accelerators: $($availableAccels -join ', ')" -ForegroundColor Yellow
 
         # Determine best accelerator (priority order: whpx > hax > tcg)
         $Global:bestAccel = $null
@@ -299,38 +289,39 @@ function StartQEMU {
     param(
         [string]$VMName = "debian-vm",
         [string]$VMSize = "200G",
-        [int]$Memory = "4G",
+        [int]$Memory = "4096",
         [int]$CPUs = 1,
-        [string]$ISOPath = ".\debian-12.7.0-amd64-netinst.iso"
+        [string]$ISOPath = "..\debian-12.7.0-amd64-netinst.iso"
     )
-
-$diskPath = ".\$VMName.qcow2"
+	$diskPath = "..\$VMName.qcow2"
 		$qemuArgs = @(
             "-name", $VMName,
             "-m", $Memory,
             "-smp", $CPUs,
-            "-drive", "file=$diskPath,format=qcow2,if=virtio",
-            "-cdrom", $ISOPath,
-            "-netdev", "user,id=net0,tftp=$tftpDir,hostfwd=tcp::2222-:22,smb=C:\",
+            "-drive", "`"file=$workDir\$VMName.qcow2,format=qcow2,if=virtio`"",
+            "-netdev", "user,id=net0,tftp=..\tftp,hostfwd=tcp::5999-:5901",
             "-device", "virtio-net,netdev=net0",
             "-boot", "order=cdn",
             "-machine", "pc,kernel-irqchip=off",
             "-vga", "std",
-            "-vnc", "localhost:1",
             "-device", "usb-ehci",
 			"-device", "usb-tablet",
             "-accel", "$Global:bestAccel" 
         )
 
 Write-Host "Starting QEMU with $qemuArgs" -ForegroundColor Green
-Write-Host "Connect to the host with VNC on localhost:5901" -ForegroundColor Yellow
+# 			"-vnc", ":1",
+# 			"-k", ".\keymaps\en-us", 
+
 start-sleep 10
-$qemuProcess = Start-Process -FilePath ".\qemu\qemu-system-x86_64.exe" -ArgumentList $qemuArgs -WindowStyle hidden -PassThru
+
+$qemuProcess = Start-Process -FilePath ".\qemu\qemu-system-x86_64.exe" -ArgumentList $qemuArgs -WorkingDirectory ".\qemu\"  -NoNewWindow -PassThru
+
 }
 
 
 function CHECKUVNC {
-    # Check if UVNC directory exists
+	# Check if UVNC directory exists
     $uvncPath = "$workDir\UVNC"
 
     if (!(Test-Path $uvncPath)) {
@@ -365,7 +356,7 @@ function CHECKUVNC {
             Remove-Item $zipFile -Force -ErrorAction SilentlyContinue
             Remove-Item "$workDir\temp_uvnc" -Recurse -Force -ErrorAction SilentlyContinue
 
-            & "C:\QEMU-Debian\UVNC\vncviewer.exe" localhost::5901  
+            & ".\UVNC\vncviewer.exe" localhost::5901  
 
         } catch {
             Write-Error "Failed to download or extract UltraVNC: $($_.Exception.Message)"
@@ -374,7 +365,7 @@ function CHECKUVNC {
     } else {
 	Write-Host "Waiting 20 seconds to connect to QEMU VM" -ForegroundColor Yellow
 	start-sleep 20
-    & "C:\QEMU-Debian\UVNC\vncviewer.exe" localhost::5901  
+    & ".\UVNC\vncviewer.exe" localhost::5901  
     }
 }
 
@@ -403,21 +394,8 @@ if ($qcowFiles.Count -gt 0) {
         Write-Host "Found: $($file.Name)"
     }
     CheckAndStartQEMU
-	CHECKUVNC
+	#CHECKUVNC
 } else {
     Write-Host "No QCOW2 files found in current directory installing" -ForegroundColor Yellow
     Install-DebianVM
-	start-sleep 10
-	CHECKUVNC
 }
-
-
-
-
-
-
-
-
- 
-
-
