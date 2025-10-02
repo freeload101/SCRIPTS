@@ -57,8 +57,8 @@ if (Test-Path $debianIso) {
     downloadFile $debianUrl $debianIso
 }
 
-# Download QEMU for Windows
-$qemuUrl = "https://qemu.weilnetz.de/w64/qemu-w64-setup-20250826.exe"
+# Download QEMU for Windows 5.2.0 circa 2021 seems to work best with WHPX
+$qemuUrl = "https://qemu.weilnetz.de/w64/2021/qemu-w64-setup-20210208.exe"
 $qemuInstaller = "$workDir\qemu-installer.exe"
 
 if (Test-Path .\qemu\qemu-system-x86_64.exe) {
