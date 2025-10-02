@@ -299,7 +299,7 @@ function StartQEMU {
     param(
         [string]$VMName = "debian-vm",
         [string]$VMSize = "200G",
-        [int]$Memory = 4096,
+        [int]$Memory = "4G",
         [int]$CPUs = 1,
         [string]$ISOPath = ".\debian-12.7.0-amd64-netinst.iso"
     )
