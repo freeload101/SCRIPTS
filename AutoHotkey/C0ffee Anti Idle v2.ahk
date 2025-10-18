@@ -40,6 +40,30 @@ Paste()
 !F12::HighContrastOff()
 
 
+CapsLock & q::
+{
+send "{LCtrl Down}a{LCtrl Up}"
+sleep 200
+Copy()
+}
+ 
+; Type Clipboard
+CapsLock & z::{
+    Sleep 1000
+    ; Store clipboard content
+    text := A_Clipboard
+
+    ; Send each character with 1 second delay
+    for char in StrSplit(text)
+    {
+        Send char
+        Sleep 50
+    }
+}
+
+; common input
+CapsLock & x::Split3()
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;FUNCTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
