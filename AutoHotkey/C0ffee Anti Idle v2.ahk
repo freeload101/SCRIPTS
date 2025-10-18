@@ -9,6 +9,13 @@ SetCapsLockState "AlwaysOff"
 
 
 ; Then define the combinations
+
+CapsLock & w::
+{
+send {LCtrl Down}w{LCtrl Up}"
+}
+
+
 CapsLock & a::
 {
 Copy()
