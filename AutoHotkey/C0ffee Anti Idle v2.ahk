@@ -6,7 +6,10 @@ InstallKeybdHook
 ; Disable CapsLock toggle FIRST
 SetCapsLockState "AlwaysOff"
 
-
+CapsLock & t::
+{
+send "{LCtrl Down}t{LCtrl Up}"
+}
 
 ; Then define the combinations
 
