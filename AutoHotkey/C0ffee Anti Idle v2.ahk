@@ -1,46 +1,34 @@
+; 4:26 AM 10/18/2025: Rewrite to fix alt issues now using Caps Lock A/S
 ; Complete rewrite for v2 ...
+
+
 InstallKeybdHook 
+; Disable CapsLock toggle FIRST
+SetCapsLockState "AlwaysOff"
 
-!d::
+
+
+; Then define the combinations
+CapsLock & a::
 {
-send "{LCtrl Down}t{LCtrl Up}"
-}
-
- 
-
-; Copy
-!a::Copy()
-
-; SELECT ALLCOPY
-!q::
-{
-send "{LCtrl Down}a{LCtrl Up}"
-sleep 200
 Copy()
 }
 
-; Paste
-!s::Paste()
-
-; Type Clipboard
-!z::{
-    Sleep 1000
-    ; Store clipboard content
-    text := A_Clipboard
-
-    ; Send each character with 1 second delay
-    for char in StrSplit(text)
-    {
-        Send char
-        Sleep 50
-    }
+CapsLock & s::
+{
+Paste()
 }
 
+; Mouse buttons as backup
+XButton1::
+{
+Copy()
+}
 
-; common input
-!x::Split3()
-!c::Send " Refine the following message to make it more clear and concise using the personality MBTI Myers-Brigg personality ENFJ and tritype Enneagram 729. Be sure not to use any emojis at all in your response :"
-!v::Send "https://calendly.com/rmccurdy1 to setup a call any time"
+XButton2::
+{
+Paste()
+}
 
 ; Reload
 ^!r::ReloadScript()
