@@ -15,7 +15,7 @@ send "{LCtrl Down}t{LCtrl Up}"
 
 CapsLock & w::
 {
-send {LCtrl Down}w{LCtrl Up}"
+send "{LCtrl Down}w{LCtrl Up}"
 }
 
 
