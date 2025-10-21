@@ -58,6 +58,7 @@ Function CheckMoba {
             (Join-Path $env:USERPROFILE "AppData\Local\Temp"),
             (Join-Path $env:USERPROFILE "AppData\Roaming")
             (Join-Path $env:USERPROFILE "Users")
+			(Join-Path $env:USERPROFILE "Desktop")
             )
 
             foreach ($dir in $directories) {
@@ -89,3 +90,4 @@ Function CheckMoba {
  
 
 CheckMoba
+
