@@ -13,19 +13,20 @@
 Set-Variable -Name ErrorActionPreference -Value SilentlyContinue
 
 $countb4 = (Get-Process).Count
- 
- 
-Get-Process   | Where{!($_.UserName -match "NT AUTHORITY\\(?:SYSTEM|(?:LOCAL|NETWORK) SERVICE)") -and !($_.ProcessName -eq "explorer") -and !($_.ProcessName -eq "smss")  -and !($_.ProcessName -eq "conhost")  -and !($_.ProcessName -eq "powershell") -and !($_.ProcessName -eq "smartscreen") -and !($_.ProcessName -eq "sihost")  -and !($_.ProcessName -eq "CSFalconService") -and !($_.ProcessName -eq "CSFalconContainer") -and !($_.ProcessName -eq "SecurityHealthService") -and !($_.ProcessName -eq "SecurityHealthSystray") -and !($_.ProcessName -eq "cmd.exe") -and !($_.ProcessName -eq "explorer") -and !($_.ProcessName -eq "taskmgr") -and !($_.ProcessName -eq "svchost") -and !($_.ProcessName -eq "lsass") -and !($_.ProcessName -eq "dwm") -and !($_.ProcessName -eq "fontdrvhost") -and !($_.ProcessName -eq "ctfmon") -and !($_.ProcessName -eq "tasklist") -and !($_.ProcessName -eq "Winlogon") -and !($_.ProcessName -eq "dllhost") -and !($_.ProcessName -eq "lsaiso") -and !($_.ProcessName -eq "pwsh") -and !($_.ProcessName -eq "powershell_ise")  } | select -Unique | foreach { 
-write-host "About to kill: "$_.ProcessName
-# DEBUG Start-Sleep -Seconds 10
-Stop-Process  $_.Id -Force 
+
+
+Get-Process | Where{!($_.UserName -match "NT AUTHORITY\\(?:SYSTEM|(?:LOCAL|NETWORK) SERVICE)") -and !($_.ProcessName -eq "explorer") -and !($_.ProcessName -eq "smss") -and !($_.ProcessName -eq "conhost") -and !($_.ProcessName -eq "powershell") -and !($_.ProcessName -eq "smartscreen") -and !($_.ProcessName -eq "sihost") -and !($_.ProcessName -eq "CSFalconService") -and !($_.ProcessName -eq "CSFalconContainer") -and !($_.ProcessName -eq "SecurityHealthService") -and !($_.ProcessName -eq "SecurityHealthSystray") -and !($_.ProcessName -eq "cmd.exe") -and !($_.ProcessName -eq "explorer") -and !($_.ProcessName -eq "taskmgr") -and !($_.ProcessName -eq "svchost") -and !($_.ProcessName -eq "lsass") -and !($_.ProcessName -eq "dwm") -and !($_.ProcessName -eq "fontdrvhost") -and !($_.ProcessName -eq "ctfmon") -and !($_.ProcessName -eq "tasklist") -and !($_.ProcessName -eq "Winlogon") -and !($_.ProcessName -eq "dllhost") -and !($_.ProcessName -eq "lsaiso") -and !($_.ProcessName -eq "pwsh") -and !($_.ProcessName -eq "powershell_ise")} | Select-Object ProcessName -Unique | ForEach-Object { 
+    $processName = $_.ProcessName
+    Write-Host "About to kill all instances of: $processName"
+    # DEBUG Start-Sleep -Seconds 10
+    Get-Process -Name $processName -ErrorAction SilentlyContinue | Stop-Process -Force
 }
- 
-Start-Sleep -Seconds 10
+
+
 
 $countafter = (Get-Process).Count
 $countkilled = $countb4-$countafter
-write-host "Killed $countkilled Processes"
+Write-Host "Killed $countkilled Processes"
 
 
 
@@ -49,7 +50,7 @@ $approvedServicePatterns = @(
     'FontCache', 'DeviceInstall', 'webthreatdefsvc', 'InstallService', 'CDPSvc',
     'Appinfo', 'WdiSystemHost', 'UsoSvc', 'wscsvc', 'WpnService', 'RmSvc', 'fdPHost',
     'wcncsvc', 'DsSvc', 'DisplayEnhancementService', 'AppXSvc', 'gpsvc', 'NgcCtnrSvc',
-    'TokenBroker', 'wlidsvc', 'ClipSVC', 'XblAuthManager', 'BDESVC', 'wuauserv', 'BITS',
+    'TokenBroker', 'wlidsvc', 'ClipSVC', 'XblAuthManager', 'BDESVC',
     # Patterns for user-specific services (wildcard '.*' used)
     'CDPUserSvc_.*',
     'webthreatdefusersvc_.*',
@@ -72,6 +73,8 @@ $approvedServicePatterns = @(
 $combinedRegex = '^(' + ($approvedServicePatterns -join '|') + ')$'
 
 
+Write-Host "Getting details on running services ...."
+
 # Get all svchost.exe processes
 $svchostProcesses = Get-CimInstance -ClassName Win32_Process -Filter "Name = 'svchost.exe'"
 
@@ -89,17 +92,14 @@ foreach ($process in $svchostProcesses) {
 
     # If we found at least one unapproved service, terminate the process
     if ($unapprovedServices) {
- 
+
         $unapprovedServices | ForEach-Object {
         Write-Host "About to kill: Service $($_.Name) ($($_.DisplayName))" }
         Stop-Process -Id $process.ProcessId -Force  
     }
 }
- 
 
-write-host "`DONE`n"
+
+
+Write-Host "`nDONE`n"
 Start-Sleep -Seconds 10
-
-
-
-
