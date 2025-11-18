@@ -1,0 +1,26 @@
+#/bin/bash
+# WHAT THE SSH ?!?!?!??!
+# Script to see all the rev tunnels etc and resolve the ports 
+IFS=$'\n'
+
+for i in `netstat -nape | grep -E "(tcp\b.*127.*sshd)" | grep LISTEN | awk '{print $4,$9}' | sed -re 's/(:|\/)/ /g' | awk '{print $2,$3}'`
+do
+
+# echo "SSHD $i"
+export VARPORT=`echo $i|awk '{print $1}'`
+export VARPID=`echo $i|awk '{print $2}'`
+
+echo "========================================================"
+echo "PORT: $VARPORT"
+
+#lsof -Pan -p $VARPID -i | grep -E '(.*127.*EST)' 2> /dev/null
+#lsof -Pan -p $VARPID -i 2> /dev/null | grep -E '(.*127.*EST)'
+# EVERYTHING lsof -Pan -p $VARPID -i 2> /dev/null | grep -E '(.*(127|139.177.204.101).*EST)'
+#export VARLSOF=`lsof -Pan -p $VARPID -i 2> /dev/null | grep -E '(.*(127|139.177.204.101).*EST)'`
+
+#export VARTARGET=`echo $VARLSOF|sed -re 's/.*->(.*):.*/\1/g'`
+
+#echo "Details: $VARLSOF"
+#echo "Nslookup: `nslookup $VARTARGET`"
+lsof -Pan -p $VARPID -i 2> /dev/null | grep -E '(.*(127|139.177.204.101).*EST)'
+done
