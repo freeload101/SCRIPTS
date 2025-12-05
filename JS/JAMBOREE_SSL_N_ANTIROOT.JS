@@ -1,4 +1,6 @@
 /*
+20251205: AI fixed okhttp3 depinning like a BOSS
+
 Original author: Daniele Linguaglossa
 28/07/2021 -    Edited by Simone Quatrini
                 Code amended to correctly run on the latest frida version
@@ -450,22 +452,70 @@ setTimeout(function() {
         }
         //}
 
-        //-------
-        console.log("[.] OkHTTP 3.x detection...");
-        // OkHTTP v3.x
-        // Wrap the logic in a try/catch as not all applications will have
-        // okhttp as part of the app.
-        try {
-            var CertificatePinner = Java.use('okhttp3.CertificatePinner');
-            console.log("[+] OkHTTP 3.x Found");
-            CertificatePinner.check.overload('java.lang.String', 'java.util.List').implementation = function() {
-                console.log("[+] OkHTTP 3.x check() called. Not throwing an exception.");
-            };
-        } catch (err) {
-            // If we dont have a ClassNotFoundException exception, raise the
-            // problem encountered.
-            console.log("[-] OkHTTP 3.x Not Found")
-        }
+        //-------//--------
+		console.log("[.] OkHTTP 3.x detection...");
+		try {
+			// Hook 1: CertificatePinner.check() - String + List overload
+			var CertificatePinner = Java.use('okhttp3.CertificatePinner');
+			console.log("[+] OkHTTP 3.x CertificatePinner Found");
+
+			CertificatePinner.check.overload('java.lang.String', 'java.util.List').implementation = function(hostname, peerCertificates) {
+				console.log("[+] OkHTTP3 CertificatePinner.check(String,List) bypassed for: " + hostname);
+				return; // Return void - allows connection
+			};
+
+			// Hook 2: CertificatePinner.check() - String + Certificate array overload
+			try {
+				CertificatePinner.check.overload('java.lang.String', '[Ljava.security.cert.Certificate;').implementation = function(hostname, peerCertificates) {
+					console.log("[+] OkHTTP3 CertificatePinner.check(String,Certificate[]) bypassed for: " + hostname);
+					return;
+				};
+			} catch(err) {
+				console.log("[-] Certificate array overload not found");
+			}
+
+		} catch (err) {
+			console.log("[-] OkHTTP 3.x CertificatePinner Not Found");
+		}
+
+		// Hook 3: OkHostnameVerifier (CRITICAL - likely missing cause)
+		try {
+			var OkHostnameVerifier = Java.use('okhttp3.internal.tls.OkHostnameVerifier');
+			console.log("[+] OkHTTP3 OkHostnameVerifier Found");
+
+			OkHostnameVerifier.verify.overload('java.lang.String', 'javax.net.ssl.SSLSession').implementation = function(hostname, session) {
+				console.log("[+] OkHTTP3 OkHostnameVerifier.verify() bypassed for: " + hostname);
+				return true; // Return true - hostname verified
+			};
+
+			OkHostnameVerifier.verify.overload('java.lang.String', 'java.security.cert.X509Certificate').implementation = function(hostname, cert) {
+				console.log("[+] OkHTTP3 OkHostnameVerifier.verify(X509) bypassed for: " + hostname);
+				return true;
+			};
+
+		} catch (err) {
+			console.log("[-] OkHTTP3 OkHostnameVerifier Not Found: " + err);
+		}
+
+		// Hook 4: CertificatePinner$Builder (prevent pinning setup)
+		try {
+			var Builder = Java.use('okhttp3.CertificatePinner$Builder');
+			console.log("[+] OkHTTP3 CertificatePinner$Builder Found");
+
+			Builder.add.overload('java.lang.String', '[Ljava.lang.String;').implementation = function(pattern, pins) {
+				console.log("[+] OkHTTP3 CertificatePinner$Builder.add() bypassed for pattern: " + pattern);
+				return this; // Return builder without adding pins
+			};
+
+			Builder.build.implementation = function() {
+				console.log("[+] OkHTTP3 CertificatePinner$Builder.build() bypassed - returning empty pinner");
+				return Java.use('okhttp3.CertificatePinner').$new(); // Return empty CertificatePinner
+			};
+
+		} catch (err) {
+			console.log("[-] OkHTTP3 CertificatePinner$Builder Not Found: " + err);
+		}
+
 
         //--------
         console.log("[.] Appcelerator Titanium detection...");
