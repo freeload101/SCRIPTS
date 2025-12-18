@@ -13,8 +13,7 @@ net accounts /lockoutthreshold:5 /lockoutduration:30 /lockoutwindow:30
 w32tm /config /manualpeerlist:"time.windows.com,0x1" /syncfromflags:manual /reliable:yes /update;net stop w32time;net start w32time;w32tm /resync;Set-TimeZone -Id "Eastern Standard Time"
 
 :: firewall popup nag removed 
-New-Item -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System'
-Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLgOnBoot' -Value '0'
+powershell -ExecutionPolicy Bypass -Command "New-Item -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Force; Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name 'EnableLgOnBoot' -Value '0'"
 
 :: fix for stupid windows 11 context menu
 reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f
@@ -181,71 +180,6 @@ choco upgrade all -y
 choco uninstall  choco-upgrade-all-at-startup
 choco uninstall  choco-upgrade-all-at 
 choco install choco-upgrade-all-at-startup
-
-
-:: download and copy yt-dlp to each user path so that you can update it ..
-# Get all user profiles
-$allUsers = Get-WmiObject -Class Win32_UserProfile | Where-Object { 
-    $_.Special -eq $false -and $_.LocalPath -notlike "*\Administrator*" 
-}
-
-# Download yt-dlp.exe to temp location first
-$tempPath = "$env:TEMP\yt-dlp.exe"
-$downloadUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe"
-
-Write-Host "Downloading yt-dlp..."
-Invoke-WebRequest -Uri $downloadUrl -OutFile $tempPath
-
-# Process each user profile
-foreach ($user in $allUsers) {
-    $userPath = $user.LocalPath
-    $targetDir = Join-Path $userPath "AppData\Local\Microsoft\WindowsApps"
-    $targetFile = Join-Path $targetDir "yt-dlp.exe"
-
-    Write-Host "Processing user: $userPath"
-
-    # Create directory if it doesn't exist
-    if (!(Test-Path $targetDir)) {
-        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
-    }
-
-    # Copy the binary
-    Copy-Item -Path $tempPath -Destination $targetFile -Force
-
-    # Set permissions: Full control for Everyone
-    $acl = Get-Acl $targetFile
-    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule(
-        "Everyone", "FullControl", "Allow"
-    )
-    $acl.SetAccessRule($accessRule)
-
-    # Set owner to Everyone (use Administrators group instead as Everyone can't own files)
-    $adminsSid = New-Object System.Security.Principal.SecurityIdentifier("S-1-5-32-544")
-    $acl.SetOwner($adminsSid)
-
-    # Apply the ACL
-    Set-Acl -Path $targetFile -AclObject $acl
-
-    # Set directory permissions too
-    $dirAcl = Get-Acl $targetDir
-    $dirAcl.SetAccessRule($accessRule)
-    $dirAcl.SetOwner($adminsSid)
-    Set-Acl -Path $targetDir -AclObject $dirAcl
-
-    Write-Host "Installed to: $targetFile"
-}
-
-# Clean up temp file
-Remove-Item $tempPath -Force
-
-Write-Host "yt-dlp installation completed for all users"
-
-# Verify installation for current user
-$currentUserPath = "$env:USERPROFILE\AppData\Local\Microsoft\WindowsApps\yt-dlp.exe"
-if (Test-Path $currentUserPath) {
-    Write-Host "Verification - Current user version:"
-    & $currentUserPath --version
-}
 
 
 
