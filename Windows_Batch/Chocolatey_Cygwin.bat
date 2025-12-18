@@ -64,6 +64,46 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows" /v "Shutdown
 rem Force close without prompting
 reg add "HKEY_USERS\.DEFAULT\Control Panel\Desktop" /v "AutoEndTasks" /t REG_SZ /d "1" /f
 
+:: Check for admin privileges
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    echo This script requires administrator privileges.
+    echo Right-click and select "Run as administrator"
+    pause
+    exit /b 1
+)
+
+Echo"Run PowerShell to download yt-dlp for all users"
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+"$tempPath = \"$env:TEMP\yt-dlp.exe\"; ^
+$downloadUrl = \"https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe\"; ^
+Write-Host \"Downloading yt-dlp...\"; ^
+Invoke-WebRequest -Uri $downloadUrl -OutFile $tempPath -UseBasicParsing; ^
+$adminsSid = [System.Security.Principal.SecurityIdentifier]::new(\"S-1-5-32-544\"); ^
+$accessRule = [System.Security.AccessControl.FileSystemAccessRule]::new(\"Everyone\", \"FullControl\", \"Allow\"); ^
+Get-CimInstance -ClassName Win32_UserProfile ^| Where-Object { -not $_.Special -and $_.LocalPath -notlike \"*\Administrator*\" } ^| ForEach-Object { ^
+    $targetDir = Join-Path $_.LocalPath \"AppData\Local\Microsoft\WindowsApps\"; ^
+    $targetFile = Join-Path $targetDir \"yt-dlp.exe\"; ^
+    Write-Host \"Processing: $($_.LocalPath)\"; ^
+    [void](New-Item -ItemType Directory -Path $targetDir -Force -ErrorAction SilentlyContinue); ^
+    Copy-Item -Path $tempPath -Destination $targetFile -Force; ^
+    foreach ($path in @($targetFile, $targetDir)) { ^
+        $acl = Get-Acl $path; ^
+        $acl.SetAccessRule($accessRule); ^
+        $acl.SetOwner($adminsSid); ^
+        Set-Acl -Path $path -AclObject $acl ^
+    }; ^
+    Write-Host \"Installed to: $targetFile\" ^
+}; ^
+Remove-Item $tempPath -Force -ErrorAction SilentlyContinue; ^
+Write-Host \"`nyt-dlp installation completed for all users\"; ^
+$currentUserPath = \"$env:USERPROFILE\AppData\Local\Microsoft\WindowsApps\yt-dlp.exe\"; ^
+if (Test-Path $currentUserPath) { ^
+    Write-Host \"Current user version:\"; ^
+    ^& $currentUserPath --version ^
+}"
+
 
 CHOICE /C YN /N /T 5 /D N /M "Install Cygwin and optional Windows apps ? Y/N"
 IF ERRORLEVEL 1 SET CYGWIN=YES
