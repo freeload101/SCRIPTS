@@ -26,6 +26,8 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AllowAutoGameMo
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AutoGameModeEnabled" -Value 0 -Type Dword -Force
 Get-AppxPackage Microsoft.XboxGamingOverlay | Remove-AppxPackage
 
+# disable smart app control
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CI\Policy" -Name "VerifiedAndReputablePolicyState" -Value 0 -Type DWord
 
 
 # diable MS signin ..
@@ -3280,6 +3282,7 @@ sc stop "TrustedInstaller"
 
 sc config TrustedInstaller binPath= "C:\Windows\servicing\TrustedInstaller.exe"   1>> output.log 2>&1
 sc config TrustedInstaller binPath= "C:\Windows\servicing\TrustedInstaller.exe"  1>> output.log 2>&1
+
 
 
 
