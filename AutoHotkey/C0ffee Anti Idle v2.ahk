@@ -1,3 +1,4 @@
+; 10:28 AM 12/30/2025: added Alt+ F10 to resize / move all windows if things go crazy 
 ; 4:26 AM 10/18/2025: Rewrite to fix alt issues now using Caps Lock A/S
 ; Complete rewrite for v2 ...
 
@@ -40,6 +41,8 @@ XButton2::
 Paste()
 }
 
+ 
+
 ; Reload
 ^!r::ReloadScript()
 
@@ -48,6 +51,7 @@ Paste()
 !0::Run "C:\Windows\System32\shutdown.exe -h -f"
 !F11::HighContrastOn()
 !F12::HighContrastOff()
+!F10::MoveAndResizeAllWindows()
 
 
 CapsLock & q::
@@ -72,7 +76,11 @@ CapsLock & z::{
 }
 
 ; common input
-CapsLock & x::Split3()
+CapsLock & x::{
+;MoveAndResizeAllWindows()
+Split3()
+}
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;FUNCTIONS
@@ -245,7 +253,7 @@ tooltip "SPLIT3"
 WipeKbdState
 
 delay1 := "300"
-ResizeAllWindowsHeight()
+;ResizeAllWindowsHeight()
 
 sleep delay1
 
@@ -264,3 +272,56 @@ sleep delay1
 	return
 
 }
+
+
+;;;;;;;;;;;;;;;;;;;;
+; Updateded POC : Cycle through all windows and set their height to 1400
+;;;;;;;;;;;;;;;;;;;;
+
+MoveAndResizeAllWindows()
+{
+    ; Target dimensions
+    targetX := 1344
+    targetY := 0
+    targetW := 2527
+    targetH := 1447
+
+    ; Get list of all windows
+    windowList := WinGetList()
+    resizedCount := 0
+
+    for hwnd in windowList
+    {
+        try
+        {
+            ; Skip if window doesn't exist or is minimized/maximized
+            if !WinExist("ahk_id " hwnd) || WinGetMinMax("ahk_id " hwnd) != 0
+                continue
+
+            ; Skip windows with no title (usually system/special windows)
+            if !WinGetTitle("ahk_id " hwnd)
+                continue
+
+            ; Get current dimensions to verify window is valid
+            WinGetPos &x, &y, &width, &height, "ahk_id " hwnd
+
+            ; Skip windows with no dimensions
+            if !height || !width
+                continue
+
+            ; Move and resize window to target dimensions
+            WinMove targetX, targetY, targetW, targetH, "ahk_id " hwnd
+            resizedCount++
+        }
+        catch as e
+        {
+            ; Skip windows that can't be resized
+            continue
+        }
+    }
+
+    return resizedCount
+}
+
+
+
