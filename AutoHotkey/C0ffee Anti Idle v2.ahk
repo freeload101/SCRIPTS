@@ -77,7 +77,7 @@ CapsLock & z::{
 
 ; common input
 CapsLock & x::{
-;MoveAndResizeAllWindows()
+MoveAndResizeAllWindows()
 Split3()
 }
 
