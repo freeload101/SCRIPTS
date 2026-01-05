@@ -56,9 +56,7 @@ Paste()
 
 CapsLock & q::
 {
-send "{LCtrl Down}a{LCtrl Up}"
-sleep 200
-Copy()
+MoveAndResizeAllWindows()
 }
  
 ; Type Clipboard
