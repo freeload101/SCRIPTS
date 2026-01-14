@@ -292,8 +292,8 @@ MoveAndResizeAllWindows()
     {
         try
         {
-            ; Skip if window doesn't exist or is minimized/maximized
-            if !WinExist("ahk_id " hwnd) || WinGetMinMax("ahk_id " hwnd) != 0
+            ; Skip if window doesn't exist
+            if !WinExist("ahk_id " hwnd)
                 continue
 
             ; Skip windows with no title (usually system/special windows)
@@ -306,6 +306,11 @@ MoveAndResizeAllWindows()
             ; Skip windows with no dimensions
             if !height || !width
                 continue
+
+            ; Restore window if minimized or maximized
+            minMaxState := WinGetMinMax("ahk_id " hwnd)
+            if minMaxState != 0
+                WinRestore "ahk_id " hwnd
 
             ; Move and resize window to target dimensions
             WinMove targetX, targetY, targetW, targetH, "ahk_id " hwnd
