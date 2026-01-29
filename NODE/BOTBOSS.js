@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const readline = require('readline');
 const { jsonToToon } = require('toon-json-converter');
-
+// npm i toon-json-converter
 function getChromeExecutablePath() {
   return 'C:\\Program Files\\Chromium\\Application\\chrome.exe';
 }
@@ -550,3 +550,4 @@ processUrlsFromFile(inputFile).catch(err => {
   console.error('❌ Fatal Error:', err.message);
   process.exit(1);
 });
+
