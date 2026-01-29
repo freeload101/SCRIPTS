@@ -2,64 +2,15 @@ const { chromium } = require('playwright');
 const fs = require('fs').promises;
 const path = require('path');
 const readline = require('readline');
+const { jsonToToon } = require('toon-json-converter');
 
 function getChromeExecutablePath() {
-  return '.\\Chromium\\chrome.exe';
+  return 'C:\\Program Files\\Chromium\\Application\\chrome.exe';
 }
 
 function getChromeUserDataDir() {
   const homeDir = require('os').homedir();
   return path.join(homeDir, 'AppData', 'Local', 'Google', 'Chrome', 'User Data');
-}
-
-function toTOON(data) {
-  function encodeValue(val, indent = 0) {
-    const spaces = '  '.repeat(indent);
-    if (val === null) return 'null';
-    if (typeof val === 'boolean') return val.toString();
-    if (typeof val === 'number') return val.toString();
-    if (typeof val === 'string') {
-      const needsQuotes = val.includes('\n') || val.includes(',') || val.includes(':') || val.trim() !== val;
-      return needsQuotes ? `"${val.replace(/"/g, '\\"')}"` : val;
-    }
-    if (Array.isArray(val)) {
-      if (val.length === 0) return '[]';
-      if (val.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
-        const keys = Object.keys(val[0]);
-        const allSameKeys = val.every(item => 
-          Object.keys(item).length === keys.length && 
-          Object.keys(item).every(k => keys.includes(k))
-        );
-        if (allSameKeys) {
-          let result = `[${val.length}] ${keys.join(', ')}\n`;
-          val.forEach(item => {
-            result += spaces + '  ' + keys.map(k => encodeValue(item[k], 0)).join(', ') + '\n';
-          });
-          return result.trimEnd();
-        }
-      }
-      let result = `[${val.length}]\n`;
-      val.forEach(item => {
-        result += spaces + '  ' + encodeValue(item, indent + 1) + '\n';
-      });
-      return result.trimEnd();
-    }
-    if (typeof val === 'object') {
-      let result = '{\n';
-      Object.entries(val).forEach(([key, value]) => {
-        const encodedVal = encodeValue(value, indent + 1);
-        if (encodedVal.includes('\n')) {
-          result += `${spaces}  ${key}:\n${spaces}    ${encodedVal.split('\n').join('\n' + spaces + '    ')}\n`;
-        } else {
-          result += `${spaces}  ${key}: ${encodedVal}\n`;
-        }
-      });
-      result += spaces + '}';
-      return result;
-    }
-    return String(val);
-  }
-  return encodeValue(data);
 }
 
 async function extractWebpageContent(page, url, sessionId, urlIndex, totalUrls) {
@@ -358,8 +309,8 @@ async function extractWebpageContent(page, url, sessionId, urlIndex, totalUrls) 
         paragraphs_count: paragraphs.length,
         images_count: images.length,
         videos_count: videos.length,
-        dialogs_count: dialogs.length,
-        accordions_count: accordions.count
+        dialogs_count: dialogs.count,
+        accordions_count: accordions.length
       }
     };
   });
@@ -451,15 +402,15 @@ async function processSession(browser, urlQueue, sessionId, results) {
     try {
       const content = await extractWebpageContent(page, url, sessionId, index, progress.total);
 
-      const toonOutput = toTOON(content);
+      const jsonOutput = JSON.stringify(content, null, 2);
       const timestamp = new Date().toISOString().split('T')[0];
       const sanitizedUrl = url.replace(/[^a-z0-9]/gi, '_').substring(0, 50);
-      const filename = `${sanitizedUrl}_${timestamp}_s${sessionId}.toon`;
+      const filename = `${sanitizedUrl}_${timestamp}_s${sessionId}.json`;
 
-      await fs.writeFile(filename, toonOutput);
+      await fs.writeFile(filename, jsonOutput);
 
       console.log(`[Session ${sessionId}] ✅ Saved: ${filename}`);
-      console.log(`[Session ${sessionId}] 📊 Tokens: ~${Math.floor(toonOutput.length / 4)}`);
+      console.log(`[Session ${sessionId}] 📊 Tokens: ~${Math.floor(jsonOutput.length / 4)}`);
       console.log(`[Session ${sessionId}] 📈 Progress: ${progress.processed}/${progress.total}\n`);
 
       results.push({ url, filename, status: 'success', sessionId });
@@ -472,6 +423,51 @@ async function processSession(browser, urlQueue, sessionId, results) {
 
   await context.close();
   console.log(`\n[Session ${sessionId}] ✓ Session completed\n`);
+}
+
+async function convertAllJsonToToon() {
+  console.log('\n' + '='.repeat(60));
+  console.log('🔄 Converting all JSON files to TOON format...');
+  console.log('='.repeat(60) + '\n');
+
+  const files = await fs.readdir('.');
+  const jsonFiles = files.filter(file => path.extname(file) === '.json');
+
+  if (jsonFiles.length === 0) {
+    console.log('⚠️  No JSON files found to convert\n');
+    return;
+  }
+
+  const allData = {};
+
+  for (const file of jsonFiles) {
+    try {
+      const content = await fs.readFile(file, 'utf-8');
+      const jsonData = JSON.parse(content);
+      const fileName = path.basename(file, '.json');
+      allData[fileName] = jsonData;
+      console.log(`✓ Loaded: ${file}`);
+    } catch (error) {
+      console.error(`✗ Failed to read ${file}: ${error.message}`);
+    }
+  }
+
+  try {
+    const toonData = jsonToToon(allData);
+    const timestamp = new Date().toISOString().split('T')[0];
+    const outputFile = `combined_${timestamp}.toon`;
+    await fs.writeFile(outputFile, toonData, 'utf-8');
+
+    const jsonSize = JSON.stringify(allData).length;
+    const toonSize = toonData.length;
+    const savings = ((1 - toonSize / jsonSize) * 100).toFixed(1);
+
+    console.log(`\n✅ Combined ${jsonFiles.length} file(s) → ${outputFile}`);
+    console.log(`📊 Size: ${jsonSize} → ${toonSize} bytes (${savings}% reduction)`);
+    console.log(`📊 Tokens: ~${Math.floor(jsonSize / 4)} → ~${Math.floor(toonSize / 4)}\n`);
+  } catch (error) {
+    console.error(`✗ Failed to convert to TOON: ${error.message}\n`);
+  }
 }
 
 async function processUrlsFromFile(inputFile) {
@@ -498,7 +494,6 @@ async function processUrlsFromFile(inputFile) {
     viewport: { width: 1080, height: 1024 }
   });
   const page = await context.newPage();
-
 
   console.log('⏳ Waiting 60 seconds to pass BOT challenge...\n');
   await new Promise(resolve => setTimeout(resolve, 60000));
@@ -544,6 +539,8 @@ async function processUrlsFromFile(inputFile) {
   console.log(`Errors: ${results.filter(r => r.status === 'error').length}`);
   console.log(`Sessions used: ${sessionCounter}`);
   console.log('='.repeat(60) + '\n');
+
+  await convertAllJsonToToon();
 
   return results;
 }
