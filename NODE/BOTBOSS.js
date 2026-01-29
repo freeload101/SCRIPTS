@@ -3,9 +3,21 @@ const fs = require('fs').promises;
 const path = require('path');
 const readline = require('readline');
 const { jsonToToon } = require('toon-json-converter');
-// npm i toon-json-converter
+
+// Create output directory name with timestamp
+const OUTPUT_DIR = `output_${new Date().toISOString().replace(/[:.]/g, '-').split('T')[0]}`;
+
+async function ensureOutputDir() {
+  try {
+    await fs.access(OUTPUT_DIR);
+  } catch {
+    await fs.mkdir(OUTPUT_DIR, { recursive: true });
+    console.log(`📁 Created output directory: ${OUTPUT_DIR}\n`);
+  }
+}
+
 function getChromeExecutablePath() {
-  return 'C:\\Program Files\\Chromium\\Application\\chrome.exe';
+  return '.\\Chromium\\chrome.exe';
 }
 
 function getChromeUserDataDir() {
@@ -37,7 +49,7 @@ async function extractWebpageContent(page, url, sessionId, urlIndex, totalUrls) 
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const sanitizedUrl = url.replace(/[^a-z0-9]/gi, '_').substring(0, 50);
-  const screenshotPath = `${sanitizedUrl}_${timestamp}_s${sessionId}.png`;
+  const screenshotPath = path.join(OUTPUT_DIR, `${sanitizedUrl}_${timestamp}_s${sessionId}.png`);
   await page.screenshot({ path: screenshotPath, fullPage: true });
   console.log(`[Session ${sessionId}] 📸 Screenshot saved: ${screenshotPath}\n`);
 
@@ -309,7 +321,7 @@ async function extractWebpageContent(page, url, sessionId, urlIndex, totalUrls) 
         paragraphs_count: paragraphs.length,
         images_count: images.length,
         videos_count: videos.length,
-        dialogs_count: dialogs.count,
+        dialogs_count: dialogs.length,
         accordions_count: accordions.length
       }
     };
@@ -405,7 +417,7 @@ async function processSession(browser, urlQueue, sessionId, results) {
       const jsonOutput = JSON.stringify(content, null, 2);
       const timestamp = new Date().toISOString().split('T')[0];
       const sanitizedUrl = url.replace(/[^a-z0-9]/gi, '_').substring(0, 50);
-      const filename = `${sanitizedUrl}_${timestamp}_s${sessionId}.json`;
+      const filename = path.join(OUTPUT_DIR, `${sanitizedUrl}_${timestamp}_s${sessionId}.json`);
 
       await fs.writeFile(filename, jsonOutput);
 
@@ -427,10 +439,10 @@ async function processSession(browser, urlQueue, sessionId, results) {
 
 async function convertAllJsonToToon() {
   console.log('\n' + '='.repeat(60));
-  console.log('🔄 Converting all JSON files to TOON format...');
+  console.log('🔄 Converting JSON files to TOON format...');
   console.log('='.repeat(60) + '\n');
 
-  const files = await fs.readdir('.');
+  const files = await fs.readdir(OUTPUT_DIR);
   const jsonFiles = files.filter(file => path.extname(file) === '.json');
 
   if (jsonFiles.length === 0) {
@@ -438,36 +450,37 @@ async function convertAllJsonToToon() {
     return;
   }
 
-  const allData = {};
+  let successCount = 0;
+  let errorCount = 0;
 
   for (const file of jsonFiles) {
     try {
-      const content = await fs.readFile(file, 'utf-8');
+      const filePath = path.join(OUTPUT_DIR, file);
+      const content = await fs.readFile(filePath, 'utf-8');
       const jsonData = JSON.parse(content);
-      const fileName = path.basename(file, '.json');
-      allData[fileName] = jsonData;
-      console.log(`✓ Loaded: ${file}`);
+
+      const toonData = jsonToToon(jsonData);
+      const outputFile = path.join(OUTPUT_DIR, file.replace('.json', '.toon'));
+      await fs.writeFile(outputFile, toonData, 'utf-8');
+
+      const jsonSize = content.length;
+      const toonSize = toonData.length;
+      const savings = ((1 - toonSize / jsonSize) * 100).toFixed(1);
+
+      console.log(`✓ ${file} → ${path.basename(outputFile)}`);
+      console.log(`  Size: ${jsonSize} → ${toonSize} bytes (${savings}% reduction)`);
+      console.log(`  Tokens: ~${Math.floor(jsonSize / 4)} → ~${Math.floor(toonSize / 4)}\n`);
+
+      successCount++;
     } catch (error) {
-      console.error(`✗ Failed to read ${file}: ${error.message}`);
+      console.error(`✗ Failed to convert ${file}: ${error.message}\n`);
+      errorCount++;
     }
   }
 
-  try {
-    const toonData = jsonToToon(allData);
-    const timestamp = new Date().toISOString().split('T')[0];
-    const outputFile = `combined_${timestamp}.toon`;
-    await fs.writeFile(outputFile, toonData, 'utf-8');
-
-    const jsonSize = JSON.stringify(allData).length;
-    const toonSize = toonData.length;
-    const savings = ((1 - toonSize / jsonSize) * 100).toFixed(1);
-
-    console.log(`\n✅ Combined ${jsonFiles.length} file(s) → ${outputFile}`);
-    console.log(`📊 Size: ${jsonSize} → ${toonSize} bytes (${savings}% reduction)`);
-    console.log(`📊 Tokens: ~${Math.floor(jsonSize / 4)} → ~${Math.floor(toonSize / 4)}\n`);
-  } catch (error) {
-    console.error(`✗ Failed to convert to TOON: ${error.message}\n`);
-  }
+  console.log('='.repeat(60));
+  console.log(`✅ Conversion complete: ${successCount} successful, ${errorCount} failed`);
+  console.log('='.repeat(60) + '\n');
 }
 
 async function processUrlsFromFile(inputFile) {
@@ -477,6 +490,8 @@ async function processUrlsFromFile(inputFile) {
   const urls = fileContent.split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('#'));
 
   console.log(`✓ Found ${urls.length} URLs to process\n`);
+
+  await ensureOutputDir();
 
   const executablePath = getChromeExecutablePath();
   console.log(`🔧 Chrome executable: ${executablePath}\n`);
@@ -538,6 +553,7 @@ async function processUrlsFromFile(inputFile) {
   console.log(`Successful: ${results.filter(r => r.status === 'success').length}`);
   console.log(`Errors: ${results.filter(r => r.status === 'error').length}`);
   console.log(`Sessions used: ${sessionCounter}`);
+  console.log(`Output directory: ${OUTPUT_DIR}`);
   console.log('='.repeat(60) + '\n');
 
   await convertAllJsonToToon();
@@ -550,4 +566,3 @@ processUrlsFromFile(inputFile).catch(err => {
   console.error('❌ Fatal Error:', err.message);
   process.exit(1);
 });
-
