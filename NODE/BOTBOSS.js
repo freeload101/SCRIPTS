@@ -510,9 +510,11 @@ async function processUrlsFromFile(inputFile) {
   });
   const page = await context.newPage();
 
-  console.log('⏳ Waiting 60 seconds to pass BOT challenge...\n');
-  await new Promise(resolve => setTimeout(resolve, 60000));
-
+ 
+  console.log('⏳ Waiting for BOT challenge (max 60 seconds)...');
+  console.log('   Press ENTER to continue immediately after passing challenge\n');
+  await waitForEnterWithTimeout('', 60000);
+  console.log('✓ Proceeding with URL processing...\n');
   const urlQueue = new URLQueue(urls);
   const results = [];
   const activeSessions = [];
