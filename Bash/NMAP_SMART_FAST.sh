@@ -1,43 +1,147 @@
-# the point of this script is to find alive host to target with deeper scans not to port scan !
+#!/bin/bash
 
-echo `date` INFO: Performing smart 192,172 and 10. scans this takes about 5-7 days
+
+# AI rewrote this script so may be gremlins but it looks better  :P 
+#Key Changes
+#Gateway Discovery Strategy:
  
-echo `date` INFO: Starting 192.
-nmap -v -T5 -oA 192 -sV --top-ports 40 --open --randomize-hosts --defeat-rst-ratelimit  192.168.0.0/16
-
-# scan 10 and 172 just  1,2,3,10,20,30,100,254 
-echo `date` INFO: Starting 172.
-nmap --max-retries 1 --min-parallelism 100 -oA 172_GUESS -sn -T5 --randomize-hosts 172.16-31.0-255.1,2,3,10,20,30,100,254 -v 
-grep Up 172_GUESS.gnmap | awk '{print $2}'  | sed -r  's/(.*\..*\..*\.).*/\10\/24/'g | sort -u > 172_NETWORKS
-nmap -v -T5 -oA 172_NETWORKS -sV  --top-ports 40 --open --randomize-hosts --defeat-rst-ratelimit -iL 172_NETWORKS
-
-echo `date` INFO: Starting 10.
-nmap --max-retries 1 --min-parallelism 100 -oA 10_GUESS -sn -T5 --randomize-hosts 10.0-255.0-255.1,254 -v 
-grep Up 10_GUESS.gnmap | awk '{print $2}'  | sed -r  's/(.*\..*\..*\.).*/\10\/24/'g | sort -u > 10_NETWORKS
-nmap -v -T5 -oA 10_NETWORKS -sV  --top-ports 40 --open --randomize-hosts --defeat-rst-ratelimit  -iL 10_NETWORKS 
-
-echo `date` INFO: Compleated Nmap
-grep open *.gnmap | awk '{print $2}'|  sort -u | uniq -c | sort -nr > ALL_IPS_WITH_OPEN.txt
+#172.16-31.x: Scan only .1,.2,.3,.10,.20,.30,.50,.100,.200,.254 across all subnets (~2,560 IPs vs 1,048,576)
+#10.x.x.x: Same approach (~655,360 IPs vs 16,777,216)
+#192.168.x: Full scan (only 65,536 IPs, manageable)
+#Two-stage approach for large ranges:
+ 
+#Find active subnets via gateway IPs (fast)
+#Scan only those /24s completely (targeted)
+#Speed comparison for 10.x:
+ 
+#Your approach: ~655K IPs to check for gateways
+#Full /8 scan: ~16.7M IPs
+#Your method is ~25x faster for discovery
+#This combines your smart gateway discovery with the other optimizations. Expected runtime: 1-3 hours depending on how many active subnets exist.
 
 
-# IP,Portlist
-grep open *.gnmap | grep -E "(Host: )" | sed 's/,/ /g'| sed 's/.*Host: //g' | sed -r 's/( \(.*\)).*Ports: /,\1,/g' | sed 's/\bIgnored State.*//g' | sed 's/\/\/\///g' > IP_PORTLIST.txt
+# Configuration
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+LOG_DIR="nmap_scan_${TIMESTAMP}"
+mkdir -p "$LOG_DIR"
+cd "$LOG_DIR"
 
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a scan.log
+}
 
-# IP,DEVICE,HOSTNAME
-grep  -Eiah "(Service Info|Nmap scan)" *.nmap|grep -B 1 "Service Info" | grep -v '\-\-'|sed -r 's/Service Info.*: /,/g' | tr -d '\n'| awk '{gsub("Nmap scan report for ","\n"); print}' | sed -r 's/(.*) \((.*)\)(.*)/\2\3,\1/g' > IP_DEVICE_HOSTNAME.csv
-# get count of *nix servers
-grep -h '22\/open' *.gnmap | grep -Evai "(cisco|Gateway|goahead|2016.74|Ricoh WS Discovery|sunssh|HP Integrated)" | sed 's/Seq.*//g'| sed 's/Ignored.*//g'| sed 's/  //g'|sed 's/\t//g' |sed 's/,/ /g'|sed -r 's/Host: ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}).*Ports: (.*)/\2,\1 /g' > PORT_IP_LINUX.csv
+# Phase 1: Smart host discovery
+log "Starting Phase 1: Smart Discovery"
 
-# PORTS,IP
-grep -h '\/open' *.gnmap | sed 's/Seq.*//g'| sed 's/Ignored.*//g'| sed 's/  //g'|sed 's/\t//g' |sed 's/,/ /g' | sed -r 's/Host: ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}).*Ports: (.*)/\2,\1 /g' > PORTS_IP.csv
+# 192.168.0.0/16 - small enough to scan directly
+log "Scanning 192.168.0.0/16 (full range)"
+nmap -sn -T4 -n --min-rate 2000 --max-retries 1 \
+    -oA 192_discovery 192.168.0.0/16 &
+PID_192=$!
 
-# subnet counts Up
-grep open *.gnmap | grep -Eo "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})"|sort -u|  grep -Eo "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})" | sort | uniq -c | sort -nr |awk '{print $1","$2}'> SUBNET_UP.csv
+# 172.16-31.0-255 - scan common IPs to find active subnets
+log "Scanning 172.16-31.x.x (gateway discovery)"
+nmap -sn -T4 -n --min-rate 2000 --max-retries 1 \
+    --min-parallelism 100 \
+    -oA 172_gw_discovery \
+    172.16-31.0-255.1,2,3,10,20,30,50,100,200,254 &
+PID_172=$!
 
-# subnet up open ports count
-grep open *.gnmap |grep open| grep -Eo "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})"|sort -u|  grep -Eo "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})" | sort | uniq -c | sort -nr |awk '{print $1","$2}'> SUBNET_OPEN_PORTS.csv
+# 10.0-255.0-255 - scan common IPs to find active subnets
+log "Scanning 10.x.x.x (gateway discovery)"
+nmap -sn -T4 -n --min-rate 2000 --max-retries 1 \
+    --min-parallelism 100 \
+    -oA 10_gw_discovery \
+    10.0-255.0-255.1,2,3,10,20,30,50,100,200,254 &
+PID_10=$!
 
-# create Nmap fingerprint hash of NMAP service output to find like host on the network
-echo "IP,HostName,Hash,Ports" > ./IP_DNS_HASH_PORT.csv
-cat *.gnmap | sort -u | grep -v Up | sed 's/,/ /g' |sed -r 's/Host: (.*) \((.*)\).*Ports: (.*)/echo "\1","\2",`echo "\3"|base64 -w 0`",\3"/ge' >> ./IP_DNS_HASH_PORT.csv
+wait $PID_192 $PID_172 $PID_10
+log "Phase 1 Complete"
+
+# Phase 2: Expand to full /24 subnets where gateways found
+log "Starting Phase 2: Subnet Expansion"
+
+# Extract active /24 networks from 172 and 10
+grep "Status: Up" 172_gw_discovery.gnmap | awk '{print $2}' | \
+    sed -r 's/([0-9]+\.[0-9]+\.[0-9]+)\..*/\1.0\/24/' | \
+    sort -u > 172_active_subnets.txt
+
+grep "Status: Up" 10_gw_discovery.gnmap | awk '{print $2}' | \
+    sed -r 's/([0-9]+\.[0-9]+\.[0-9]+)\..*/\1.0\/24/' | \
+    sort -u > 10_active_subnets.txt
+
+SUBNET_172=$(wc -l < 172_active_subnets.txt)
+SUBNET_10=$(wc -l < 10_active_subnets.txt)
+log "Found ${SUBNET_172} active /24s in 172.x, ${SUBNET_10} in 10.x"
+
+# Scan full /24s for active subnets
+if [ $SUBNET_172 -gt 0 ]; then
+    nmap -sn -T4 -n --min-rate 2000 --max-retries 1 \
+        -oA 172_subnet_discovery -iL 172_active_subnets.txt &
+    PID_172_SUB=$!
+fi
+
+if [ $SUBNET_10 -gt 0 ]; then
+    nmap -sn -T4 -n --min-rate 2000 --max-retries 1 \
+        -oA 10_subnet_discovery -iL 10_active_subnets.txt &
+    PID_10_SUB=$!
+fi
+
+wait $PID_172_SUB $PID_10_SUB 2>/dev/null
+log "Phase 2 Complete"
+
+# Phase 3: Port scan all live hosts
+log "Starting Phase 3: Port Scanning"
+
+grep "Status: Up" *_discovery.gnmap | awk '{print $2}' | sort -u > all_live_hosts.txt
+LIVE_COUNT=$(wc -l < all_live_hosts.txt)
+log "Found ${LIVE_COUNT} live hosts"
+
+nmap -Pn -T4 -n --top-ports 100 --open \
+    --min-rate 500 --max-retries 2 \
+    -oA ports_scan -iL all_live_hosts.txt
+
+log "Phase 3 Complete"
+
+# Phase 4: Service detection on hosts with open ports
+log "Starting Phase 4: Service Detection"
+
+grep "open" ports_scan.gnmap | awk '{print $2}' | sort -u > hosts_with_ports.txt
+PORTS_COUNT=$(wc -l < hosts_with_ports.txt)
+log "Found ${PORTS_COUNT} hosts with open ports"
+
+if [ $PORTS_COUNT -gt 0 ]; then
+    nmap -Pn -T4 -sV --version-intensity 5 \
+        --min-rate 300 --max-retries 2 \
+        -oA service_detection -iL hosts_with_ports.txt
+fi
+
+log "Phase 4 Complete"
+
+# Generate reports
+log "Generating reports"
+
+grep "open" *.gnmap | awk '{print $2}' | sort | uniq -c | sort -rn > all_ips_with_open.txt
+
+grep "open" *.gnmap | awk '/Ports:/ {
+    ip=$2; 
+    sub(/.*Ports: /, ""); 
+    gsub(/\/\/\//, ""); 
+    print ip "," $0
+}' > ip_portlist.csv
+
+grep "open" *.gnmap | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}" | \
+    awk -F. '{print $1"."$2"."$3}' | sort | uniq -c | sort -rn | \
+    awk '{print $1","$2}' > subnet_stats.csv
+
+awk '/Host:.*Ports:/ {
+    match($0, /Host: ([^ ]+) \(([^)]*)\).*Ports: (.*)/, arr);
+    if (arr[3]) {
+        cmd = "echo \"" arr[3] "\" | md5sum | cut -d\" \" -f1";
+        cmd | getline hash;
+        close(cmd);
+        print arr[1] "," arr[2] "," hash "," arr[3];
+    }
+}' *.gnmap > ip_hash_ports.csv
+
+log "Scan Complete - Results in ${LOG_DIR}"
