@@ -193,6 +193,9 @@ for %%x in (
 	teracopy
 	ffmpeg
 	audacity
+	doublecmd
+	windirstat
+	
 ) do (
 	echo Installing:	%%x
 	choco install %%x
