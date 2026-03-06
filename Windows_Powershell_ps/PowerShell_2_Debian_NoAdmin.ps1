@@ -10,6 +10,15 @@ Set-Location $workDir
 # Download Debian ISO
 $Global:debianUrl = "https://cloud.debian.org/images/archive/12.7.0/amd64/iso-cd/debian-12.7.0-amd64-netinst.iso"
 # or use https://users.aalto.fi/~rjarvine/install/debian-12.7.0-amd64-netinst.iso if blocked ...
+# for mirror use :
+# mirrors.up.pt	Portugal
+# debian.sil.at	Austria
+# ftp.heanet.ie	Ireland
+# ftp.kaist.ac.kr	South Korea
+# ftp.tku.edu.tw	Taiwan
+# ftp.nluug.nl	Netherlands
+# ftp.acc.umu.se	Sweden
+
 $Global:debianIso = "$workDir\debian-12.7.0-amd64-netinst.iso"
 $Global:qemuUrl = "https://qemu.weilnetz.de/w64/2021/qemu-w64-setup-20210208.exe"
 $Global:Memory = "4096"
