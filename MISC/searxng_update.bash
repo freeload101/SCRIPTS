@@ -1,7 +1,7 @@
 # wipe EVERYTHING  
-docker rm -f $(docker ps -a -q)
-sleep  5
-docker rmi -f $(docker images -q)
+# docker rm -f $(docker ps -a -q)
+# sleep  5
+# docker rmi -f $(docker images -q)
 mkdir /opt
 cd /opt
 rm -Rf /opt/searxng
