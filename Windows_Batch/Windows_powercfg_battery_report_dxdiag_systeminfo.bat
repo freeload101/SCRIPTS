@@ -1,3 +1,10 @@
+# DONT USE THIS USE THIS!!
+# https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_powercfg_battery_report_dxdiag_systeminfo.ps1 
+# https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_powercfg_battery_report_dxdiag_systeminfo.ps1 
+# https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_powercfg_battery_report_dxdiag_systeminfo.ps1 
+# https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_powercfg_battery_report_dxdiag_systeminfo.ps1 
+# https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_powercfg_battery_report_dxdiag_systeminfo.ps1 
+
 dxdiag /dontskip /whql:off /64bit /t "%temp%\dxdiag.txt"
 systeminfo >> "%temp%\dxdiag.txt"
 
