@@ -331,10 +331,10 @@ MoveAndResizeAllWindows()
 MoveAndResizeAllSkinny()
 {
     ; Target dimensions
-    targetX := 1763
+    targetX := 1793
     targetY := 0
-    targetW := 1689
-    targetH := 1447
+    targetW := 1677
+    targetH := 1449
 
     ; Get list of all windows
     windowList := WinGetList()
