@@ -52,7 +52,7 @@ Paste()
 !F11::HighContrastOn()
 !F12::HighContrastOff()
 !F10::MoveAndResizeAllWindows()
-
+!F9::MoveAndResizeAllSkinny()
 
 CapsLock & q::
 {
@@ -325,6 +325,59 @@ MoveAndResizeAllWindows()
 
     return resizedCount
 }
+
+
+
+MoveAndResizeAllSkinny()
+{
+    ; Target dimensions
+    targetX := 1763
+    targetY := 0
+    targetW := 1689
+    targetH := 1447
+
+    ; Get list of all windows
+    windowList := WinGetList()
+    resizedCount := 0
+
+    for hwnd in windowList
+    {
+        try
+        {
+            ; Skip if window doesn't exist
+            if !WinExist("ahk_id " hwnd)
+                continue
+
+            ; Skip windows with no title (usually system/special windows)
+            if !WinGetTitle("ahk_id " hwnd)
+                continue
+
+            ; Get current dimensions to verify window is valid
+            WinGetPos &x, &y, &width, &height, "ahk_id " hwnd
+
+            ; Skip windows with no dimensions
+            if !height || !width
+                continue
+
+            ; Restore window if minimized or maximized
+            minMaxState := WinGetMinMax("ahk_id " hwnd)
+            if minMaxState != 0
+                WinRestore "ahk_id " hwnd
+
+            ; Move and resize window to target dimensions
+            WinMove targetX, targetY, targetW, targetH, "ahk_id " hwnd
+            resizedCount++
+        }
+        catch as e
+        {
+            ; Skip windows that can't be resized
+            continue
+        }
+    }
+
+    return resizedCount
+}
+
 
 
 
