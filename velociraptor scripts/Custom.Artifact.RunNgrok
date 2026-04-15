@@ -1,0 +1,42 @@
+name: Custom.Artifact.RunNgrok
+description: |
+  Downloads, configures, and starts ngrok to tunnel RDP (port 3389)
+  using a hidden process. Runs on Windows clients only.
+  Deletes ngrok.log before starting, and redirects all PowerShell
+  stdout and stderr to powershell.log.
+
+type: CLIENT
+
+resources:
+  timeout: 21600   # 6 hours in seconds
+
+required_permissions:
+  - EXECVE
+
+sources:
+  - precondition:
+      SELECT OS FROM info() WHERE OS = 'windows'
+
+    query: |
+      LET PowershellScript = '''
+        if (Test-Path "ngrok.log") { Remove-Item -Path "ngrok.log" -Force }
+        Get-Process -Name ngrok -ErrorAction SilentlyContinue | Stop-Process -Force
+        Invoke-WebRequest -Uri "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip" -OutFile "ngrok.zip"
+        Expand-Archive -Path "ngrok.zip" -DestinationPath "." -Force
+        .\ngrok.exe config add-authtoken 3CM7p*******************************ds7irFE4
+        Start-Process -FilePath ".\ngrok.exe" -ArgumentList "tcp 3389 --log=ngrok.log" -WindowStyle Hidden
+        Get-Content .\ngrok.log
+        Get-Content .\powershell.log
+      '''
+
+      LET EncodedScript = base64encode(
+        string=utf16_encode(string=PowershellScript)
+      )
+
+      SELECT * FROM execve(
+        argv=[
+          "cmd.exe", "/c",
+          "powershell.exe -NonInteractive -NoProfile -EncodedCommand " + EncodedScript + " > powershell.log 2>&1"
+        ],
+        length=10000
+      )
