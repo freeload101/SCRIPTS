@@ -327,9 +327,13 @@ MoveAndResizeAllWindows()
 }
 
 
-
 MoveAndResizeAllSkinny()
 {
+    ; --- EASILY EDIT TITLE EXCLUSIONS HERE ---
+    ; Add any window title strings you want to exclude to this list
+    excludedTitles := ["Plex", "Voice Recorder" ]
+    ; ------------------------------------------
+
     ; Target dimensions
     targetX := 1793
     targetY := 0
@@ -348,8 +352,25 @@ MoveAndResizeAllSkinny()
             if !WinExist("ahk_id " hwnd)
                 continue
 
+            ; Get window title
+            title := WinGetTitle("ahk_id " hwnd)
+
             ; Skip windows with no title (usually system/special windows)
-            if !WinGetTitle("ahk_id " hwnd)
+            if !title
+                continue
+
+            ; Check if the title contains any of the excluded strings
+            skipWindow := false
+            for exclusion in excludedTitles
+            {
+                if InStr(title, exclusion)
+                {
+                    skipWindow := true
+                    break ; Stop checking if a match is found
+                }
+            }
+
+            if skipWindow
                 continue
 
             ; Get current dimensions to verify window is valid
@@ -377,7 +398,5 @@ MoveAndResizeAllSkinny()
 
     return resizedCount
 }
-
-
 
 
