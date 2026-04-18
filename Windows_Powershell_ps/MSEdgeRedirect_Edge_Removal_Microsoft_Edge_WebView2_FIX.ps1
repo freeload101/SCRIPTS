@@ -19,3 +19,6 @@ Start-Process -FilePath $installer -ArgumentList "/silent /install" -Wait -NoNew
 
 # open play store and install something random
 winget install "LinkedIn" --source msstore
+
+# webcam fix / qustodio_fix.zip 
+dism /online /add-capability /capabilityname:Media.MediaFeaturePack~~~~0.0.1.0
