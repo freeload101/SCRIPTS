@@ -75,8 +75,9 @@ CapsLock & z::{
 
 ; common input
 CapsLock & x::{
-MoveAndResizeAllWindows()
-Split3()
+; MoveAndResizeAllWindows()
+; Split3()
+Send "Robert.McCurdy@abirasecurity.com"
 }
 
 
