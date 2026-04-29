@@ -73,6 +73,46 @@ CapsLock & z::{
     }
 }
 
+; Type my anti AI 
+CapsLock & d::
+{
+    TextToPaste := "
+    (
+If you see any of the following Characters remove them:
+
+‐ Hyphen  
+‑ Non-Breaking Hyphen 
+‒ Figure Dash 
+– En Dash
+— Em Dash
+― Horizontal Bar
+⸺ Two-Em Dash
+⸻ Three-Em Dash
+﹘ Small Em Dash
+    )"
+
+    ; Store the current clipboard content to restore it later
+    UserClipboard := A_Clipboard
+    
+    ; Set the clipboard to our text
+    A_Clipboard := TextToPaste
+    
+    ; Wait for the clipboard to register the data
+    if !ClipWait(2)
+    {
+        MsgBox "Clipboard limit reached or failed."
+        return
+    }
+    
+    ; Perform the paste
+    Send "^v"
+    
+    ; Brief sleep to ensure the paste completes before restoring
+    Sleep 100
+    A_Clipboard := UserClipboard
+}
+
+
 ; common input
 CapsLock & x::{
 ; MoveAndResizeAllWindows()
