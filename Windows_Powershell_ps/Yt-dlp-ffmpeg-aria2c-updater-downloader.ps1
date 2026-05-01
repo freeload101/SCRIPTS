@@ -58,6 +58,8 @@ if (-not (Test-Path ".\ffmpeg.exe")) {
     Expand-Archive -Path $zip -DestinationPath $extract -Force
     $ffmpeg = Get-ChildItem -Path $extract -Name "ffmpeg.exe" -Recurse | Select-Object -First 1
     Move-Item -Path (Join-Path $extract $ffmpeg) -Destination ".\ffmpeg.exe" -Force
+    $ffprobe = Get-ChildItem -Path $extract -Name "ffprobe.exe" -Recurse | Select-Object -First 1
+    Move-Item -Path (Join-Path $extract $ffprobe) -Destination ".\ffprobe.exe" -Force
     Remove-Item -Path $zip, $extract -Recurse -Force
 }
 
