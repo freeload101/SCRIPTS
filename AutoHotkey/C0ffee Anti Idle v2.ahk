@@ -407,11 +407,11 @@ MoveAndResizeAllSkinny()
     excludedTitles := ["Plex", "Voice Recorder" ]
     ; ------------------------------------------
 
-; no SCALING Screen:	x: 1344	y: 0	w: 2527	h: 1447
+; Screen:	x: 1763	y: 0	w: 1689	h: 1447
     ; Target dimensions
-    targetX := 1344
+    targetX := 1763	
     targetY := 0
-    targetW := 2527
+    targetW := 1689	
     targetH := 1447
 
     ; Get list of all windows
