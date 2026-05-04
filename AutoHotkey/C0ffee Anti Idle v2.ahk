@@ -407,7 +407,8 @@ MoveAndResizeAllSkinny()
     excludedTitles := ["Plex", "Voice Recorder" ]
     ; ------------------------------------------
 
-; Screen:	x: 1763	y: 0	w: 1689	h: 1447
+; SCALING 125%  Screen:	x: 1763	y: 0	w: 1689	h: 1447
+; NO SCALING  x: 1763	y: 0	w: 1689	h: 1447 
     ; Target dimensions
     targetX := 1763	
     targetY := 0
