@@ -73,6 +73,7 @@ CapsLock & z::{
     }
 }
 
+
 ; Type my anti AI 
 CapsLock & d::
 {
@@ -111,6 +112,35 @@ If you see any of the following Characters remove them:
     Sleep 100
     A_Clipboard := UserClipboard
 }
+
+; DeCRIM
+CapsLock & e::
+{
+    TextToPaste := "
+    (
+Do research use chain of thought reasoning DeCRiM. Only reference authoritative  resource and stack overflow are not considered authoritative  resource. )"
+
+    ; Store the current clipboard content to restore it later
+    UserClipboard := A_Clipboard
+    
+    ; Set the clipboard to our text
+    A_Clipboard := TextToPaste
+    
+    ; Wait for the clipboard to register the data
+    if !ClipWait(2)
+    {
+        MsgBox "Clipboard limit reached or failed."
+        return
+    }
+    
+    ; Perform the paste
+    Send "^v"
+    
+    ; Brief sleep to ensure the paste completes before restoring
+    Sleep 100
+    A_Clipboard := UserClipboard
+}
+
 
 
 ; common input
