@@ -116,9 +116,11 @@ If you see any of the following Characters remove them:
 ; DeCRIM
 CapsLock & e::
 {
-    TextToPaste := "
+   TextToPaste := "
     (
-Do research use chain of thought reasoning DeCRiM. Only reference authoritative  resource and stack overflow are not considered authoritative  resource. )"
+	Do research use chain of thought reasoning DeCRiM. Only reference authoritative  resource and stack overflow are not considered authoritative  resource. 
+    )"
+
 
     ; Store the current clipboard content to restore it later
     UserClipboard := A_Clipboard
