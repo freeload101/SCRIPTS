@@ -7,6 +7,14 @@ InstallKeybdHook
 ; Disable CapsLock toggle FIRST
 SetCapsLockState "AlwaysOff"
 
+^down::
+{
+send "{alt}i"
+sleep 200
+send "r"
+
+}
+
 CapsLock & t::
 {
 send "{LCtrl Down}t{LCtrl Up}"
