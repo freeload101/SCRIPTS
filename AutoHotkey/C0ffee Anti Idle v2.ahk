@@ -7,12 +7,12 @@ InstallKeybdHook
 ; Disable CapsLock toggle FIRST
 SetCapsLockState "AlwaysOff"
 
-^down::
+APPSKEY::
 {
+sleep 500
 send "{alt}i"
 sleep 200
 send "r"
-
 }
 
 CapsLock & t::
