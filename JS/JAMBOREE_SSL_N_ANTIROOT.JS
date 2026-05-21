@@ -1,4 +1,5 @@
 /*
+20260521: !!!!!!!!!!!!!!!!!!!!! NOTICE IF YOU EDIT THE FILE WHILE FRIDA HAS IT OPEN IS RELOADS IT AND WILL SOMETIMES FIX SSL DEPINNING !!!!!!!!!!!!!!!!!!!!!!!!
 20251205: AI fixed okhttp3 depinning like a BOSS
 
 Original author: Daniele Linguaglossa
@@ -6,534 +7,307 @@ Original author: Daniele Linguaglossa
                 Code amended to correctly run on the latest frida version
         		Added controls to exclude Magisk Manager
 */
-
 Java.perform(function() {
-	console.log("");
-	console.log("[.] Antiroot check");
-    var RootPackages = ["com.noshufou.android.su", "com.noshufou.android.su.elite", "eu.chainfire.supersu",
-        "com.koushikdutta.superuser", "com.thirdparty.superuser", "com.yellowes.su", "com.koushikdutta.rommanager",
-        "com.koushikdutta.rommanager.license", "com.dimonvideo.luckypatcher", "com.chelpus.lackypatch",
-        "com.ramdroid.appquarantine", "com.ramdroid.appquarantinepro", "com.devadvance.rootcloak", "com.devadvance.rootcloakplus",
-        "de.robv.android.xposed.installer", "com.saurik.substrate", "com.zachspong.temprootremovejb", "com.amphoras.hidemyroot",
-        "com.amphoras.hidemyrootadfree", "com.formyhm.hiderootPremium", "com.formyhm.hideroot", "me.phh.superuser",
-        "eu.chainfire.supersu.pro", "com.kingouser.com", "com.topjohnwu.magisk"
-    ];
+    console.log("[AUABF] Script starting...");
+ 
+    // ─── ROOT DETECTION BYPASS ───────────────────────────────────────────────
 
-    var RootBinaries = ["su", "busybox", "supersu", "Superuser.apk", "KingoUser.apk", "SuperSu.apk", "magisk"];
-
-    var RootProperties = {
-        "ro.build.selinux": "1",
-        "ro.debuggable": "0",
-        "service.adb.root": "0",
-        "ro.secure": "1"
+    var File = Java.use("java.io.File");
+    File.exists.implementation = function() {
+        var path = this.getAbsolutePath();
+        var dangerous_paths = [
+            "/su", "/system/bin/su", "/system/xbin/su", "/sbin/su",
+            "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su",
+            "/system/bin/failsafe/su", "/data/local/su", "/su/bin/su",
+            "/system/app/Superuser.apk", "/system/etc/init.d/99SuperSUDaemon",
+            "/dev/com.koushikdutta.superuser.daemon/", "/system/xbin/daemonsu",
+            "com.koushikdutta.superuser", "com.thirdparty.superuser",
+            "eu.chainfire.supersu", "com.noshufou.android.su"
+        ];
+        for (var i = 0; i < dangerous_paths.length; i++) {
+            if (path.indexOf(dangerous_paths[i]) != -1) {
+                console.log("[BYPASS-ROOT] File.exists(): " + path + " -> false");
+                return false;
+            }
+        } 
+        return this.exists();
     };
 
-    var RootPropertiesKeys = [];
+    var Runtime = Java.use("java.lang.Runtime");
+    var ProcessBuilder = Java.use("java.lang.ProcessBuilder");
+    var Process = Java.use("java.lang.Process");
 
-    for (var k in RootProperties) RootPropertiesKeys.push(k);
-
-    var PackageManager = Java.use("android.app.ApplicationPackageManager");
-
-    var Runtime = Java.use('java.lang.Runtime');
-
-    var NativeFile = Java.use('java.io.File');
-
-    var String = Java.use('java.lang.String');
-
-    var SystemProperties = Java.use('android.os.SystemProperties');
-
-    var BufferedReader = Java.use('java.io.BufferedReader');
-
-    var ProcessBuilder = Java.use('java.lang.ProcessBuilder');
-
-    var StringBuffer = Java.use('java.lang.StringBuffer');
-
-    var loaded_classes = Java.enumerateLoadedClassesSync();
-
-    send("Loaded " + loaded_classes.length + " classes!");
-
-    var useKeyInfo = false;
-
-    var useProcessManager = false;
-
-    send("loaded: " + loaded_classes.indexOf('java.lang.ProcessManager'));
-
-    if (loaded_classes.indexOf('java.lang.ProcessManager') != -1) {
-        try {
-            //useProcessManager = true;
-            //var ProcessManager = Java.use('java.lang.ProcessManager');
-        } catch (err) {
-            send("ProcessManager Hook failed: " + err);
-        }
-    } else {
-        send("ProcessManager hook not loaded");
+    function createFakeProcess() {
+        var ByteArrayInputStream  = Java.use("java.io.ByteArrayInputStream");
+        var ByteArrayOutputStream = Java.use("java.io.ByteArrayOutputStream");
+        var fakeProcess = Process.$new();
+        fakeProcess.getInputStream.implementation  = function() { return ByteArrayInputStream.$new([]); };
+        fakeProcess.getOutputStream.implementation = function() { return ByteArrayOutputStream.$new(); };
+        fakeProcess.getErrorStream.implementation  = function() { return ByteArrayInputStream.$new([]); };
+        fakeProcess.waitFor.implementation         = function() { return 0; };
+        fakeProcess.exitValue.implementation       = function() { return 0; };
+        fakeProcess.destroy.implementation         = function() {};
+        return fakeProcess;
     }
 
-    var KeyInfo = null;
-
-    if (loaded_classes.indexOf('android.security.keystore.KeyInfo') != -1) {
-        try {
-            //useKeyInfo = true;
-            //var KeyInfo = Java.use('android.security.keystore.KeyInfo');
-        } catch (err) {
-            send("KeyInfo Hook failed: " + err);
+    Runtime.exec.overload('java.lang.String').implementation = function(cmd) {
+        if (cmd.indexOf("su") != -1 || cmd.indexOf("which") != -1) {
+            console.log("[BYPASS-ROOT] Runtime.exec blocked: " + cmd);
+            return createFakeProcess();
         }
-    } else {
-        send("KeyInfo hook not loaded");
-    }
-
-    PackageManager.getPackageInfo.overload('java.lang.String', 'int').implementation = function(pname, flags) {
-        var shouldFakePackage = (RootPackages.indexOf(pname) > -1);
-        if (shouldFakePackage) {
-            send("Bypass root check for package: " + pname);
-            pname = "set.package.name.to.a.fake.one.so.we.can.bypass.it";
-        }
-        return this.getPackageInfo.overload('java.lang.String', 'int').call(this, pname, flags);
+        return this.exec(cmd);
     };
-
-    NativeFile.exists.implementation = function() {
-        var name = NativeFile.getName.call(this);
-        var shouldFakeReturn = (RootBinaries.indexOf(name) > -1);
-        if (shouldFakeReturn) {
-            send("Bypass return value for binary: " + name);
-            return false;
-        } else {
-            return this.exists.call(this);
+    Runtime.exec.overload('[Ljava.lang.String;').implementation = function(cmds) {
+        var cmd = cmds.join(" ");
+        if (cmd.indexOf("su") != -1 || cmd.indexOf("which") != -1) {
+            console.log("[BYPASS-ROOT] Runtime.exec[] blocked: " + cmd);
+            return createFakeProcess();
         }
+        return this.exec(cmds);
     };
-
-    var exec = Runtime.exec.overload('[Ljava.lang.String;');
-    var exec1 = Runtime.exec.overload('java.lang.String');
-    var exec2 = Runtime.exec.overload('java.lang.String', '[Ljava.lang.String;');
-    var exec3 = Runtime.exec.overload('[Ljava.lang.String;', '[Ljava.lang.String;');
-    var exec4 = Runtime.exec.overload('[Ljava.lang.String;', '[Ljava.lang.String;', 'java.io.File');
-    var exec5 = Runtime.exec.overload('java.lang.String', '[Ljava.lang.String;', 'java.io.File');
-
-    exec5.implementation = function(cmd, env, dir) {
-        if (cmd.indexOf("getprop") != -1 || cmd == "mount" || cmd.indexOf("build.prop") != -1 || cmd == "id" || cmd == "sh") {
-            var fakeCmd = "grep";
-            send("Bypass " + cmd + " command");
-            return exec1.call(this, fakeCmd);
+    Runtime.exec.overload('java.lang.String', '[Ljava.lang.String;').implementation = function(cmd, env) {
+        if (cmd.indexOf("su") != -1 || cmd.indexOf("which") != -1) {
+            console.log("[BYPASS-ROOT] Runtime.exec+env blocked: " + cmd);
+            return createFakeProcess();
         }
-        if (cmd == "su") {
-            var fakeCmd = "justafakecommandthatcannotexistsusingthisshouldthowanexceptionwheneversuiscalled";
-            send("Bypass " + cmd + " command");
-            return exec1.call(this, fakeCmd);
-        }
-        return exec5.call(this, cmd, env, dir);
+        return this.exec(cmd, env);
     };
-
-    exec4.implementation = function(cmdarr, env, file) {
-        for (var i = 0; i < cmdarr.length; i = i + 1) {
-            var tmp_cmd = cmdarr[i];
-            if (tmp_cmd.indexOf("getprop") != -1 || tmp_cmd == "mount" || tmp_cmd.indexOf("build.prop") != -1 || tmp_cmd == "id" || tmp_cmd == "sh") {
-                var fakeCmd = "grep";
-                send("Bypass " + cmdarr + " command");
-                return exec1.call(this, fakeCmd);
-            }
-
-            if (tmp_cmd == "su") {
-                var fakeCmd = "justafakecommandthatcannotexistsusingthisshouldthowanexceptionwheneversuiscalled";
-                send("Bypass " + cmdarr + " command");
-                return exec1.call(this, fakeCmd);
-            }
+    Runtime.exec.overload('[Ljava.lang.String;', '[Ljava.lang.String;').implementation = function(cmds, env) {
+        var cmd = cmds.join(" ");
+        if (cmd.indexOf("su") != -1 || cmd.indexOf("which") != -1) {
+            console.log("[BYPASS-ROOT] Runtime.exec[]+env blocked: " + cmd);
+            return createFakeProcess();
         }
-        return exec4.call(this, cmdarr, env, file);
+        return this.exec(cmds, env);
     };
-
-    exec3.implementation = function(cmdarr, envp) {
-        for (var i = 0; i < cmdarr.length; i = i + 1) {
-            var tmp_cmd = cmdarr[i];
-            if (tmp_cmd.indexOf("getprop") != -1 || tmp_cmd == "mount" || tmp_cmd.indexOf("build.prop") != -1 || tmp_cmd == "id" || tmp_cmd == "sh") {
-                var fakeCmd = "grep";
-                send("Bypass " + cmdarr + " command");
-                return exec1.call(this, fakeCmd);
-            }
-
-            if (tmp_cmd == "su") {
-                var fakeCmd = "justafakecommandthatcannotexistsusingthisshouldthowanexceptionwheneversuiscalled";
-                send("Bypass " + cmdarr + " command");
-                return exec1.call(this, fakeCmd);
-            }
-        }
-        return exec3.call(this, cmdarr, envp);
-    };
-
-    exec2.implementation = function(cmd, env) {
-        if (cmd.indexOf("getprop") != -1 || cmd == "mount" || cmd.indexOf("build.prop") != -1 || cmd == "id" || cmd == "sh") {
-            var fakeCmd = "grep";
-            send("Bypass " + cmd + " command");
-            return exec1.call(this, fakeCmd);
-        }
-        if (cmd == "su") {
-            var fakeCmd = "justafakecommandthatcannotexistsusingthisshouldthowanexceptionwheneversuiscalled";
-            send("Bypass " + cmd + " command");
-            return exec1.call(this, fakeCmd);
-        }
-        return exec2.call(this, cmd, env);
-    };
-
-    exec.implementation = function(cmd) {
-        for (var i = 0; i < cmd.length; i = i + 1) {
-            var tmp_cmd = cmd[i];
-            if (tmp_cmd.indexOf("getprop") != -1 || tmp_cmd == "mount" || tmp_cmd.indexOf("build.prop") != -1 || tmp_cmd == "id" || tmp_cmd == "sh") {
-                var fakeCmd = "grep";
-                send("Bypass " + cmd + " command");
-                return exec1.call(this, fakeCmd);
-            }
-
-            if (tmp_cmd == "su") {
-                var fakeCmd = "justafakecommandthatcannotexistsusingthisshouldthowanexceptionwheneversuiscalled";
-                send("Bypass " + cmd + " command");
-                return exec1.call(this, fakeCmd);
-            }
-        }
-
-        return exec.call(this, cmd);
-    };
-
-    exec1.implementation = function(cmd) {
-        if (cmd.indexOf("getprop") != -1 || cmd == "mount" || cmd.indexOf("build.prop") != -1 || cmd == "id" || cmd == "sh") {
-            var fakeCmd = "grep";
-            send("Bypass " + cmd + " command");
-            return exec1.call(this, fakeCmd);
-        }
-        if (cmd == "su") {
-            var fakeCmd = "justafakecommandthatcannotexistsusingthisshouldthowanexceptionwheneversuiscalled";
-            send("Bypass " + cmd + " command");
-            return exec1.call(this, fakeCmd);
-        }
-        return exec1.call(this, cmd);
-    };
-
-    String.contains.implementation = function(name) {
-        if (name == "test-keys") {
-            send("Bypass test-keys check");
-            return false;
-        }
-        return this.contains.call(this, name);
-    };
-
-    var get = SystemProperties.get.overload('java.lang.String');
-
-    get.implementation = function(name) {
-        if (RootPropertiesKeys.indexOf(name) != -1) {
-            send("Bypass " + name);
-            return RootProperties[name];
-        }
-        return this.get.call(this, name);
-    };
-
-    Interceptor.attach(Module.findExportByName("libc.so", "fopen"), {
-        onEnter: function(args) {
-            var path = Memory.readCString(args[0]);
-            path = path.split("/");
-            var executable = path[path.length - 1];
-            var shouldFakeReturn = (RootBinaries.indexOf(executable) > -1)
-            if (shouldFakeReturn) {
-                Memory.writeUtf8String(args[0], "/notexists");
-                send("Bypass native fopen");
-            }
-        },
-        onLeave: function(retval) {
-
-        }
-    });
-
-    Interceptor.attach(Module.findExportByName("libc.so", "system"), {
-        onEnter: function(args) {
-            var cmd = Memory.readCString(args[0]);
-            send("SYSTEM CMD: " + cmd);
-            if (cmd.indexOf("getprop") != -1 || cmd == "mount" || cmd.indexOf("build.prop") != -1 || cmd == "id") {
-                send("Bypass native system: " + cmd);
-                Memory.writeUtf8String(args[0], "grep");
-            }
-            if (cmd == "su") {
-                send("Bypass native system: " + cmd);
-                Memory.writeUtf8String(args[0], "justafakecommandthatcannotexistsusingthisshouldthowanexceptionwheneversuiscalled");
-            }
-        },
-        onLeave: function(retval) {
-
-        }
-    });
-
-    /*
-
-    TO IMPLEMENT:
-
-    Exec Family
-
-    int execl(const char *path, const char *arg0, ..., const char *argn, (char *)0);
-    int execle(const char *path, const char *arg0, ..., const char *argn, (char *)0, char *const envp[]);
-    int execlp(const char *file, const char *arg0, ..., const char *argn, (char *)0);
-    int execlpe(const char *file, const char *arg0, ..., const char *argn, (char *)0, char *const envp[]);
-    int execv(const char *path, char *const argv[]);
-    int execve(const char *path, char *const argv[], char *const envp[]);
-    int execvp(const char *file, char *const argv[]);
-    int execvpe(const char *file, char *const argv[], char *const envp[]);
-
-    */
-
-
-    BufferedReader.readLine.overload('boolean').implementation = function() {
-        var text = this.readLine.overload('boolean').call(this);
-        if (text === null) {
-            // just pass , i know it's ugly as hell but test != null won't work :(
-        } else {
-            var shouldFakeRead = (text.indexOf("ro.build.tags=test-keys") > -1);
-            if (shouldFakeRead) {
-                send("Bypass build.prop file read");
-                text = text.replace("ro.build.tags=test-keys", "ro.build.tags=release-keys");
-            }
-        }
-        return text;
-    };
-
-    var executeCommand = ProcessBuilder.command.overload('java.util.List');
 
     ProcessBuilder.start.implementation = function() {
-        var cmd = this.command.call(this);
-        var shouldModifyCommand = false;
-        for (var i = 0; i < cmd.size(); i = i + 1) {
-            var tmp_cmd = cmd.get(i).toString();
-            if (tmp_cmd.indexOf("getprop") != -1 || tmp_cmd.indexOf("mount") != -1 || tmp_cmd.indexOf("build.prop") != -1 || tmp_cmd.indexOf("id") != -1) {
-                shouldModifyCommand = true;
-            }
-        }
-        if (shouldModifyCommand) {
-            send("Bypass ProcessBuilder " + cmd);
-            this.command.call(this, ["grep"]);
-            return this.start.call(this);
-        }
+        var cmd = this.command().toString();
         if (cmd.indexOf("su") != -1) {
-            send("Bypass ProcessBuilder " + cmd);
-            this.command.call(this, ["justafakecommandthatcannotexistsusingthisshouldthowanexceptionwheneversuiscalled"]);
-            return this.start.call(this);
+            console.log("[BYPASS-ROOT] ProcessBuilder blocked: " + cmd);
+            return createFakeProcess();
         }
-
-        return this.start.call(this);
+        return this.start();
     };
 
-    if (useProcessManager) {
-        var ProcManExec = ProcessManager.exec.overload('[Ljava.lang.String;', '[Ljava.lang.String;', 'java.io.File', 'boolean');
-        var ProcManExecVariant = ProcessManager.exec.overload('[Ljava.lang.String;', '[Ljava.lang.String;', 'java.lang.String', 'java.io.FileDescriptor', 'java.io.FileDescriptor', 'java.io.FileDescriptor', 'boolean');
+    var Build = Java.use("android.os.Build");
+    Build.TAGS.value = "release-keys";
 
-        ProcManExec.implementation = function(cmd, env, workdir, redirectstderr) {
-            var fake_cmd = cmd;
-            for (var i = 0; i < cmd.length; i = i + 1) {
-                var tmp_cmd = cmd[i];
-                if (tmp_cmd.indexOf("getprop") != -1 || tmp_cmd == "mount" || tmp_cmd.indexOf("build.prop") != -1 || tmp_cmd == "id") {
-                    var fake_cmd = ["grep"];
-                    send("Bypass " + cmdarr + " command");
-                }
+    try {
+        var SystemProperties = Java.use("android.os.SystemProperties");
+        SystemProperties.get.overload('java.lang.String').implementation = function(key) {
+            if (key == "ro.debuggable") return "0";
+            if (key == "ro.secure")     return "1";
+            if (key == "ro.build.tags") return "release-keys";
+            return this.get(key);
+        };
+    } catch(e) { console.log("[ERROR] SystemProperties hook failed: " + e); }
 
-                if (tmp_cmd == "su") {
-                    var fake_cmd = ["justafakecommandthatcannotexistsusingthisshouldthowanexceptionwheneversuiscalled"];
-                    send("Bypass " + cmdarr + " command");
+    try {
+        var PackageManager = Java.use("android.app.ApplicationPackageManager");
+        PackageManager.getPackageInfo.overload('java.lang.String', 'int').implementation = function(pkg, flags) {
+            var dangerous_packages = [
+                "com.koushikdutta.superuser", "com.thirdparty.superuser",
+                "eu.chainfire.supersu", "com.noshufou.android.su",
+                "com.zachspong.temprootremovejb", "com.ramdroid.appquarantine",
+                "com.koushikdutta.rommanager", "com.koushikdutta.rommanager.license",
+                "com.dimonvideo.luckypatcher", "com.chelpus.lackypatch",
+                "com.ramdroid.appquarantinepro"
+            ];
+            if (dangerous_packages.indexOf(pkg) != -1) {
+                console.log("[BYPASS-ROOT] Package hidden: " + pkg);
+                throw Java.use("android.content.pm.PackageManager$NameNotFoundException").$new(pkg);
+            }
+            return this.getPackageInfo(pkg, flags);
+        };
+    } catch(e) { console.log("[ERROR] PackageManager hook failed: " + e); }
+
+    try {
+        var UnixFileSystem = Java.use("java.io.UnixFileSystem");
+        UnixFileSystem.checkAccess.implementation = function(file, access) {
+            var path = file.toString();
+            var dangerous_paths = [
+                "/su", "/system/bin/su", "/system/xbin/su", "/sbin/su",
+                "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su",
+                "/system/bin/failsafe/su", "/data/local/su", "/su/bin/su",
+                "/system/app/Superuser.apk", "/vendor/bin/su", "/cache/su", "/data/su"
+            ];
+            for (var i = 0; i < dangerous_paths.length; i++) {
+                if (path.indexOf(dangerous_paths[i]) != -1) {
+                    console.log("[BYPASS-ROOT] UnixFileSystem.checkAccess denied: " + path);
+                    return false;
                 }
             }
-            return ProcManExec.call(this, fake_cmd, env, workdir, redirectstderr);
+            return this.checkAccess(file, access);
         };
+    } catch(e) { console.log("[ERROR] UnixFileSystem hook failed: " + e); }
 
-        ProcManExecVariant.implementation = function(cmd, env, directory, stdin, stdout, stderr, redirect) {
-            var fake_cmd = cmd;
-            for (var i = 0; i < cmd.length; i = i + 1) {
-                var tmp_cmd = cmd[i];
-                if (tmp_cmd.indexOf("getprop") != -1 || tmp_cmd == "mount" || tmp_cmd.indexOf("build.prop") != -1 || tmp_cmd == "id") {
-                    var fake_cmd = ["grep"];
-                    send("Bypass " + cmdarr + " command");
-                }
+    // ─── SSL / CERTIFICATE PINNING BYPASS ───────────────────────────────────
 
-                if (tmp_cmd == "su") {
-                    var fake_cmd = ["justafakecommandthatcannotexistsusingthisshouldthowanexceptionwheneversuiscalled"];
-                    send("Bypass " + cmdarr + " command");
-                }
-            }
-            return ProcManExecVariant.call(this, fake_cmd, env, directory, stdin, stdout, stderr, redirect);
+    // 1. Conscrypt TrustManagerImpl
+    try {
+        var TrustManagerImpl = Java.use('com.android.org.conscrypt.TrustManagerImpl');
+        TrustManagerImpl.verifyChain.implementation = function(untrustedChain, trustAnchorChain, host, clientAuth, ocspData, tlsSctData) {
+            console.log('[BYPASS-SSL] TrustManagerImpl.verifyChain bypassed for: ' + host);
+            return untrustedChain;
         };
-    }
+    } catch(e) { console.log('[ERROR] TrustManagerImpl.verifyChain hook failed: ' + e); }
 
-    if (useKeyInfo) {
-        KeyInfo.isInsideSecureHardware.implementation = function() {
-            send("Bypass isInsideSecureHardware");
-            return true;
-        }
-    }
+    try {
+        var TrustManagerImpl2 = Java.use('com.android.org.conscrypt.TrustManagerImpl');
+        TrustManagerImpl2.checkTrustedRecursive.implementation = function(certs, host, clientAuth, untrustedChain, trustAnchorChain, used) {
+            console.log('[BYPASS-SSL] TrustManagerImpl.checkTrustedRecursive bypassed for: ' + host);
+            return Java.use('java.util.ArrayList').$new();
+        };
+    } catch(e) { console.log('[ERROR] TrustManagerImpl.checkTrustedRecursive hook failed: ' + e); }
 
-});
+    // 2. OkHttp3 CertificatePinner — all overloads
+    try {
+        var CertificatePinner = Java.use('okhttp3.CertificatePinner');
+        CertificatePinner.check.overload('java.lang.String', 'java.util.List')
+            .implementation = function(hostname, certs) {
+                console.log('[BYPASS-SSL] OkHttp3 CertificatePinner.check(List) bypassed for: ' + hostname);
+            };
+    } catch(e) { console.log('[ERROR] OkHttp3 CertificatePinner.check(List) failed: ' + e); }
 
-/* 
-   Android SSL Re-pinning frida script v0.1 @masbog 
-   $ frida -U -f it.app.mobile -l frida-android-unpinning-ssl.js
-   $ [Samsung GT-I9500::it.app.mobile]-> %resume
-   
-   or
-   
-   $ frida --codeshare masbog/frida-android-unpinning-ssl
-   $ [Samsung GT-I9500::it.app.mobile]-> %resume
-   
-   TODO: bypass kony android application
-   
-   original source code from: https://github.com/sensepost/objection/blob/8974d37733d108762184bb41fe8d0a4f1fffb591/objection/hooks/android/pinning/disable.js
-   
-*/
+    try {
+        var CertificatePinner2 = Java.use('okhttp3.CertificatePinner');
+        CertificatePinner2.check.overload('java.lang.String', '[Ljava.security.cert.Certificate;')
+            .implementation = function(hostname, certs) {
+                console.log('[BYPASS-SSL] OkHttp3 CertificatePinner.check(Certificate[]) bypassed for: ' + hostname);
+            };
+    } catch(e) { console.log('[ERROR] OkHttp3 CertificatePinner.check(Certificate[]) failed: ' + e); }
 
-setTimeout(function() {
-    Java.perform(function() {
-        console.log("");
-        console.log("[.] Android Cert Pinning Bypass");
+    try {
+        var CertificatePinner3 = Java.use('okhttp3.CertificatePinner');
+        CertificatePinner3['check$okhttp'].implementation = function(hostname, pinsFn) {
+            console.log('[BYPASS-SSL] OkHttp3 CertificatePinner.check$okhttp bypassed for: ' + hostname);
+        };
+    } catch(e) { console.log('[ERROR] OkHttp3 check$okhttp failed (may not apply): ' + e); }
 
-        var CertificateFactory = Java.use("java.security.cert.CertificateFactory");
-        var FileInputStream = Java.use("java.io.FileInputStream");
-        var BufferedInputStream = Java.use("java.io.BufferedInputStream");
-        var X509Certificate = Java.use("java.security.cert.X509Certificate");
-        var KeyStore = Java.use("java.security.KeyStore");
-        var TrustManagerFactory = Java.use("javax.net.ssl.TrustManagerFactory");
-        var SSLContext = Java.use("javax.net.ssl.SSLContext");
+    // 3. network_security_config pin bypass
+    // AndroGoat pins cve.org with 3 SHA-256 hashes in network_security_config.xml
+    try {
+        var NetworkSecurityTrustManager = Java.use('android.security.net.config.NetworkSecurityTrustManager');
+        NetworkSecurityTrustManager.checkPins.implementation = function(chain) {
+            console.log('[BYPASS-SSL] NetworkSecurityTrustManager.checkPins bypassed');
+        };
+    } catch(e) { console.log('[ERROR] NetworkSecurityTrustManager.checkPins failed: ' + e); }
+
+    try {
+        var NetworkSecurityTrustManager2 = Java.use('android.security.net.config.NetworkSecurityTrustManager');
+        NetworkSecurityTrustManager2.checkServerTrusted.overload('[Ljava.security.cert.X509Certificate;', 'java.lang.String')
+            .implementation = function(chain, authType) {
+                console.log('[BYPASS-SSL] NetworkSecurityTrustManager.checkServerTrusted bypassed');
+            };
+    } catch(e) { console.log('[ERROR] NetworkSecurityTrustManager.checkServerTrusted failed: ' + e); }
+
+    try {
+        var PinSet = Java.use('android.security.net.config.PinSet');
+        PinSet.checkServerTrusted.implementation = function() {
+            console.log('[BYPASS-SSL] PinSet.checkServerTrusted bypassed');
+        };
+    } catch(e) { console.log('[ERROR] PinSet.checkServerTrusted failed: ' + e); }
+
+    // 4. X509TrustManagerExtensions
+    try {
+        var X509TrustManagerExtensions = Java.use('android.net.http.X509TrustManagerExtensions');
+        X509TrustManagerExtensions.checkServerTrusted.implementation = function(chain, authType, host) {
+            console.log('[BYPASS-SSL] X509TrustManagerExtensions.checkServerTrusted bypassed for: ' + host);
+            return Java.use('java.util.ArrayList').$new();
+        };
+    } catch(e) { console.log('[ERROR] X509TrustManagerExtensions hook failed: ' + e); }
+
+    // 5. Generic javax.net.ssl.X509TrustManager + HostnameVerifier override
+    try {
         var X509TrustManager = Java.use('javax.net.ssl.X509TrustManager');
-        //var is_android_n = 0;
+        var SSLContext       = Java.use('javax.net.ssl.SSLContext');
 
-        //--------
-        console.log("[.] TrustManagerImpl Android 7+ detection...");
-        // Android 7+ TrustManagerImpl
-        // The work in the following NCC blogpost was a great help for this hook!
-        // hattip @AdriVillaB :)
-        // https://www.nccgroup.trust/uk/about-us/newsroom-and-events/blogs/2017/november/bypassing-androids-network-security-configuration/
-        try {
-            var TrustManagerImpl = Java.use('com.android.org.conscrypt.TrustManagerImpl');
-            // https://github.com/google/conscrypt/blob/c88f9f55a523f128f0e4dace76a34724bfa1e88c/platform/src/main/java/org/conscrypt/TrustManagerImpl.java#L650
-            TrustManagerImpl.verifyChain.implementation = function(untrustedChain, trustAnchorChain, host, clientAuth, ocspData, tlsSctData) {
-                console.log("[+] (Android 7+) TrustManagerImpl verifyChain() called. Not throwing an exception.");
-                // Skip all the logic and just return the chain again :P
-                //is_android_n = 1;
-                return untrustedChain;
-            }
-
-            PinningTrustManager.checkServerTrusted.implementation = function() {
-                console.log("[+] Appcelerator checkServerTrusted() called. Not throwing an exception.");
-            }
-        } catch (err) {
-            console.log("[-] TrustManagerImpl Not Found");
-        }
-
-        //if (is_android_n === 0) {
-        //--------
-        console.log("[.] TrustManager Android < 7 detection...");
-        // Implement a new TrustManager
-        // ref: https://gist.github.com/oleavr/3ca67a173ff7d207c6b8c3b0ca65a9d8
         var TrustManager = Java.registerClass({
-            name: 'com.sensepost.test.TrustManager',
+            name: 'com.auabf.TrustManager',
             implements: [X509TrustManager],
             methods: {
                 checkClientTrusted: function(chain, authType) {},
-                checkServerTrusted: function(chain, authType) {},
-                getAcceptedIssuers: function() {
-                    return [];
+                checkServerTrusted: function(chain, authType) {
+                    console.log('[BYPASS-SSL] Custom X509TrustManager.checkServerTrusted bypassed');
+                },
+                getAcceptedIssuers: function() { return []; }
+            }
+        });
+
+        var HostnameVerifier = Java.use('javax.net.ssl.HostnameVerifier');
+        var CustomHostnameVerifier = Java.registerClass({
+            name: 'com.auabf.HostnameVerifier',
+            implements: [HostnameVerifier],
+            methods: {
+                verify: function(hostname, session) {
+                    console.log('[BYPASS-SSL] HostnameVerifier.verify bypassed for: ' + hostname);
+                    return true;
                 }
             }
         });
 
-        // Prepare the TrustManagers array to pass to SSLContext.init()
-        var TrustManagers = [TrustManager.$new()];
+        var sslCtx = SSLContext.getInstance('TLS');
+        sslCtx.init(null, [TrustManager.$new()], null);
 
-        // Get a handle on the init() on the SSLContext class
-        var SSLContext_init = SSLContext.init.overload(
-            '[Ljavax.net.ssl.KeyManager;', '[Ljavax.net.ssl.TrustManager;', 'java.security.SecureRandom');
+        var HttpsURLConnection = Java.use('javax.net.ssl.HttpsURLConnection');
+        HttpsURLConnection.setDefaultSSLSocketFactory(sslCtx.getSocketFactory());
+        HttpsURLConnection.setDefaultHostnameVerifier(CustomHostnameVerifier.$new());
+        console.log('[BYPASS-SSL] Global TrustManager + HostnameVerifier installed');
+    } catch(e) { console.log('[ERROR] Generic TrustManager hook failed: ' + e); }
 
-        try {
-            // Override the init method, specifying our new TrustManager
-            SSLContext_init.implementation = function(keyManager, trustManager, secureRandom) {
-                console.log("[+] Overriding SSLContext.init() with the custom TrustManager android < 7");
-                SSLContext_init.call(this, keyManager, TrustManagers, secureRandom);
-            };
-        } catch (err) {
-            console.log("[-] TrustManager Not Found");
-        }
-        //}
+    // 6. OkHttp3 — force trust all via SSLSocketFactory on builder
+    try {
+        var OkHttpClientBuilder = Java.use('okhttp3.OkHttpClient$Builder');
+        var X509TrustManager3   = Java.use('javax.net.ssl.X509TrustManager');
+        var SSLContext3          = Java.use('javax.net.ssl.SSLContext');
 
-        //-------//--------
-		console.log("[.] OkHTTP 3.x detection...");
-		try {
-			// Hook 1: CertificatePinner.check() - String + List overload
-			var CertificatePinner = Java.use('okhttp3.CertificatePinner');
-			console.log("[+] OkHTTP 3.x CertificatePinner Found");
-
-			CertificatePinner.check.overload('java.lang.String', 'java.util.List').implementation = function(hostname, peerCertificates) {
-				console.log("[+] OkHTTP3 CertificatePinner.check(String,List) bypassed for: " + hostname);
-				return; // Return void - allows connection
-			};
-
-			// Hook 2: CertificatePinner.check() - String + Certificate array overload
-			try {
-				CertificatePinner.check.overload('java.lang.String', '[Ljava.security.cert.Certificate;').implementation = function(hostname, peerCertificates) {
-					console.log("[+] OkHTTP3 CertificatePinner.check(String,Certificate[]) bypassed for: " + hostname);
-					return;
-				};
-			} catch(err) {
-				console.log("[-] Certificate array overload not found");
-			}
-
-		} catch (err) {
-			console.log("[-] OkHTTP 3.x CertificatePinner Not Found");
-		}
-
-		// Hook 3: OkHostnameVerifier (CRITICAL - likely missing cause)
-		try {
-			var OkHostnameVerifier = Java.use('okhttp3.internal.tls.OkHostnameVerifier');
-			console.log("[+] OkHTTP3 OkHostnameVerifier Found");
-
-			OkHostnameVerifier.verify.overload('java.lang.String', 'javax.net.ssl.SSLSession').implementation = function(hostname, session) {
-				console.log("[+] OkHTTP3 OkHostnameVerifier.verify() bypassed for: " + hostname);
-				return true; // Return true - hostname verified
-			};
-
-			OkHostnameVerifier.verify.overload('java.lang.String', 'java.security.cert.X509Certificate').implementation = function(hostname, cert) {
-				console.log("[+] OkHTTP3 OkHostnameVerifier.verify(X509) bypassed for: " + hostname);
-				return true;
-			};
-
-		} catch (err) {
-			console.log("[-] OkHTTP3 OkHostnameVerifier Not Found: " + err);
-		}
-
-		// Hook 4: CertificatePinner$Builder (prevent pinning setup)
-		try {
-			var Builder = Java.use('okhttp3.CertificatePinner$Builder');
-			console.log("[+] OkHTTP3 CertificatePinner$Builder Found");
-
-			Builder.add.overload('java.lang.String', '[Ljava.lang.String;').implementation = function(pattern, pins) {
-				console.log("[+] OkHTTP3 CertificatePinner$Builder.add() bypassed for pattern: " + pattern);
-				return this; // Return builder without adding pins
-			};
-
-			Builder.build.implementation = function() {
-				console.log("[+] OkHTTP3 CertificatePinner$Builder.build() bypassed - returning empty pinner");
-				return Java.use('okhttp3.CertificatePinner').$new(); // Return empty CertificatePinner
-			};
-
-		} catch (err) {
-			console.log("[-] OkHTTP3 CertificatePinner$Builder Not Found: " + err);
-		}
-
-
-        //--------
-        console.log("[.] Appcelerator Titanium detection...");
-        // Appcelerator Titanium PinningTrustManager
-        // Wrap the logic in a try/catch as not all applications will have
-        // appcelerator as part of the app.
-        try {
-            var PinningTrustManager = Java.use('appcelerator.https.PinningTrustManager');
-            console.log("[+] Appcelerator Titanium Found");
-            PinningTrustManager.checkServerTrusted.implementation = function() {
-                console.log("[+] Appcelerator checkServerTrusted() called. Not throwing an exception.");
+        var TrustAllManager = Java.registerClass({
+            name: 'com.auabf.TrustAllManager',
+            implements: [X509TrustManager3],
+            methods: {
+                checkClientTrusted: function(chain, authType) {},
+                checkServerTrusted: function(chain, authType) {
+                    console.log('[BYPASS-SSL] OkHttp TrustAllManager.checkServerTrusted bypassed');
+                },
+                getAcceptedIssuers: function() { return []; }
             }
+        });
 
-        } catch (err) {
-            // If we dont have a ClassNotFoundException exception, raise the
-            // problem encountered.
-            console.log("[-] Appcelerator Titanium Not Found");
-        }
+        var trustAllInstance = TrustAllManager.$new();
+        var sslCtx3 = SSLContext3.getInstance('TLS');
+        sslCtx3.init(null, [trustAllInstance], null);
 
-    });
-}, 0);
+        OkHttpClientBuilder.build.implementation = function() {
+            console.log('[BYPASS-SSL] OkHttpClient.Builder.build() — injecting trust-all SSLSocketFactory');
+            this.sslSocketFactory(sslCtx3.getSocketFactory(), trustAllInstance);
+            this.hostnameVerifier(Java.use('javax.net.ssl.HttpsURLConnection').getDefaultHostnameVerifier());
+            return this.build();
+        };
+    } catch(e) { console.log('[ERROR] OkHttpClient.Builder.build hook failed: ' + e); }
+
+    // ─── EMULATOR DETECTION BYPASS ──────────────────────────────────────────
+
+    try {
+        var TelephonyManager = Java.use('android.telephony.TelephonyManager');
+        TelephonyManager.getNetworkOperatorName.overload().implementation = function() {
+            return "T-Mobile";
+        };
+        TelephonyManager.getSimOperatorName.overload().implementation = function() {
+            return "T-Mobile";
+        };
+        TelephonyManager.getLine1Number.overload().implementation = function() {
+            return "+1234567890";
+        };
+    } catch(e) { console.log('[ERROR] TelephonyManager hook failed: ' + e); }
+
+    // ─── DEBUGGER DETECTION BYPASS ──────────────────────────────────────────
+
+    try {
+        var Debug = Java.use('android.os.Debug');
+        Debug.isDebuggerConnected.implementation  = function() { return false; };
+        Debug.waitingForDebugger.implementation   = function() { return false; };
+    } catch(e) { console.log('[ERROR] Debug hook failed: ' + e); }
+
+    console.log("[AUABF] ✓ All bypasses loaded successfully!");
+});
