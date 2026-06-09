@@ -166,7 +166,7 @@ Send "Robert.McCurdy@abirasecurity.com"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP 
-SetTimer AntiIdleUnknown, 65000, 0
+; SetTimer AntiIdleUnknown, 65000, 0
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;Sends F22 to anti idle
