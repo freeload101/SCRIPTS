@@ -158,6 +158,61 @@ foreach ($App in $Provisioned) {
 }
 
 # 2. Disable Copilot + AI features
+
+#Requires -RunAsAdministrator
+
+  # ============ YOUR EXISTING REGISTRY KEYS (keep all of them) ============
+  # [paste your script above here — it's all correct, just not sufficient alone]
+
+  # ============ ADDITIONAL KILLS FOR EXCEL COPILOT BUTTON ============
+
+  # 1. Disable Copilot add-in across all Office apps via registry
+  $addinPaths = @(
+      "HKCU:\Software\Microsoft\Office\16.0\Excel\Resiliency\DisabledItems"
+      "HKCU:\Software\Policies\Microsoft\Office\16.0\Excel\Options"
+      "HKCU:\Software\Policies\Microsoft\Office\16.0\Word\Options"
+      "HKCU:\Software\Policies\Microsoft\Office\16.0\PowerPoint\Options"
+  )
+
+  # 2. Kill the Copilot ribbon tab via Office policy
+  foreach ($app in @("Excel", "Word", "PowerPoint")) {
+      $ribbonPath = "HKCU:\Software\Policies\Microsoft\Office\16.0\$app\DisabledCmdBarItemsList"
+      New-Item -Path $ribbonPath -Force | Out-Null
+      Set-ItemProperty -Path $ribbonPath -Name "TCID1" -Value "TabCopilot" -Type String
+  }
+
+  # 3. Disable the Copilot feature flag that Office checks at startup
+  $flightPath = "HKCU:\Software\Microsoft\Office\16.0\Common\ExperimentConfigs\ExternalFeatureOverrides\microsoft"
+  New-Item -Path $flightPath -Force | Out-Null
+  Set-ItemProperty -Path $flightPath -Name "Microsoft.Office.Copilot.Excel" -Value "false" -Type String
+  Set-ItemProperty -Path $flightPath -Name "Microsoft.Office.Copilot.Word" -Value "false" -Type String
+  Set-ItemProperty -Path $flightPath -Name "Microsoft.Office.Copilot.PowerPoint" -Value "false" -Type String
+  Set-ItemProperty -Path $flightPath -Name "Microsoft.Office.Copilot.OneNote" -Value "false" -Type String
+
+  # 4. Prevent Office from re-enabling via cloud policy sync
+  $cloudPolicy = "HKCU:\Software\Policies\Microsoft\Cloud\Office\16.0\common\privacy"
+  New-Item -Path $cloudPolicy -Force | Out-Null
+  Set-ItemProperty -Path $cloudPolicy -Name "controllerconnectedservicesenabled" -Value 2 -Type DWord
+
+  # 5. Remove Recall / AI companion from Windows
+  $recallPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI"
+  New-Item -Path $recallPath -Force | Out-Null
+  Set-ItemProperty -Path $recallPath -Name "DisableAIDataAnalysis" -Value 1 -Type DWord
+  Set-ItemProperty -Path $recallPath -Name "TurnOffSavingSnapshots" -Value 1 -Type DWord
+
+  # 6. Remove Copilot from taskbar (Windows 11 24H2+)
+  Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowCopilotButton" -Value 0 -Type DWord
+
+  # 7. Unpin Copilot app if installed as an MSIX
+  Get-AppxPackage -Name "*Microsoft.Copilot*" -ErrorAction SilentlyContinue | Remove-AppxPackage -ErrorAction SilentlyContinue
+  Get-AppxPackage -Name "*Microsoft.Windows.Ai*" -ErrorAction SilentlyContinue | Remove-AppxPackage -ErrorAction SilentlyContinue
+
+  # 8. Kill Office and Explorer to apply
+  Get-Process -Name "excel","winword","powerpnt","onenote","outlook" -ErrorAction SilentlyContinue | Stop-Process -Force
+  Stop-Process -Name "explorer" -Force -ErrorAction SilentlyContinue
+
+  Write-Host "Done. Restart if the taskbar Copilot icon persists." -ForegroundColor Green
+
 # 2a. Remove the Copilot app package
 Get-AppxPackage *Windows.Copilot* | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
 
