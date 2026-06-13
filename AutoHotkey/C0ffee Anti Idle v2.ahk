@@ -126,7 +126,7 @@ CapsLock & e::
 {
    TextToPaste := "
     (
-	Do research use chain of thought reasoning DeCRiM. Only reference authoritative  resource and stack overflow are not considered authoritative  resource. 
+	Do research use chain of thought reasoning DeCRiM. Ask yourself ten questions about how to approach differently and what other problems there could be, create separate proposed files and proposed test fixtures and link to plan, do pushback use DCR. Update codesearch index, make sure there are no annie or Sauron rule violations, use code search and AST.
     )"
 
 
