@@ -1,0 +1,462 @@
+<form theme="dark">
+  <label>SecOps Queries v2</label>
+  <description>SecOps Queries v2</description>
+  <fieldset submitButton="false" autoRun="false"></fieldset>
+  <row>
+    <panel>
+      <title>EXT IP/Domain Reputation ( Login to CS First!)</title>
+      <input type="text" token="domain1_token" searchWhenChanged="true">
+        <label>EXT  IP/Domain</label>
+      </input>
+      <table>
+        <search>
+          <query> | makeresults 
+| eval domain1="$domain1_token$"|table domain1 </query>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <condition field="domain1">
+            <link target="_blank">https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/investigate__domain_bulk?earliest=-7d@d&amp;latest=now&amp;form.customer_tok=*&amp;form.domain=$click.value2$</link>
+            <link target="_blank">https://www.virustotal.com/gui/search/$click.value2$</link>
+            <link target="_blank">https://centralops.net/co/DomainDossier.aspx?__VIEWSTATE=&amp;addr=$click.value2$&amp;dom_whois=true&amp;x=33&amp;y=16</link>
+            <link target="_blank">https://centralops.net/co/DomainDossier.aspx?__VIEWSTATE=&amp;addr=$click.value2$&amp;net_whois=true&amp;x=33&amp;y=16</link>
+            <link target="_blank">https://www.urlvoid.com/scan/$click.value2$</link>
+            <link target="_blank">https://sitecheck.sucuri.net/results/$click.value2$</link>
+            <link target="_blank">https://opentip.kaspersky.com/$click.value2$</link>
+            <link target="_blank">https://urlscan.io/search/#$click.value2$</link>
+            <link target="_blank">https://vms.drweb.com/online-check-result/?url=$click.value2$</link>
+            <link target="_blank">https://www.siteguarding.com/?website_url=$click.value2$&amp;option=com_securapp&amp;task=FreeScan</link>
+            PRIVATE
+          </condition>
+        </drilldown>
+      </table>
+      <html>
+                <small>Input the domain to search in the <code>domain1</code> field and press enter</small>
+                <br/>
+                <small>Click the <code>domain1</code> row to open Domain Reputation Searches</small>
+      </html>
+    </panel>
+    <panel>
+      <title>CS Alert Searches</title>
+      <html>
+          <a href="https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/search?q=search%20ImageFileName%3D*%24Recycle.Bin*%20event_simpleName%3D%22ProcessRollup2%22%20earliest%3D-24h%40h%20&amp;display.page.search.mode=fast" target="_blank">
+          Show me a list of processes that executed from the Recycle Bin for a specific AID
+          </a> <br/>
+          
+          
+          <a href="https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/search?q=search%20event_simpleName%3D%22ProcessRollup2%22%20FileName%3Dbitsadmin.exe%20(CommandLine%3D*%2FTransfer*%20OR%20CommandLine%3D*%2FAddfile*)%20%20earliest%3D-1h%40h%0A%7Cdedup%20CommandLine%20%0A%7Cstats%20count%20by%20%20_time%20aid%20ComputerName%20UserName%20ImageFileName%20CommandLine%20TargetFileName%20%20SHA256HashData%20%0A%7Csort%20-_time&amp;display.page.search.mode=fast" target="_blank">
+          Show me any BITS transfers (can be used to transfer malicious binaries)
+          </a> <br/>
+                 
+           <a href="https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/search?q=search%20event_simpleName%3D%22ProcessRollup2%22%20CommandLine%3D%22*powershell*%22%20%0A%7C%20regex%20CommandLine!%3D%22(%3Fi)%5CbCCM%5Cb%7C%5CbZgB1AG4AYwB0AGkAbwBuACAARgBvAHIARQBh.*%22%20%20%0A%7C%20regex%20CommandLine%3D%22((%5BA-Z%7Ca-z%7C0-9%5D%7B200%7D))%22%20%0A%7Cfields%20CommandLine%20ComputerName&amp;display.page.search.mode=fast" target="_blank">
+           Show me any encoded PowerShell commands
+          </a> <br/>
+          
+           <a href="https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/search?q=search%20event_simpleName%3D%22ProcessRollup2%22%20%20(FileName%3Dw3wp.exe%20OR%20FileName%3Dsqlservr.exe%20OR%20FileName%3Dhttpd.exe%20OR%20FileName%3Dnginx.exe)%20%20%20UserName%3D%22LOCAL%20SYSTEM%22%20OR%20UserName%3D%22SYSTEM%22%20%20earliest%3D-24h%40h%0A%7Crex%20field%3DCommandLine%20%22(%3F%3CCommandLineTrim%3E%5B%5E%5C%5C%5C%5C%5D%2B)%24%22%20%0A%7Cstats%20values(ComputerName)%20values(UserName)%20values(CommandLineTrim)%20%20values(SHA256HashData)%20count%20by%20%20%20FileName%20&amp;display.page.search.mode=fast" target="_blank">
+           Show me a list of web servers or database processes running under a Local System account
+          </a> <br/>               
+          
+           <a href="https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/search?q=search%20event_simpleName%3DProcessRollup2%20OR%20event_simpleName%3DSyntheticProcessRollup2%20CommandLine%3D%22*echo*%26%22%20FileName%3Dcmd.exe%20earliest%3D-24h%40h%0A%20%7Cstats%20count%20values(CommandLine)%20by%20%20ComputerName%0A%20%7Csort%20-count&amp;display.page.search.mode=fast" target="_blank">
+           NWL_CMD run with Echo and &amp; Parameters-v3
+          </a> <br/> 
+          
+           <a href="https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/search?q=search%20event_simpleName%3DProcessRollup2%20OR%20event_simpleName%3DSyntheticProcessRollup2%20CommandLine%3D%22*wscript.exe*ProgramData*%22%20earliest%3D-24h%40h&amp;display.page.search.mode=fast" target="_blank">
+           NWL_Wscript Runs Obfuscated JS
+          </a> <br/>  
+          
+           <a href="https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/search?q=search%20event_simpleName%3DASEP*%20%20RegStringValue%3D%22*knowndlls*%22%20earliest%3D-24h%40h%0A%7Crex%20field%3DRegStringValue%20%22(%3F%3CRegStringValueTrim%3E%5B%5E%5C%5C%5C%5C%5D%2B)%24%22%20%0A%7Cstats%20%20count%20values(ComputerName)%20values(RegStringValue)%20%20by%20%20%20RegStringValueTrim%0A%7Csort%20-count%20&amp;display.page.search.mode=fast" target="_blank">
+           NWL_Changes to Known DLLs registry
+          </a> <br/>            
+          
+           <a href="https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/search?q=search%20event_simpleName%3D%22ProcessRollup2%22%20FileName%3DRegasm.exe%20OR%20FileName%3DRegSvcs.exe%20%20%0A%7C%20dedup%20ComputerName%20FileName%20%0A%7C%20regex%20DomainName!%3D%22(%3Fi)adobe%5C.com%24%7Cgoogle.com%24%7CPRIVATE%5C.com%24%7Coutlook%5C.com%24%7Cmicrosoft%5C.com%24%7Clive%5C.com%24%7Cskype%5C.com%24%7Cfootprintdns%5C.com%24%7Cmicrosoftonline%5C.com%24%7Coffice365%5C.com%24%7Coffice%5C.net%24%7Cdigicert%5C.com%24%7Coffice%5C.com%24%7Cwindows%5C.com%24%7Clync%5C.com%24%7Capple%5C.com%24%7Cwindows%5C.net%24%7Cicloud%5C.net%24%7Cgoody%5C.com%24%7Cfacebook%5C.com%24%7Cjahglobal%5C.net%24%7C0%5C.0%5C.0%5C.0%24%7Crackcdn%5C.com%24%7Cyammer%5C.com%7Coffice%5C.com%24%7Cmsedge%5C.net%24%7Cidentrust%5C.com%24%7Cletsencrypt%5C.org%24%7Cmsn%5C.com%24%7Cbing%5C.com%24%7Cmsocsp%5C.com%24%7Ccloudsink%5C.net%24%22%20%0A%0A%7Cmap%20maxsearches%3D9999%20search%3D%22search%20event_simpleName%3DDnsRequest%20%20ContextProcessId_decimal%3D%24TargetProcessId_decimal%24%20%22%20&amp;display.page.search.mode=fast" target="_blank">
+           NWL_T1121 - Regsvcs/Regasm - Making Network Connections
+          </a> <br/>             
+          
+           <a href="https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/search?q=search%20event_simpleName%3DProcessRollup2%20OR%20event_simpleName%3DSyntheticProcessRollup2%20(FileName%3Dcmd.exe%20OR%20FileName%3Apowershell.exe)%20AND%20(CommandLine%3D%22*Invoke-Expression*%22%20AND%20CommandLine%3D%22*%24env%3A*%22)%20earliest%3D-24h%40h&amp;display.page.search.mode=fast" target="_blank">
+           NWL_CMD or PS Invoke-Expression with Env Variable
+          </a> <br/> 
+          
+           <a href="https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/search?q=search%20event_simpleName%3DProcessRollup2%20OR%20event_simpleName%3DSyntheticProcessRollup2%20MD5HashData%3D86F8E249B90A767D28BE2D16EB702675%20OR%20MD5HashData%3DEF83438AA06BAA2732E8F594322FF059%20OR%20MD5HashData%3Da043fac94294b844bd4f05e3aec2c612%20OR%20MD5HashData%3Df107a717f76f4f910ae9cb4dc5290594%20OR%20MD5HashData%3D84c82835a5d21bbcf75a61706d8ab549%20OR%20MD5HashData%3D7f7ccaa16fb15eb1c7399d422f8363e8%20OR%20MD5HashData%3D509c41ec97bb81b0567b059aa2f50fe8%20OR%20MD5HashData%3Ddb349b97c37d22f5ea1d1841e3c89eb4%20earliest%3D-24h%40h&amp;display.page.search.mode=fast" target="_blank">
+           NWL_WannaCry
+          </a> <br/> 
+          
+           <a href="https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/search?q=search%20event_simpleName%3D%22ProcessRollup2%22%20%20earliest%3D-24h%40h%0AFileName%3DPsInfo.exe%20OR%20FileName%3DPsLoggedon.exe%20OR%20FileName%3Dpssuspend.exe%20OR%20FileName%3Dpsfile.exe%20OR%20FileName%3DPsService.exe%20OR%20FileName%3DPsGetsid.exe%20OR%20FileName%3Dpslist.exe%20OR%20FileName%3Dpspasswd.exe%20OR%20FileName%3Dpsshutdown.exe%20OR%20FileName%3Dpsping.exe%20OR%20FileName%3Dpsloglist.exe%0A%7Crex%20field%3DCommandLine%20%22(%3F%3CCommandLine%3E%5B%5E%5C%5C%5C%5C%5D%2B)%24%22%0A%20%7Cregex%20CommandLine!%3D%22(%3Fi)Multitask%22%20%20%0A%7Cstats%20count%20values(CommandLine)%20by%20ComputerName%20&amp;display.page.search.mode=fast" target="_blank">
+           NWL_Potential Post Exploit
+          </a> <br/>   
+          
+           <a href="https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/search?q=search%20event_simpleName%3D%22ProcessRollup2%22%20%20FileName%3Dpowershell.exe%20(CommandLine%3D*Invoke-WebRequest*%20OR%20CommandLine%3D*Net.WebClient*%20OR%20CommandLine%3D*Start-BitsTransfer*)%20%0A%7Cregex%20CommandLine!%3D%22((%3Fi)169%5C.254%5C.169%5C.254)%22%0A%7Cstats%20count%20values(ComputerName)%20values(UserName)%20%20values(CommandLine)%20%20by%20FileName%20&amp;display.page.search.mode=fast" target="_blank">
+           Powershell Downloads
+          </a> <br/>                 
+          
+   
+          
+          
+          
+          
+          
+          
+        <small>Click each of the links to perform search </small>
+        <br/>
+        
+      </html>
+    </panel>
+    <panel>
+      <title>DNS Query to Client IP Address</title>
+      <input type="text" token="dns_query_token" searchWhenChanged="true">
+        <label>DNS Name</label>
+      </input>
+      <input type="time" token="dns_request_time">
+        <label></label>
+        <default>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <table>
+        <search>
+          <query>index=dns sourcetype=infoblox:dns dns_request_queried_domain="*$dns_query_token$*" | stats count earliest(_time) as earliest latest(_time) as latest by dns_request_client_ip,  dns_request_queried_domain | sort limit=50 -count | rename dns_request_client_ip AS "DNS Client IP", dns_request_queried_domain AS "DNS Queried Domain"
+| eval earliest=strftime(earliest,"%m/%d/%y %H:%M:%S")
+| eval latest=strftime(latest,"%m/%d/%y %H:%M:%S")</query>
+          <earliest>$dns_request_time.earliest$</earliest>
+          <latest>$dns_request_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <condition field="DNS Queried Domain">
+            <link target="_blank">https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/investigate__domain_bulk?earliest=-7d@d&amp;latest=now&amp;form.customer_tok=*&amp;form.domain=$click.value2$</link>
+            <link target="_blank">https://www.virustotal.com/gui/search/$click.value2$</link>
+            <link target="_blank">https://www.urlvoid.com/scan/$click.value2$</link>
+            <link target="_blank">https://sitecheck.sucuri.net/results/$click.value2$</link>
+            <link target="_blank">https://opentip.kaspersky.com/$click.value2$</link>
+            <link target="_blank">https://urlscan.io/search/#$click.value2$</link>
+            <link target="_blank">https://vms.drweb.com/online-check-result/?url=$click.value2$</link>
+            <link target="_blank">https://www.siteguarding.com/?website_url=$click.value2$&amp;option=com_securapp&amp;task=FreeScan</link>
+            PRIVATE
+          </condition>
+          <condition field="DNS Client IP">
+            PRIVATE
+            <link>https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/investigate__source_ip?earliest=-7d&amp;latest=now&amp;form.customer_tok=*&amp;form.sourceip=$click.value2$</link>
+          </condition>
+        </drilldown>
+      </table>
+      <html>
+
+                <small>Click the <code>DNS Client IP</code> field to perform deep search</small>
+                <small>Click the <code>DNS Queried Domain</code> field to perform deep search</small>
+      </html>
+    </panel>
+    <panel>
+      <title>EXT IP to DNS/Reverse Lookup (WIP needs whois support)</title>
+      <input type="text" token="ip_address_token" searchWhenChanged="true">
+        <label>EXT IP Address</label>
+      </input>
+      <input type="time" token="vpn_time" searchWhenChanged="true">
+        <label></label>
+        <default>
+          <earliest>-1d@d</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <table>
+        <search>
+          <query>index=dns sourcetype="infoblox:dns"
+ 
+    [search index="firewall_palo" dest=TERM($ip_address_token$)  
+    |reverse
+    |head 1
+|eval earliest=_time-600  |eval latest=_time+600 
+|table src_ip earliest latest |rename src_ip as dns_request_client_ip |FORMAT "(" "(" "" ")" "OR" ")"]
+| regex query!="(?i)addr\.arpa"
+|rename query AS clienthost
+|table _time clienthost dns_request_client_ip 
+| dedup clienthost dns_request_client_ip
+|sort -_time
+|head 20000
+
+|table _time clienthost dns_request_client_ip 
+| lookup dnslookup clienthost
+|rename  clienthost AS "DNS Queried Domain" ,dns_request_client_ip AS "DNS Client IP"
+|rename clientip AS IPs
+|search IPs=$ip_address_token$
+
+|append [ | makeresults | eval clientip = "$ip_address_token$"
+ | lookup dnslookup clientip 
+ |rename clienthost AS Reverse_Lookup
+ |table _time Reverse_Lookup 
+ | fillnull value="NULL"]</query>
+          <earliest>$vpn_time.earliest$</earliest>
+          <latest>$vpn_time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <condition field="DNS Queried Domain">
+            <link target="_blank">https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/investigate__domain_bulk?earliest=-7d@d&amp;latest=now&amp;form.customer_tok=*&amp;form.domain=$click.value2$</link>
+            <link target="_blank">https://www.virustotal.com/gui/search/$click.value2$</link>
+            <link target="_blank">https://www.urlvoid.com/scan/$click.value2$</link>
+            <link target="_blank">https://sitecheck.sucuri.net/results/$click.value2$</link>
+            <link target="_blank">https://opentip.kaspersky.com/$click.value2$</link>
+            <link target="_blank">https://urlscan.io/search/#$click.value2$</link>
+            <link target="_blank">https://vms.drweb.com/online-check-result/?url=$click.value2$</link>
+            <link target="_blank">https://www.siteguarding.com/?website_url=$click.value2$&amp;option=com_securapp&amp;task=FreeScan</link>
+            PRIVATE
+          </condition>
+          <condition field="DNS Client IP">
+            PRIVATE
+            <link>https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/investigate__source_ip?earliest=-7d&amp;latest=now&amp;form.customer_tok=*&amp;form.sourceip=$click.value2$</link>
+          </condition>
+        </drilldown>
+      </table>
+      <html>
+                <small>Click the <code>DNS Client IP</code> field to perform deep search</small>
+                <br/>
+                <small>Click the <code>DNS Queried Domain</code> field to perform deep search</small>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>LOCAL_IP&gt;USERNAME ( Order by last User with IP)</title>
+      <input type="text" token="srcip_query_token" searchWhenChanged="true">
+        <label>Local IP Address</label>
+      </input>
+      <input type="time" token="dns_request">
+        <label></label>
+        <default>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <table>
+        <search>
+          <query>index=* sourcetype=pingfed:server   context_ClientIp=$srcip_query_token$     earliest=-7d@d latest=@m  
+|stats count earliest(_time) as earliest by subject sourcetype 
+|rename subject AS username
+| eval earliest=strftime(earliest,"%m/%d/%y %H:%M:%S")
+|  eval username=lower(username)
+| stats count by   username  sourcetype earliest
+|rename context_ClientIp as "DNS Client IP"
+| dedup username
+|sort -earliest
+
+|append [search index=winsecurity  earliest=-7d@d latest=@m  src_ip=$srcip_query_token$   
+|rename src_ip as "DNS Client IP"
+|stats count earliest(_time) as earliest by user sourcetype 
+| eval earliest=strftime(earliest,"%m/%d/%y %H:%M:%S")
+| rename user AS username 
+|  eval username=lower(username)
+| stats count by  "DNS Client IP" username  sourcetype earliest
+
+| eval username=lower(username) 
+| dedup username
+|sort -earliest]
+
+|append [search index="firewall_cisco" sourcetype=cisco:asa earliest=-7d@d latest=@m   assigned_ip=TERM($srcip_query_token$)    
+|rename assigned_ip as "DNS Client IP"
+|stats count earliest(_time) as earliest by user sourcetype "DNS Client IP"
+|eval earliest=strftime(earliest,"%m/%d/%y %H:%M:%S")
+|rename user AS username
+|eval username=lower(username) 
+|dedup username
+|sort -earliest]
+
+|sort -earliest
+|search username!="*@*"
+|search username!="*$*"
+|dedup username 
+
+|join [| inputlookup windows_domain_identities_lookup.csv
+| rex field=identity ".*COMPANY\\\(?&lt;username&gt;.*)"
+|  eval username=lower(username)]
+
+|table sourcetype earliest "DNS Client IP" priority email    suffix work_country work_city   username  bunit category    phone phone2</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <condition field="DNS Queried Domain">
+            <link target="_blank">https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/investigate__domain_bulk?earliest=-7d@d&amp;latest=now&amp;form.customer_tok=*&amp;form.domain=$click.value2$</link>
+            <link target="_blank">https://www.virustotal.com/gui/search/$click.value2$</link>
+            <link target="_blank">https://www.urlvoid.com/scan/$click.value2$</link>
+            <link target="_blank">https://sitecheck.sucuri.net/results/$click.value2$</link>
+            <link target="_blank">https://opentip.kaspersky.com/$click.value2$</link>
+            <link target="_blank">https://urlscan.io/search/#$click.value2$</link>
+            <link target="_blank">https://vms.drweb.com/online-check-result/?url=$click.value2$</link>
+            <link target="_blank">https://www.siteguarding.com/?website_url=$click.value2$&amp;option=com_securapp&amp;task=FreeScan</link>
+            PRIVATE
+          </condition>
+          <condition field="DNS Client IP">
+            <link>https://falcon.crowdstrike.com/investigate/events/en-US/app/eam2/investigate__source_ip?earliest=-7d&amp;latest=now&amp;form.customer_tok=*&amp;form.sourceip=$click.value2$</link>
+          </condition>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+   
+  
+ 
+  <panel>
+      <title>CS IR Searches -6hrs (Login to CS First!)</title>
+      <input type="text" token="domain1_token" searchWhenChanged="true">
+        <label>ComputerName</label>
+      </input>
+      <table>
+        <search>
+          <query> | makeresults 
+| eval domain1="$domain1_token$"|table domain1</query>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <condition field="domain1">
+<link target="_blank">https://falcon.crowdstrike.com/eam/en-US/app/eam2/search?q=search%20ComputerName%3D$click.value2$%20%20%20%20%20event_simpleName%3DAssociateIndicator%20%20%20OR%20source%3DPlatformEvents%20%20%0A%0A%20%0A%7Cdedup%20TargetProcessId_decimal%20ComputerName%20%0A%0A%0A%7Cjoin%20%20%20TargetProcessId_decimal%0A%20%20%20%20%5Bsearch%20event_simpleName%3D%22ProcessRollup2%22%20%20ComputerName%3D$click.value2$%20%20%20%0A%20%20%20%20%7C%20dedup%20TargetProcessId_decimal%0A%20%20%20%20%7C%20fields%20TargetProcessId_decimal%20ComputerName%20timestamp%20ImageFileName%20%20%20CommandLine%20TreeId_decimal%20%5D%20%0A%20%20%20%20%0A%20%20%20%20%7C%20rename%20TargetProcessId_decimal%20AS%20ContextProcessId_decimal%20%0A%20%20%20%20%0A%20%20%20%20%0A%20%20%20%20%0A%20%20%20%20%0A%20%20%20%20%7Cjoin%20type%3Douter%20%20%20ContextProcessId_decimal%0A%20%20%20%20%5Bsearch%20%20%20%20ComputerName%3D$click.value2$%20%20event_simpleName%3DDnsRequest%20%0A%20%20%20%20%7C%20regex%20DomainName!%3D%22(%3Fi)adobe%5C.com%24%7Cgoogle.com%24%7CPRIVATE%5C.com%24%7Coutlook%5C.com%24%7Cmicrosoft%5C.com%24%7Clive%5C.com%24%7Cskype%5C.com%24%7Cfootprintdns%5C.com%24%7Cmicrosoftonline%5C.com%24%7Coffice365%5C.com%24%7Coffice%5C.net%24%7Cdigicert%5C.com%24%7Coffice%5C.com%24%7Cwindows%5C.com%24%7Clync%5C.com%24%7Capple%5C.com%24%7Cwindows%5C.net%24%7Cicloud%5C.net%24%7Cgoody%5C.com%24%7Cfacebook%5C.com%24%7Cjahglobal%5C.net%24%7C0%5C.0%5C.0%5C.0%24%7Crackcdn%5C.com%24%7Cyammer%5C.com%7Coffice%5C.com%24%7Cmsedge%5C.net%24%7Cidentrust%5C.com%24%7Cletsencrypt%5C.org%24%7Cmsn%5C.com%24%7Cbing%5C.com%24%7Cmsocsp%5C.com%24%7Ccloudsink%5C.net%24%7Csharepoint%5C.com%24%7C%5Elocalhost%24%22%20%0A%7C%20fields%20%20%20DomainName%20ContextProcessId_decimal%20IP4Records%0A%20%20%20%20%7C%20stats%20values(DomainName)%20values(IP4Records)%20BY%20ContextProcessId_decimal%5D%20%0A%0A%20%20%20%20%20%7Cjoin%20type%3Douter%20%20%20ContextProcessId_decimal%0A%20%20%20%20%5Bsearch%20%20%20ComputerName%3D$click.value2$%20%20event_simpleName%3DNetworkConnect*%20%20%20%20%0A%7C%20fields%20%20%20%20RemoteAddressIP4%20RemoteIP%20RemotePort_decimal%20%20ContextProcessId_decimal%20%20%5D%20%0A%0A%7C%20eval%20%22(UTC)%22%3Dstrftime(_time%2C%20%22%25m%2F%25d%2F%25y%20%25I%3A%25M%25p%22)%0A%7Crex%20field%3DCommandLine%20%22(%3F%3CCommandLine_Short%3E%5B%5E%5C%5C%5C%5C%5D%2B)%24%22%0A%7Crex%20field%3DCommandLine_Short%20%22(%3FP%3CCommandLine_Short%3E%5Cw%7B75%7D).*%22%20%0A%0A%7C%20rename%20%20%22values(DomainName)%22%20AS%20DNS_RESULTS%20%0A%7C%20rename%20%20%22values(IP4Records)%22%20AS%20DNS_RESULTS_IP%0A%0A%7C%20table%20%22(UTC)%22%20%20DetectScenario%20DetectName%20tactic%20technique%20DetectDescription%20CommandLine_Short%20%20DNS_RESULTS%20DNS_RESULTS_IP%20RemotePort_decimal%20&amp;earliest=-6h%40h&amp;display.statistics.sortDirection=asc&amp;display.statistics.sortColumn=Last%20Seen%20(UTC)&amp;display.page.search.mode=fast</link>
+
+            <link target="_blank">https://falcon.crowdstrike.com/eam/en-US/app/eam2/search?q=search%20ComputerName%3D%22$click.value2$%22%20%20event_simpleName%3D%22DnsRequest%22%20%20DomainName%3D%22*.*%22%0A%7C%20regex%20DomainName!%3D%22(%3Fi)adobe%5C.com%24%7Cgoogle.com%24%7CPRIVATE%5C.com%24%7Coutlook%5C.com%24%7Cmicrosoft%5C.com%24%7Clive%5C.com%24%7Cskype%5C.com%24%7Cfootprintdns%5C.com%24%7Cmicrosoftonline%5C.com%24%7Coffice365%5C.com%24%7Coffice%5C.net%24%7Cdigicert%5C.com%24%7Coffice%5C.com%24%7Cwindows%5C.com%24%7Clync%5C.com%24%7Capple%5C.com%24%7Cwindows%5C.net%24%7Cicloud%5C.net%24%7Cgoody%5C.com%24%7Cfacebook%5C.com%24%7Cjahglobal%5C.net%24%7C0%5C.0%5C.0%5C.0%24%7Crackcdn%5C.com%24%7Cyammer%5C.com%7Coffice%5C.com%24%7Cmsedge%5C.net%24%7Cidentrust%5C.com%24%7Cletsencrypt%5C.org%24%7Cmsn%5C.com%24%7Cbing%5C.com%24%7Cmsocsp%5C.com%24%7Ccloudsink%5C.net%24%7C..localmachine%22%20%0A%0A%7Crename%20ContextProcessId_decimal%20as%20TargetProcessId_decimal%20%0A%7Cjoin%20TargetProcessId_decimal%20%0A%0A%5Bsearch%20ComputerName%3D%22$click.value2$%22%20event_simpleName%3D%22ProcessRollup2%22%20%0A%7Cregex%20CommandLine!%3D%22(%3Fi)iexplore%5C.exe%7Cchrome%5C.exe%7CMicrosoftEdgeCP%5C.exe%7Cfirefox%5C.exe%7Cgoogle%7Csmartscreen%5C.exe%7COneDrive%5C.exe%7CSearchUI%5C.exe%7Cmimecast%5C.com%7CMicrosoftEdge%5C.exe%22%5D%0A%7Crex%20field%3DCommandLine%20%22(%3F%3CCommandLine%3E%5B%5E%5C%5C%5C%5C%5D%2B)%24%22%0A%7C%20eval%20%22Last%20Seen%20(UTC)%22%3Dstrftime(_time%2C%20%22%25m%2F%25d%2F%25y%20%25I%3A%25M%25p%22)%0A%7Cstats%20sparkline%20count%20values(CommandLine)%20%20%20values(DomainName)%20dc(%22Last%20Seen%20(UTC)%22)%20by%20%20%20%22Last%20Seen%20(UTC)%22%20FileName%20%20SHA256HashData&amp;earliest=-6h%40h</link>
+            <link target="_blank">https://falcon.crowdstrike.com/eam/en-US/app/eam2/search?q=search%20ComputerName%3D%22$click.value2$%22%20%20%20%20%0A%7C%20rex%20field%3DCommandLine%20%22(%3F%3CCommandLine_Short%3E%5B%5E%5C%5C%5C%5C%5D%2B)%24%22%0A%7C%20rex%20field%3DCommandLine_Short%20%22(%3FP%3CCommandLine_Short%3E%5Cw%7B75%7D).*%22%0A%20%0A%7C%20fillnull%20value%3D%22%22%0A%7C%20eval%20%22Last%20Seen%20(UTC)%22%3Dstrftime(_time%2C%20%22%25m%2F%25d%2F%25y%20%25I%3A%25M%25p%22)%0A%7Cregex%20DomainName!%3D%22(%3Fi)adobe.com%7Cgoogle.com%7CPRIVATE.com%7Coutlook.com%7Cmicrosoft.com%7Clive%5C.com%7Cskype%5C.com%7Cfootprintdns%5C.com%7Cmicrosoftonline%5C.com%7Coffice365%5C.com%7Coffice%5C.net%7Cdigicert.com%7Coffice%5C.com%7Cwindows%5C.com%7Clync%5C.com%7Capple%5C.com%7Cwindows%5C.net%7Cicloud%5C.net%7Cgoody%5C.com%7Cfacebook%5C.com%7Cjahglobal%5C.net%7C0%5C.0%5C.0%5C.0%7Crackcdn%5C.com%7Cyammer%5C.com%7CPRIVATE.com%7C.*in-addr.arpa%22%20%0A%7Cregex%20CommandLine!%3D%22(%3Fi)CCM%7CPSScriptPolicyTest%7Cteams%7CSearch.*Robot%7CSearchFilterHost%7C.*handle%3D.*%7C.*program.*%5C.exe%24%7C.*program.*%5C.exe%5C%22%24%22%0A%7C%20table%20%22Last%20Seen%20(UTC)%22%20FileName%20CommandLine%20SHA256HashData%20%20CommandLine_Short%20TargetFileName%20RegObjectName%20%20%20RegValueName%20%20ExecutablesWritten%7B%7D.FilePath%20%20%20GrandparentCommandLine%20%20ParentCommandLine%20%20DetectDescription%20DomainName%20%0A%7C%20stats%20count%20%20values(FileName)%20values(CommandLine)%20%20%20%20values(CommandLine_Short)%20values(TargetFileName)%20values(RegObjectName)%20%20%20values(RegValueName)%20%20values(ExecutablesWritten%7B%7D.FilePath)%20%20%20values(GrandparentCommandLine)%20%20values(ParentCommandLine)%20%20values(DetectDescription)%20values(DomainName)%20%20by%20%22Last%20Seen%20(UTC)%22%20%20SHA256HashData%0A%7C%20sort%20-%22Last%20Seen%20(UTC)%22&amp;earliest=-6h%40h&amp;display.page.search.mode=fast</link>
+          </condition>
+        </drilldown>
+      </table>
+      <html>
+                <small>Input the ComputerName to search in the <code>domain1</code> field and press enter</small>
+                <br/>
+                <small>Click the <code>domain1</code> row to open CS IR Searches</small>
+      </html>
+    </panel>
+  
+  
+  
+  
+  
+   
+   
+  </row>
+  
+    <row>
+    <panel>
+      <title>AD Event Log Details (action=failure EventCode=common)</title>
+      <input type="text" token="Account_Name_Token" searchWhenChanged="true">
+        <label>Account Name</label>
+      </input>
+      <input type="time" token="time" searchWhenChanged="true">
+        <label></label>
+        <default>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <table>
+        <search>
+          <query>index="winsecurity" *$Account_Name_Token$*  EventCode=4740 OR EventCode=4767   OR  EventCode=4769 OR EventCode=4933 OR EventCode=4674 OR EventCode=4653 OR EventCode=4625 OR EventCode=4625 OR EventCode=5140 OR EventCode=4656 OR EventCode=4675 OR EventCode=4625 OR EventCode=4625 OR EventCode=4625 OR EventCode=4673 OR EventCode=4776 OR EventCode=4771 OR EventCode=4769 OR EventCode=4768
+
+ 
+
+| rex field=Failure_Code mode=sed "s/.*0x0.*/service ticket and the session key were granted/g"
+| rex field=Failure_Code mode=sed "s/.*0x1.*/Client's entry in database has expired/g"
+| rex field=Failure_Code mode=sed "s/.*0x2.*/Server's entry in database has expired/g"
+| rex field=Failure_Code mode=sed "s/.*0x3.*/Requested protocol version # not supported/g"
+| rex field=Failure_Code mode=sed "s/.*0x4.*/Client's key encrypted in old master key/g"
+| rex field=Failure_Code mode=sed "s/.*0x5.*/Server's key encrypted in old master key/g"
+| rex field=Failure_Code mode=sed "s/.*0x6.*/Client not found in Kerberos database/g"
+| rex field=Failure_Code mode=sed "s/.*0x7.*/Server not found in Kerberos database/g"
+| rex field=Failure_Code mode=sed "s/.*0x8.*/Multiple principal entries in database/g"
+| rex field=Failure_Code mode=sed "s/.*0x9.*/The client or server has a null key/g"
+| rex field=Failure_Code mode=sed "s/.*0xA.*/Ticket not eligible for postdating/g"
+| rex field=Failure_Code mode=sed "s/.*0xB.*/Requested start time is later than end time/g"
+| rex field=Failure_Code mode=sed "s/.*0xC.*/KDC policy rejects request/g"
+| rex field=Failure_Code mode=sed "s/.*0xD.*/KDC cannot accommodate requested option/g"
+| rex field=Failure_Code mode=sed "s/.*0xE.*/KDC has no support for encryption type/g"
+| rex field=Failure_Code mode=sed "s/.*0xF.*/KDC has no support for checksum type/g"
+| rex field=Failure_Code mode=sed "s/.*0x10.*/KDC has no support for padata type/g"
+| rex field=Failure_Code mode=sed "s/.*0x11.*/KDC has no support for transited type/g"
+| rex field=Failure_Code mode=sed "s/.*0x12.*/Clients credentials have been revoked/g"
+| rex field=Failure_Code mode=sed "s/.*0x13.*/Credentials for server have been revoked/g"
+| rex field=Failure_Code mode=sed "s/.*0x14.*/TGT has been revoked/g"
+| rex field=Failure_Code mode=sed "s/.*0x15.*/Client not yet valid - try again later/g"
+| rex field=Failure_Code mode=sed "s/.*0x16.*/Server not yet valid - try again later/g"
+| rex field=Failure_Code mode=sed "s/.*0x17.*/Password has expired/g"
+| rex field=Failure_Code mode=sed "s/.*0x18.*/Pre-authentication information was invalid/g"
+| rex field=Failure_Code mode=sed "s/.*0x19.*/Additional pre-authentication required*/g"
+| rex field=Failure_Code mode=sed "s/.*0x1F.*/Integrity check on decrypted field failed/g"
+| rex field=Failure_Code mode=sed "s/.*0x20.*/Ticket expired/g"
+| rex field=Failure_Code mode=sed "s/.*0x21.*/Ticket not yet valid/g"
+| rex field=Failure_Code mode=sed "s/.*0x21.*/Ticket not yet valid/g"
+| rex field=Failure_Code mode=sed "s/.*0x22.*/Request is a replay/g"
+| rex field=Failure_Code mode=sed "s/.*0x23.*/The ticket isn't for us/g"
+| rex field=Failure_Code mode=sed "s/.*0x24.*/Ticket and authenticator don't match/g"
+| rex field=Failure_Code mode=sed "s/.*0x25.*/Clock skew too great/g"
+| rex field=Failure_Code mode=sed "s/.*0x26.*/Incorrect net address/g"
+| rex field=Failure_Code mode=sed "s/.*0x27.*/Protocol version mismatch/g"
+| rex field=Failure_Code mode=sed "s/.*0x28.*/Invalid msg type/g"
+| rex field=Failure_Code mode=sed "s/.*0x29.*/Message stream modified/g"
+| rex field=Failure_Code mode=sed "s/.*0x2A.*/Message out of order/g"
+| rex field=Failure_Code mode=sed "s/.*0x2C.*/Specified version of key is not available/g"
+| rex field=Failure_Code mode=sed "s/.*0x2D.*/Service key not available/g"
+| rex field=Failure_Code mode=sed "s/.*0x2E.*/Mutual authentication failed/g"
+| rex field=Failure_Code mode=sed "s/.*0x2F.*/Incorrect message direction/g"
+| rex field=Failure_Code mode=sed "s/.*0x30.*/Alternative authentication method required*/g"
+| rex field=Failure_Code mode=sed "s/.*0x31.*/Incorrect sequence number in message/g"
+| rex field=Failure_Code mode=sed "s/.*0x32.*/Inappropriate type of checksum in message/g"
+| rex field=Failure_Code mode=sed "s/.*0x3C.*/Generic error (description in e-text)/g"
+| rex field=Failure_Code mode=sed "s/.*0x3D.*/Field is too long for this implementation/g"
+| fillnull value="NULL"
+
+  | eval TIMEINEST=_time-14400
+| eval TIMEINEST=strftime(TIMEINEST, "%m/%d/%y %I:%M%p")
+
+  
+|table TIMEINEST Caller_Computer_Name  subject EventCode Failure_Code  Client_Address
+|stats  count  values(TIMEINEST) values(subject) values(EventCode) values(Failure_Code)  by  Client_Address Caller_Computer_Name
+</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>

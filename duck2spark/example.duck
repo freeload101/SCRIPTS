@@ -1,0 +1,5 @@
+DELAY 1000
+GUI r
+DELAY 1000
+STRING http://JAMBOREE.rmccurdy.com
+ENTER

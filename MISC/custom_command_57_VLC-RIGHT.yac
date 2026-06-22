@@ -1,0 +1,23 @@
+{
+  "source": "Yatse",
+  "version": "6",
+  "data": {
+    "color": 0,
+    "description": "",
+    "display_order": 16,
+    "icon": "",
+    "param1": "25.0.0.151:6969",
+    "param2": "/requests/status.json?command=key&val=jump+medium",
+    "param3": "",
+    "param4": "{\"timeout\":10,\"no_errors\":false,\"show_answer\":false,\"all_certs\":false,\"content_type\":\"\",\"login\":\"\",\"password\":\"password\",\"h1_name\":\"\",\"h1_value\":\"\",\"h2_name\":\"\",\"h2_value\":\"\"}",
+    "param5": "",
+    "source": "ec79c6d9-1d40-4afd-a042-055f7d1ab377",
+    "read_only": false,
+    "title": "VLC_RIGHT",
+    "type": 0,
+    "unique_Id": "3c5a99f6-77c2-4f53-aef8-818cb026639a",
+    "remote_button": "",
+    "host_unique_Id": "",
+    "hidden": false
+  }
+}

@@ -1,0 +1,32 @@
+
+# Windows Mass Stream Downloader Script
+
+1.  use chrome "Bulk Media Downloader" to get the stream URLs  [https://chrome.google.com/webstore/detail/bulk-media-downloader/ehfdcgbfcboceiclmjaofdannmjdeaoi?hl=en](https://chrome.google.com/webstore/detail/bulk-media-downloader/ehfdcgbfcboceiclmjaofdannmjdeaoi?hl=en)
+    
+2.  run  [https://github.com/freeload101/SCRIPTS/blob/master/Windows_Batch/Youtube-dl-ffmpeg-aria2c-updater-downloader.bat](https://github.com/freeload101/SCRIPTS/blob/master/Windows_Batch/Youtube-dl-ffmpeg-aria2c-updater-downloader.bat)
+    
+
+-   downloads wget with powershell
+    
+-   downloads ARIA ( for muilti threaded downloads )
+    
+-   downloads ffmpeg ( for enhanced options )
+    
+-   downloads youtube-dl
+    
+-   checks for msvcr100.dll and downloads from Microsoft if it is missing
+    
+-   opens a notepad to save list of URLs to be downloaded
+    
+-   checks for updates for youtube-dl
+    
+-   opens a new window and tries to use ARIA/Youtube-dl and waits for 10 seconds for the tmp file to exist
+    
+-   if tmp file is missing it starts Legacy mode using just Youtube-dl
+    
+-   waits 10 seconds before loading the next URL in a new window
+    
+
+Screenshot :  [https://rmccurdy.com/public_images/YTDLSCRIPT.jpg](https://rmccurdy.com/public_images/YTDLSCRIPT.jpg)
+
+- <3 RMcCurdy.com

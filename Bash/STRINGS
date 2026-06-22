@@ -1,0 +1,14 @@
+
+echo Usage Example :
+echo For searching binary files or strings in a single line sort of like strings command but with just grep 
+echo './STRINGS SEARCH_STRING EXCLUDE_STRINGS PATH_TO_FILES NUMBER_OF_BYTES_TO_RETURN'
+echo './STRINGS "(Java|Log4j|struts|logjam|rmi\b|login\.jsp)" "(Javascript)" "in*" 10 '
+#grep -iaEl ${1} ${3}| grep -viaE ${2} | sort | uniq -c | sort -nr
+
+
+for i in `grep -iaEl ${1} ${3}| grep -viaE ${2}`
+do
+echo '================================================='
+echo Searching ${i}
+grep -oih -P ".{0,$4}${1}.{0,$4}" ${i}  | grep -viaE ${2} | sort | uniq -c | sort -nr
+done
