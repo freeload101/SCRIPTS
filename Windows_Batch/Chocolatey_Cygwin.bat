@@ -1,5 +1,20 @@
 @echo off
 setlocal enabledelayedexpansion
+
+:: SEE https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_Choco_Debloat.ps1
+:: SEE https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_Choco_Debloat.ps1
+:: SEE https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_Choco_Debloat.ps1
+:: SEE https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_Choco_Debloat.ps1
+:: SEE https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_Choco_Debloat.ps1
+:: SEE https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_Choco_Debloat.ps1
+:: SEE https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_Choco_Debloat.ps1
+:: SEE https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_Choco_Debloat.ps1
+:: SEE https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_Choco_Debloat.ps1
+:: SEE https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_Choco_Debloat.ps1
+:: SEE https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_Choco_Debloat.ps1
+:: SEE https://github.com/freeload101/SCRIPTS/blob/master/Windows_Powershell_ps/Windows_Choco_Debloat.ps1
+
+
 echo ###############################################################################
 echo rmccurdyDOTcom
 echo This script will download and install a buncha stuff I use for base Windows builds
