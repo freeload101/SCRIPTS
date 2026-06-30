@@ -74,7 +74,7 @@ if (Test-Path "$DIR\chocolatey.license.xml") {
 }
 
 # Core choco packages
-foreach ($pkg in @('chocolateygui','winmerge','chromium','irfanview','irfanview-shellextension','irfanviewplugins','vlc','7zip','mobaxterm','nerd-fonts-hack','notepadplusplus','filezilla','gimp','teracopy','ffmpeg','audacity','doublecmd','windirstat')) {
+foreach ($pkg in @('chocolateygui','winmerge','chromium','irfanview','irfanview-shellextension','irfanviewplugins','vlc','7zip','mobaxterm','nerd-fonts-hack','notepadplusplus','filezilla','gimp','teracopy','ffmpeg','audacity','doublecmd','windirstat','obsidian' )) {
     choco install $pkg -y; choco upgrade $pkg -y
 }
 
