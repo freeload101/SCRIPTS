@@ -6,7 +6,7 @@ $DIR = Split-Path -Parent $MyInvocation.MyCommand.Path
 # Ops I forgot local admin account change the password plz ...
 $p = ConvertTo-SecureString "password" -AsPlainText -Force
 New-LocalUser -Name "admin" -Password $p -PasswordNeverExpires $true
-Add-LocalGroupMember -Group "Administrators" -Member "NewAdminUser"
+Add-LocalGroupMember -Group "Administrators" -Member "admin"
 net user "admin" /lockoutthreshold:0
 
 #region === PART 1: Chocolatey_Cygwin (base setup) ===
