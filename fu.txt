@@ -1111,21 +1111,18 @@ db.getCollectionNames()
 service mongod start
 
 # more masscan
-sudo masscan 0.0.0.0/0 -p 11500 --rate 150000 -oJ ollama_results.json --exclude 255.255.255.255
+cat > exclude.txt << EOF
+10.0.0.0/8
+172.16.0.0/12
+192.168.0.0/16
+127.0.0.0/8
+169.254.0.0/16
+224.0.0.0/4
+EOF
 
-masscan -p80,8000-8100 10.0.0.0/8
-masscan -p0-65535 --rate 150000 -oL output.txt
+sudo masscan 0.0.0.0/0 -p 11434 --rate 150000 -oJ ollama_results.json --excludefile exclude.txt --open
+nmap -T5  -sV -Pn  -p 11434 `awk '{print $3}'  ollama_results.json |shuf -n 11|sed 's/,//g'|sed 's/\"//g'` -n --open
 
-masscan -p0-65535 23.239.151.0/24 --rate 150000 -oL output.txt
-
-# playback conf
-/masscan -p0-65535 23.239.151.0/24 --rate 150000 -oL output.txt --echo > scan.conf
-/masscan -c scan.conf
-
-masscan --ports 80,443,22,445,135,139,5900,5800,5901,5801,8080 --rate 150000 -oL 172_masscan_common.txt  172.16.0.0/12
-
-
-masscan   -p21,22,23,25,53,80,88,110,111,113,135,139,143,220,264,389,443,445,449,524,585,636,993,995,1433,1521,1723,3306,3389,5900,8080    --rate=14114 --open --excludefile BLACKLIST --ping  172.16.0.0/12 -oX  172.xml
 
 
 
