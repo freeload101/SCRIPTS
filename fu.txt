@@ -1111,6 +1111,8 @@ db.getCollectionNames()
 service mongod start
 
 # more masscan
+sudo masscan 0.0.0.0/0 -p 11500 --rate 150000 -oJ ollama_results.json --exclude 255.255.255.255
+
 masscan -p80,8000-8100 10.0.0.0/8
 masscan -p0-65535 --rate 150000 -oL output.txt
 
