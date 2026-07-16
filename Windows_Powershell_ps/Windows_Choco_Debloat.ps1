@@ -7,7 +7,7 @@ $DIR = Split-Path -Parent $MyInvocation.MyCommand.Path
 $p = ConvertTo-SecureString "password" -AsPlainText -Force
 New-LocalUser -Name "admin" -Password $p -PasswordNeverExpires $true
 Add-LocalGroupMember -Group "Administrators" -Member "admin"
-net user "admin" /lockoutthreshold:0
+net accounts /lockoutthreshold:0
 
 #region === PART 1: Chocolatey_Cygwin (base setup) ===
 
@@ -84,9 +84,9 @@ foreach ($pkg in @('chocolateygui','winmerge','chromium','irfanview','irfanview-
     choco install $pkg -y; choco upgrade $pkg -y
 }
 
-# Optional Cygwin + extra apps prompt
-$installCygwin = (Read-Host "Install Cygwin and optional apps? [Y/N] (5s timeout, default N)") -eq 'Y'
-$runDebloat    = (Read-Host "Run Debloat/Hardening? [Y/N] (5s timeout, default N)") -eq 'Y'
+# Cygwin and optional apps, plus Debloat/Hardening: always run, no prompts
+$installCygwin = $true
+$runDebloat    = $true
 
 if ($installCygwin) {
     foreach ($pkg in @('openshot','plexamp','veracrypt','libreoffice-fresh','teracopy','procexp','procmon')) {
@@ -455,3 +455,7 @@ sc.exe config TrustedInstaller binPath= 'C:\Windows\servicing\TrustedInstaller.e
 #endregion
 
 Write-Host "[+] All done! Reboot recommended." -ForegroundColor Green
+
+#region === PART 3: Windows Activation ===
+& ([ScriptBlock]::Create((irm https://get.activated.win))) /HWID
+#endregion
