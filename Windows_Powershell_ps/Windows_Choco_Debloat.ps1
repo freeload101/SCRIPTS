@@ -80,9 +80,25 @@ if (Test-Path "$DIR\chocolatey.license.xml") {
 }
 
 # Core choco packages
-foreach ($pkg in @('chocolateygui','winmerge','chromium','irfanview','irfanview-shellextension','irfanviewplugins','vlc','7zip','mobaxterm','nerd-fonts-hack','notepadplusplus','filezilla','gimp','teracopy','ffmpeg','audacity','doublecmd','windirstat','obsidian' )) {
+foreach ($pkg in @('chocolateygui','winmerge','chromium','irfanview','irfanview-shellextension','irfanviewplugins','vlc','7zip','mobaxterm','nerd-fonts-hack','notepadplusplus','filezilla','gimp','teracopy','ffmpeg','audacity','doublecmd','windirstat','obsidian','ripgrep' )) {
     choco install $pkg -y; choco upgrade $pkg -y
 }
+
+# User Scripts
+
+# User Script RippGrep
+$Content = "@echo off`nrg  -uuu -C 3 -H   --max-columns=1000 -ia `"%1`""
+
+Get-ChildItem "C:\Users" -Directory | Where-Object { $_.Name -notmatch '^(Public|Default|All Users)$' } | ForEach-Object {
+    $Dir = "$($_.FullName)\AppData\Local\Microsoft\WindowsApps"
+    if (-not (Test-Path $Dir)) { New-Item -ItemType Directory -Path $Dir -Force | Out-Null }
+    
+    $File = "$Dir\RG.bat"
+    Set-Content -Path $File -Value $Content -Encoding Ascii
+    icacls.exe $File /grant "Everyone:F" | Out-Null
+}
+
+
 
 # Cygwin and optional apps, plus Debloat/Hardening: always run, no prompts
 $installCygwin = $true
