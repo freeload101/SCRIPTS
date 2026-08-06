@@ -82,6 +82,36 @@ CapsLock & z::{
 }
 
 
+CapsLock & x::
+{
+   TextToPaste := "
+    (
+	run 'git add .'  then update the comments with the work you just did and ask me what message I want to prepend to the git commit before you commit
+    )"
+
+
+    ; Store the current clipboard content to restore it later
+    UserClipboard := A_Clipboard
+    
+    ; Set the clipboard to our text
+    A_Clipboard := TextToPaste
+    
+    ; Wait for the clipboard to register the data
+    if !ClipWait(2)
+    {
+        MsgBox "Clipboard limit reached or failed."
+        return
+    }
+    
+    ; Perform the paste
+    Send "^v"
+    
+    ; Brief sleep to ensure the paste completes before restoring
+    Sleep 100
+    A_Clipboard := UserClipboard
+}
+
+
 ; Type my anti AI 
 CapsLock & d::
 {
@@ -152,13 +182,7 @@ CapsLock & e::
 }
 
 
-
-; common input
-CapsLock & x::{
-; MoveAndResizeAllWindows()
-; Split3()
-Send "Robert.McCurdy@abirasecurity.com"
-}
+ 
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
