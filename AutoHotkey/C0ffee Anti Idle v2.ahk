@@ -1,5 +1,6 @@
 ; 10:28 AM 12/30/2025: added Alt+ F10 to resize / move all windows if things go crazy 
 ; 4:26 AM 10/18/2025: Rewrite to fix alt issues now using Caps Lock A/S
+; 9:20 AM 9/2/2026: IDK my screen hight keeps changing ??? so I get screen hight from targetH := A_ScreenHeight ... I have no idea ...
 ; Complete rewrite for v2 ...
 
 
@@ -387,8 +388,8 @@ MoveAndResizeAllWindows()
     targetX := 1344
     targetY := 0
     targetW := 2527
-    targetH := 1447
-
+    ; Somehow my screen hight keeps chainging ??? IDK ...
+    targetH := A_ScreenHeight
     ; Get list of all windows
     windowList := WinGetList()
     resizedCount := 0
@@ -445,7 +446,9 @@ MoveAndResizeAllSkinny()
     targetX := 1763	
     targetY := 0
     targetW := 1689	
-    targetH := 1447
+    ; Somehow my screen hight keeps chainging ??? IDK ...
+    targetH := A_ScreenHeight
+
 
     ; Get list of all windows
     windowList := WinGetList()
