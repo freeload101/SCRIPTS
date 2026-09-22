@@ -157,7 +157,7 @@ CapsLock & e::
 {
    TextToPaste := "
     (
-	Do research use chain of thought reasoning DeCRiM. Ask yourself ten questions about how to approach differently and what other problems there could be, do pushback use DCR. If you need to perform deep research or help with code errors use kagi_search.
+	Do research use chain of thought reasoning DeCRiM. Ask yourself ten questions about how to approach differently and what other problems there could be, do pushback use DCR. If you need to perform deep research or help with code errors use kagi_search. Update codesearch index, make sure there are no annie or Sauron rule violations, use code search and AST.
     )"
 
 
