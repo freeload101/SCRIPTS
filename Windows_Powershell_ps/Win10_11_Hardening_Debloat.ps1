@@ -19,6 +19,132 @@
 # RUN ://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/6d376ab4-4a07-4679-8918-e0dc3c0735c8/MicrosoftEdgeWebView2RuntimeInstallerX64.exe 
 ####################################################################################
 
+
+
+# #Requires -RunAsAdministrator
+# === Nuke-FirewallNag.ps1 : permanently silences "Turn on Windows Firewall" toast + re-applies on every logon ===
+
+$ErrorActionPreference = 'SilentlyContinue'
+$dir  = 'C:\ProgramData\FirewallNagKiller'
+$script = Join-Path $dir 'Suppress-FirewallNag.ps1'
+New-Item -ItemType Directory -Path $dir -Force | Out-Null
+
+# --- payload that reapplies the suppression on every login ---
+@'
+$paths = @(
+    "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\Notifications",
+    "HKLM:\SOFTWARE\Microsoft\Windows Defender Security Center\Notifications"
+)
+foreach ($p in $paths) {
+    New-Item -Path $p -Force | Out-Null
+    New-ItemProperty -Path $p -Name DisableNotifications        -Value 1 -PropertyType DWord -Force | Out-Null
+    New-ItemProperty -Path $p -Name DisableEnhancedNotifications -Value 1 -PropertyType DWord -Force | Out-Null
+}
+
+# Tell WSC the firewall is policy-managed OFF so it stops nagging (instead of just "off")
+$fwProfiles = @('DomainProfile','StandardProfile','PublicProfile')
+foreach ($prof in $fwProfiles) {
+    $p = "HKLM:\SOFTWARE\Policies\Microsoft\WindowsFirewall\$prof"
+    New-Item -Path $p -Force | Out-Null
+    New-ItemProperty -Path $p -Name EnableFirewall -Value 0 -PropertyType DWord -Force | Out-Null
+}
+
+# Keep the actual firewall state consistent with the policy above
+netsh advfirewall set allprofiles state off | Out-Null
+'@ | Set-Content -Path $script -Encoding UTF8
+
+# apply immediately
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $script
+
+# --- scheduled task: fires for ANY user at logon, runs as SYSTEM, highest privileges ---
+$action    = New-ScheduledTaskAction -Execute 'powershell.exe' `
+             -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$script`""
+$trigger   = New-ScheduledTaskTrigger -AtLogOn
+$principal = New-ScheduledTaskPrincipal -UserId 'SYSTEM' -LogonType ServiceAccount -RunLevel Highest
+$settings  = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
+
+Unregister-ScheduledTask -TaskName 'Nuke-FirewallNag' -Confirm:$false
+Register-ScheduledTask -TaskName 'Nuke-FirewallNag' -Action $action -Trigger $trigger `
+    -Principal $principal -Settings $settings -Description 'Global thermonuclear strike on the firewall nag toast' | Out-Null
+
+Write-Host "Done. Notification suppressed and re-armed on every logon via task 'Nuke-FirewallNag'." -ForegroundColor Green
+
+
+
+# Disable Nvidia stuff
+$TaskName = "DisableNvidiaSystray"
+
+# Script block executed at user logon
+$ScriptBlock = {
+    # 1. Terminate running NVIDIA system tray processes
+    Stop-Process -Name "nvtray" -Force -ErrorAction SilentlyContinue
+
+    # 2. Block nvtray.exe from ever starting via Image File Execution Options (IFEO)
+    $ifeoPath = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\nvtray.exe'
+    if (!(Test-Path $ifeoPath)) { 
+        New-Item -Path $ifeoPath -Force | Out-Null 
+    }
+    Set-ItemProperty -Path $ifeoPath -Name 'Debugger' -Value 'cmd.exe /c exit' -Force -ErrorAction SilentlyContinue
+
+    # 3. Disable NVIDIA Tray Icon initialization in HKCU registry
+    $tweakPath = 'HKCU:\Software\NVIDIA Corporation\Global\NVTweak'
+    if (Test-Path $tweakPath) {
+        Set-ItemProperty -Path $tweakPath -Name 'DisplayPropertyIconInit' -Value 0 -Force -ErrorAction SilentlyContinue
+    }
+}
+
+# Encode command to avoid string quoting conflicts in Scheduled Tasks
+$Bytes = [System.Text.Encoding]::Unicode.GetBytes($ScriptBlock.ToString())
+$EncodedCommand = [Convert]::ToBase64String($Bytes)
+
+# Configure Scheduled Task
+$Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -NonInteractive -WindowStyle Hidden -EncodedCommand $EncodedCommand"
+$Trigger = New-ScheduledTaskTrigger -AtLogOn
+$Principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
+
+# Register Task
+Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Principal $Principal -Settings $Settings -Force
+
+
+$TaskName = "DisableNvidiaContainer"
+
+$ScriptBlock = {
+    # 1. Stop and Disable all underlying NVIDIA Container Windows Services
+    Get-Service -Name "*NVDisplay*" -ErrorAction SilentlyContinue | ForEach-Object {
+        Stop-Service -Name $_.Name -Force -ErrorAction SilentlyContinue
+        Set-Service -Name $_.Name -StartupType Disabled -ErrorAction SilentlyContinue
+    }
+
+    # 2. Force kill any active NVDisplay.Container.exe processes and child trees
+    taskkill.exe /F /T /IM NVDisplay.Container.exe >$null 2>&1
+    Get-Process -Name "NVDisplay.Container" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+
+    # 3. Block NVDisplay.Container.exe from ever launching via IFEO
+    $ifeoPath = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\NVDisplay.Container.exe'
+    if (!(Test-Path $ifeoPath)) { 
+        New-Item -Path $ifeoPath -Force | Out-Null 
+    }
+    Set-ItemProperty -Path $ifeoPath -Name 'Debugger' -Value 'cmd.exe /c exit' -Force -ErrorAction SilentlyContinue
+}
+
+# Run execution block immediately in current session
+& $ScriptBlock
+
+# Register logon task to persistently enforce disablement
+$Bytes = [System.Text.Encoding]::Unicode.GetBytes($ScriptBlock.ToString())
+$EncodedCommand = [Convert]::ToBase64String($Bytes)
+
+$Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -NonInteractive -WindowStyle Hidden -EncodedCommand $EncodedCommand"
+$Trigger = New-ScheduledTaskTrigger -AtLogOn
+$Principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
+
+Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Principal $Principal -Settings $Settings -Force
+
+
+
+
 # disable windows gamebar
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR" -Name "AppCaptureEnabled" -Value 0 -Type Dword -Force
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR" -Name "GameDVR_Enabled" -Value 0 -Type Dword -Force
