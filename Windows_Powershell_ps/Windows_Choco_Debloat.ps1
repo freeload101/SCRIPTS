@@ -48,21 +48,27 @@ powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_NONE CONSOLELOCK 0
     'HKU:\.DEFAULT\Control Panel\Desktop' = @{AutoEndTasks='1'}
 } | ForEach-Object { $p=$_.Key; $_.Value.GetEnumerator() | ForEach { Set-ItemProperty -Path $p -Name $_.Key -Value $_.Value -Force -ErrorAction SilentlyContinue } }
 
-# Download yt-dlp for all users
-$tempPath = "$env:TEMP\yt-dlp.exe"
-Invoke-WebRequest -Uri "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe" -OutFile $tempPath -UseBasicParsing
-$accessRule = [System.Security.AccessControl.FileSystemAccessRule]::new("Everyone","FullControl","Allow")
-$adminsSid  = [System.Security.Principal.SecurityIdentifier]::new("S-1-5-32-544")
-Get-CimInstance -ClassName Win32_UserProfile | Where-Object { -not $_.Special -and $_.LocalPath -notlike "*\Administrator" } | ForEach-Object {
-    $targetDir  = Join-Path $_.LocalPath "AppData\Local\Microsoft\WindowsApps"
-    $targetFile = Join-Path $targetDir "yt-dlp.exe"
-    [void](New-Item -ItemType Directory -Path $targetDir -Force -ErrorAction SilentlyContinue)
-    Copy-Item -Path $tempPath -Destination $targetFile -Force
-    foreach ($path in @($targetFile,$targetDir)) {
-        $acl = Get-Acl $path; $acl.SetAccessRule($accessRule); $acl.SetOwner($adminsSid); Set-Acl -Path $path -AclObject $acl
-    }
+# Download yt-dlp for all users# 1. Define the global installation folder
+$installPath = "$env:ProgramFiles\yt-dlp"
+$exePath = Join-Path $installPath "yt-dlp.exe"
+
+# 2. Create the directory
+New-Item -ItemType Directory -Path $installPath -Force | Out-Null
+
+# 3. Download the executable directly to the install folder
+Invoke-WebRequest -Uri "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe" -OutFile $exePath -UseBasicParsing
+
+# 4. Add the folder to the System (All Users) PATH environment variable
+$machinePath = [Environment]::GetEnvironmentVariable("Path", "Machine")
+if ($machinePath -notmatch [regex]::Escape($installPath)) {
+    [Environment]::SetEnvironmentVariable("Path", "$machinePath;$installPath", "Machine")
 }
-Remove-Item $tempPath -Force -ErrorAction SilentlyContinue
+
+# 5. Update the current PowerShell session's PATH so it works immediately 
+$env:Path += ";$installPath"
+
+# 6. Verify it works
+yt-dlp.exe --version
 
 # Set PS execution policy (base64: Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force)
 powershell.exe -Enc UwBlAHQALQBFAHgAZQBjAHUAdABpAG8AbgBQAG8AbABpAGMAeQAgAC0ARQB4AGUAYwB1AHQAaQBvAG4AUABvAGwAaQBjAHkAIABVAG4AcgBlAHMAdAByAGkAYwB0AGUAZAAgAC0ARgBvAHIAYwBlAA==
