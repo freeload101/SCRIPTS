@@ -1,0 +1,2330 @@
+# merged: Thu, Oct 22, 2026 12:55:35 PM (+91 new, ~4 updated)
+# manually-authored rules live above the merge marker
+# --- MERGE MARKER: rules below are auto-updated ---
+rules:
+- id: aws-secret-key
+  name: AWS Secret Access Key
+  severity: high
+  pattern: (?<![A-Za-z0-9/+=])AWS_SECRET_ACCESS_KEY\s*[:=]\s*["']?([A-Za-z0-9/+=]{40})["']?
+  keywords:
+  - AWS_SECRET
+  verify: true
+  snaffle: true
+- id: aws-access-key-id
+  name: AWS Access Key ID
+  severity: high
+  pattern: (?<![A-Za-z0-9])AKIA[0-9A-Z]{16}(?![A-Za-z0-9])
+  keywords:
+  - AKIA
+  verify: true
+  snaffle: true
+- id: generic-api-key
+  name: Generic API Key Assignment
+  severity: medium
+  pattern: api[_-]?key\s*[:=]\s*["']([A-Za-z0-9_\-]{16,})["']
+  flags_i: true
+  keywords:
+  - api_key
+  - apikey
+  snaffle: true
+- id: db-connection-string
+  name: Database Connection String
+  severity: high
+  pattern: (mongodb\+aws|mongodb|postgres|postgresql|mysql|redis|mssql|jdbc):[^"'\s@]+:[^"'\s@]+@[^"'\s]+
+  keywords:
+  - mongodb
+  - postgres
+  - mysql
+  - redis
+  - jdbc
+  snaffle: true
+- id: pem-private-key
+  name: PEM Private Key
+  severity: critical
+  pattern: '-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----'
+  keywords:
+  - PRIVATE KEY
+  snaffle: true
+- id: bearer-token
+  name: Bearer / Authorization Token
+  severity: high
+  pattern: (bearer|authorization)\s*[:=]\s*["']([A-Za-z0-9._\-_]{20,})["']
+  flags_i: true
+  keywords:
+  - bearer
+  - authorization
+  snaffle: true
+- id: jwt-token
+  name: JWT Token
+  severity: high
+  pattern: eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+
+  keywords:
+  - eyJ
+  snaffle: true
+- id: ssn
+  name: US Social Security Number
+  severity: medium
+  pattern: (?!000|666|9\d\d)\d{3}([- ]?)\d{2}\1\d{4}
+  keywords: []
+  snaffle: true
+- id: credit-card
+  name: Credit Card Number
+  severity: medium
+  pattern: \b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})\b
+  keywords: []
+  snaffle: true
+- id: custom-app-password
+  name: Custom Application Password
+  severity: high
+  pattern: password\s*[:=]\s*["']([^\s"']{6,})["']
+  flags_i: true
+  keywords:
+  - password
+  snaffle: true
+- id: adafruitio
+  name: Adafruitio
+  pattern: \b(aio\_[a-zA-Z0-9]{28})\b
+  keywords:
+  - aio_
+  verify: true
+- id: aha
+  name: Aha
+  pattern: \b([A-Za-z0-9](?:[A-Za-z0-9\-]{0,61}[A-Za-z0-9])\.aha\.io)
+  keywords:
+  - aha.io
+  verify: true
+- id: airtableoauth
+  name: Airtableoauth
+  pattern: \b([[:alnum:]]+\.v1\.[a-zA-Z0-9_-]+\.[a-f0-9]+)\b
+  keywords:
+  - airtable
+  verify: true
+- id: alibaba
+  name: Alibaba
+  pattern: \b([a-zA-Z0-9]{30})\b
+  keywords:
+  - LTAI
+  verify: true
+- id: anthropic
+  name: Anthropic
+  pattern: \b(sk-ant-(?:admin01|api03)-[\w\-]{93}AA)\b
+  keywords:
+  - sk-ant-api03
+  - sk-ant-admin01
+  verify: true
+- id: anypoint
+  name: Anypoint
+  pattern: \b([0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12})\b
+  keywords:
+  - anypoint
+  verify: true
+- id: apideck
+  name: Apideck
+  pattern: \b(sk_live_[a-z0-9A-Z-]{93})\b
+  keywords:
+  - apideck
+  verify: true
+- id: apify
+  name: Apify
+  pattern: \b(apify\_api\_[a-zA-Z-0-9]{36})\b
+  keywords:
+  - apify
+  verify: true
+- id: artifactory
+  name: Artifactory
+  pattern: \b(AKCp[a-zA-Z0-9]{69})\b
+  keywords:
+  - artifactory
+  - jfrog.io
+  - AKCp
+  verify: true
+- id: artifactoryreferencetoken
+  name: Artifactoryreferencetoken
+  pattern: \b(cmVmdGtu[A-Za-z0-9]{56})\b
+  keywords:
+  - cmVmdGtu
+  verify: true
+- id: atlassian
+  name: Atlassian
+  pattern: \b(ATCTT3xFfG[A-Za-z0-9+/=_-]+=[A-Za-z0-9]{8})\b
+  keywords:
+  - ATCTT3xFfG
+  verify: true
+- id: bitbucketdatacenter
+  name: Bitbucketdatacenter
+  pattern: \b(BBDC-[A-Za-z0-9+/@_-]{40,50})(?:[^A-Za-z0-9+/@_-]|$)
+  keywords:
+  - BBDC-
+  verify: true
+- id: auth0managementapitoken
+  name: Auth0Managementapitoken
+  pattern: \b(ey[a-zA-Z0-9._-]+)\b
+  keywords:
+  - auth0
+  verify: true
+- id: auth0oauth
+  name: Auth0Oauth
+  pattern: \b([a-zA-Z0-9_-]{64,})\b
+  keywords:
+  - auth0
+  verify: true
+- id: common
+  name: Common
+  pattern: (?:[^A-Za-z0-9+/]|\A)([A-Za-z0-9+/]{40})(?:[^A-Za-z0-9+/]|\z)
+  keywords: []
+  verify: true
+- id: utils
+  name: Utils
+  pattern: '[a-f0-9]{40}'
+  keywords: []
+  verify: true
+- id: accesskey
+  name: Accesskey
+  pattern: \b((?:AKIA|ABIA|ACCA)[A-Z0-9]{16})\b
+  keywords:
+  - AKIA
+  - ABIA
+  - ACCA
+  verify: true
+- id: appsync
+  name: Appsync
+  pattern: \b(da2-[a-z0-9]{26})\b
+  keywords:
+  - da2-
+  verify: true
+- id: sessionkey
+  name: Sessionkey
+  pattern: \b((?:ASIA)[A-Z0-9]{16})\b
+  keywords:
+  - ASIA
+  verify: true
+- id: repositorykey
+  name: Repositorykey
+  pattern: \d+\.\d+\.\d+
+  keywords:
+  - azure
+  - .scm.azure-api.net
+  verify: true
+- id: azureapimanagementsubscriptionkey
+  name: Azureapimanagementsubscriptionkey
+  pattern: https://([a-z0-9][a-z0-9-]{0,48}[a-z0-9])\.azure-api\.net
+  keywords:
+  - .azure-api.net
+  verify: true
+- id: azureappconfigconnectionstring
+  name: Azureappconfigconnectionstring
+  pattern: Endpoint=(https:\/\/[a-zA-Z0-9-]+\.azconfig\.io);Id=([a-zA-Z0-9+\/=]+);Secret=([a-zA-Z0-9+\/=]+)
+  keywords:
+  - .azconfig.io
+  verify: true
+- id: azurecontainerregistry
+  name: Azurecontainerregistry
+  pattern: ([a-z0-9][a-z0-9-]{1,100}[a-z0-9])\.azurecr\.io
+  keywords:
+  - .azurecr.io
+  verify: true
+- id: azuredirectmanagementkey
+  name: Azuredirectmanagementkey
+  pattern: https://([a-z0-9][a-z0-9-]{0,48}[a-z0-9])\.management\.azure-api\.net
+  keywords:
+  - .management.azure-api.net
+  verify: true
+- id: azurefunctionkey
+  name: Azurefunctionkey
+  pattern: \bhttps:\/\/([a-zA-Z0-9-]{2,30})\.azurewebsites\.net\/api\/([a-zA-Z0-9-]{2,30})\b
+  keywords:
+  - azure
+  verify: true
+- id: azuresastoken
+  name: Azuresastoken
+  pattern: https://([a-zA-Z0-9][a-z0-9_-]{1,22}[a-zA-Z0-9])\.blob\.core\.windows\.net/[a-z0-9]([a-z0-9-]{1,61}[a-z0-9])?(?:/[a-zA-Z0-9._-]+)*
+  keywords:
+  - azure
+  - .blob.core.windows.net
+  verify: true
+- id: azurebatch
+  name: Azurebatch
+  pattern: https://(.{1,50})\.(.{1,50})\.batch\.azure\.com
+  keywords:
+  - .batch.azure.com
+  verify: true
+- id: azurecosmosdb
+  name: AzureCosmosdb
+  pattern: ([A-Za-z0-9]{86}==)
+  keywords:
+  - .documents.azure.com
+  - .table.cosmos.azure.com
+  verify: true
+- id: refreshtoken
+  name: Refreshtoken
+  pattern: \b[01]\.A[\w-]{50,}(?:\.\d)?\.Ag[\w-]{250,}(?:\.A[\w-]{200,})?
+  keywords:
+  - 0.A
+  - 1.A
+  verify: true
+- id: spv1
+  name: Spv1
+  pattern: (?i)(?:secret|password| -p[ =]).{0,80}?([\w~@[\]:.?*/+=-]{31,34}
+  keywords:
+  - azure
+  - az
+  - entra
+  - msal
+  - login.microsoftonline.com
+  - .onmicrosoft.com
+  verify: true
+- id: spv2
+  name: Spv2
+  pattern: (?:[^a-zA-Z0-9_~.-]|\A)([a-zA-Z0-9_~.-]{3}\dQ~[a-zA-Z0-9_~.-]{31,34})(?:[^a-zA-Z0-9_~.-]|\z)
+  keywords:
+  - q~
+  verify: true
+- id: azureopenai
+  name: AzureOpenai
+  pattern: (?i)([a-z0-9-]+\.openai\.azure\.com)
+  keywords:
+  - .openai.azure.com
+  verify: true
+- id: storage
+  name: Storage
+  pattern: (?i:Account[_.-]?Name|Storage[_.-]?(?:Account|Name))(?:.|\s){0,20}?\b([a-z0-9]{3,24})\b|([a-z0-9]{3,24})(?i:\.blob\.core\.windows\.net)
+  keywords:
+  - DefaultEndpointsProtocol=http
+  - EndpointSuffix
+  - core.windows.net
+  - AccountName
+  - Account_Name
+  - Account.Name
+  - Account-Name
+  - StorageAccount
+  - Storage_Account
+  - Storage.Account
+  - Storage-Account
+  - AccountKey
+  - Account_Key
+  - Account.Key
+  - Account-Key
+  verify: true
+- id: storageintegrationtest
+  name: StorageIntegrationTest
+  pattern: AccountName=(?P<account_name>[^;]+);AccountKey
+  keywords: []
+  verify: true
+- id: bannerbear
+  name: Bannerbear
+  pattern: \b(bb_(?:pr|ma)_[a-f0-9]{30})\b
+  keywords:
+  - bb_pr_
+  - bb_ma_
+  verify: true
+- id: bitbucketapppassword
+  name: Bitbucketapppassword
+  pattern: (?:^|[^A-Za-z0-9-_])(?P<username>[A-Za-z0-9-_]{1,30}):(?P<password>ATBB[A-Za-z0-9_=.-]+)\b
+  keywords:
+  - bitbucket
+  - ATBB
+  verify: true
+- id: braintrust
+  name: Braintrust
+  pattern: \b(sk-[A-Za-z0-9]{48})\b
+  keywords:
+  - braintrust
+  verify: true
+- id: buildkite
+  name: Buildkite
+  pattern: \b(bkua_[a-z0-9]{40})\b
+  keywords:
+  - bkua_
+  verify: true
+- id: caflou
+  name: Caflou
+  pattern: \b(eyJhbGciOiJIUzI1NiJ9[a-zA-Z0-9._-]{135})\b
+  keywords:
+  - caflou
+  verify: true
+- id: circleci
+  name: Circleci
+  pattern: (CCIPAT_[a-zA-Z0-9]{22}_[a-fA-F0-9]{40})
+  keywords:
+  - CCIPAT_
+  verify: true
+- id: clickhelp
+  name: Clickhelp
+  pattern: \b([0-9A-Za-z-]{3,20}\.(?:try\.)?clickhelp\.co)\b
+  keywords:
+  - clickhelp.co
+  verify: true
+- id: close
+  name: Close
+  pattern: \b(api_[a-z0-9A-Z.]{45})\b
+  keywords:
+  - close
+  verify: true
+- id: cloudflareapitoken
+  name: Cloudflareapitoken
+  pattern: \b(cf[ua]t_[a-zA-Z0-9]{40}[a-f0-9]{8})\b
+  keywords:
+  - cfut_
+  - cfat_
+  verify: true
+- id: cloudflarecakey
+  name: Cloudflarecakey
+  pattern: \b(v1\.0-[A-Za-z0-9-]{171})\b
+  keywords:
+  - cloudflare
+  verify: true
+- id: cloudflareglobalapikey
+  name: Cloudflareglobalapikey
+  pattern: \b(cfk_[a-zA-Z0-9]{40}[a-f0-9]{8})\b
+  keywords:
+  - cfk_
+  verify: true
+- id: cloudinary
+  name: Cloudinary
+  pattern: (?i:cloudinary)(?:.|[\n\r]){0,47}?
+  keywords:
+  - cloudinary
+  verify: true
+- id: coinbase
+  name: Coinbase
+  pattern: \b(organizations\\*/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}\\*/apiKeys\\*/\w{8}-\w{4}-\w{4}-\w{4}-\w{12})\b
+  keywords:
+  - begin ec
+  verify: true
+- id: contentfulpersonalaccesstoken
+  name: Contentfulpersonalaccesstoken
+  pattern: \b(CFPAT-[a-zA-Z0-9_\-]{43})\b
+  keywords:
+  - CFPAT-
+  verify: true
+- id: copper
+  name: Copper
+  pattern: \b([a-z0-9]{4,25}@[a-zA-Z0-9]{2,12}.[a-zA-Z0-9]{2,6})\b
+  keywords:
+  - copper
+  verify: true
+- id: couchbase
+  name: Couchbase
+  pattern: \b(cb\.[a-z0-9]+\.cloud\.couchbase\.com)\b
+  keywords:
+  - couchbase://
+  - couchbases://
+  verify: true
+- id: databrickstoken
+  name: Databrickstoken
+  pattern: \b([a-z0-9-]+(?:\.[a-z0-9-]+)*\.(cloud\.databricks\.com|gcp\.databricks\.com|azuredatabricks\.net))\b
+  keywords:
+  - databricks
+  - dapi
+  verify: true
+- id: datadogapikey
+  name: Datadogapikey
+  pattern: \b(api(?:\.[a-z0-9-]+)?\.(?:datadoghq|ddog-gov)\.(com|eu))\b
+  keywords:
+  - datadog
+  - ddog-gov
+  verify: true
+- id: datadogtoken
+  name: Datadogtoken
+  pattern: \b(api(?:\.[a-z0-9-]+)?\.(?:datadoghq|ddog-gov)\.(com|eu))\b
+  keywords:
+  - datadog
+  - ddog-gov
+  verify: true
+- id: denodeploy
+  name: Denodeploy
+  pattern: \b(dd[pw]_[a-zA-Z0-9]{36})\b
+  keywords:
+  - ddp_
+  - ddw_
+  verify: true
+- id: deputy
+  name: Deputy
+  pattern: \b([0-9a-z]{1,}\.as\.deputy\.com)\b
+  keywords:
+  - deputy
+  verify: true
+- id: dfuse
+  name: Dfuse
+  pattern: \b(web\_[0-9a-z]{32})\b
+  keywords:
+  - dfuse
+  verify: true
+- id: digitaloceanv2
+  name: Digitaloceanv2
+  pattern: \b((?:dop|doo|dor)_v1_[a-f0-9]{64})\b
+  keywords:
+  - dop_v1_
+  - doo_v1_
+  - dor_v1_
+  verify: true
+- id: discordwebhook
+  name: Discordwebhook
+  pattern: (https:\/\/discord\.com\/api\/webhooks\/[0-9]{18,19}\/[0-9a-zA-Z-]{68})
+  keywords:
+  - https://discord.com/api/webhooks/
+  verify: true
+- id: dockerauthconfig
+  name: DockerAuthConfig
+  pattern: '{(?:\s|\\+[nrt])*\\*"auths\\*"(?:\s|\\+t)*:(?:\s|\\+t)*{(?:\s|\\+[nrt])*\\*"(?i:https?:\/\/)?[a-z0-9\-.:\/]+\\*"(?:\s|\\+t)*:(?:\s|\\+t)*{(?:(?:\s|\\+[nrt])*\\*"(?i:auth|email|username|password)\\*"\s*:\s*\\*".*?\\*"\s*,?)+?(?:\s|\\+[nrt])*}(?:\s|\\+[nrt])*}(?:\s|\\+[nrt])*}'
+  keywords:
+  - auths
+  verify: true
+- id: dockerhub
+  name: Dockerhub
+  pattern: (?im)(?:user|usr|-u|id)\S{0,40}?[:=\s]{1,3}[ '"=]?([a-zA-Z0-9]{4,40})\b
+  keywords:
+  - docker
+  - dckr_pat_
+  - dckr_oat_
+  verify: true
+- id: documo
+  name: Documo
+  pattern: \b(ey[a-zA-Z0-9]{34}.ey[a-zA-Z0-9]{154}.[a-zA-Z0-9_-]{43})\b
+  keywords:
+  - documo
+  verify: true
+- id: doppler
+  name: Doppler
+  pattern: \b(dp\.pt\.[a-zA-Z0-9]{43})\b
+  keywords:
+  - dp.ct.
+  - dp.pt.
+  - dp.st
+  - dp.sa.
+  - dp.scim.
+  - dp.audit.
+  verify: true
+- id: dotdigital
+  name: Dotdigital
+  pattern: \b(apiuser-[a-z0-9]{12}@apiconnector.com)\b
+  keywords:
+  - '@apiconnector.com'
+  verify: true
+- id: duffeltoken
+  name: Duffeltoken
+  pattern: \b(duffel_(test|live)_[A-Za-z0-9_-]{43})(?:$|[^A-Za-z0-9_-])
+  keywords:
+  - duffel_test_
+  - duffel_live_
+  verify: true
+- id: duo
+  name: Duo
+  pattern: \b([a-z0-9-]{6,}\.duosecurity\.com)\b
+  keywords:
+  - duosecurity
+  verify: true
+- id: elevenlabs
+  name: Elevenlabs
+  pattern: (?i)(?:elevenlabs|xi-api-key|el|token|key)[^\.].{0,40}[ =:'"]+([a-f0-9]{32})\b
+  keywords:
+  - elevenlabs
+  - xi-api-key
+  - xi_api_key
+  verify: true
+- id: endorlabs
+  name: Endorlabs
+  pattern: \b(endr\+[a-zA-Z0-9-]{16})\b
+  keywords:
+  - endr+
+  verify: true
+- id: fibery
+  name: Fibery
+  pattern: (?:https?:\/\/)?([a-zA-Z0-9-]{1,63})\.fibery\.io(?:\/.*)?
+  keywords:
+  - .fibery.io
+  verify: true
+- id: figmapersonalaccesstoken
+  name: Figmapersonalaccesstoken
+  pattern: (figp_[a-zA-Z0-9_=-]{40,54})(?:[^a-zA-Z0-9_=-]|\z)
+  keywords:
+  - figp_
+  verify: true
+- id: finage
+  name: Finage
+  pattern: \b(API_KEY[0-9A-Z]{32})\b
+  keywords:
+  - finage
+  verify: true
+- id: fleetbase
+  name: Fleetbase
+  pattern: \b(flb_live_[0-9a-zA-Z]{20})\b
+  keywords:
+  - fleetbase
+  verify: true
+- id: flexport
+  name: Flexport
+  pattern: \b(shltm_[0-9a-zA-Z-_]{40})
+  keywords:
+  - shltm_
+  verify: true
+- id: flightlabs
+  name: Flightlabs
+  pattern: \b(eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9\.ey[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]{86})\b
+  keywords:
+  - eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9
+  verify: true
+- id: flutterwave
+  name: Flutterwave
+  pattern: \b(FLWSECK-[0-9a-z]{32}-X)\b
+  keywords:
+  - FLWSECK-
+  verify: true
+- id: flyio
+  name: Flyio
+  pattern: \b(FlyV1 fm\d+_[A-Za-z0-9+\/=,_-]{500,700})\b
+  keywords:
+  - FlyV1
+  verify: true
+- id: frameio
+  name: Frameio
+  pattern: \b(fio-u-[0-9a-zA-Z_-]{64})\b
+  keywords:
+  - fio-u-
+  verify: true
+- id: freshdesk
+  name: Freshdesk
+  pattern: \b([0-9a-z-]{1,}\.freshdesk\.com)\b
+  keywords:
+  - freshdesk
+  verify: true
+- id: ftp
+  name: Ftp
+  pattern: \bftp://[\S]{3,50}:([\S]{3,50})@[-.%\w\/:]+\b
+  keywords:
+  - ftp://
+  verify: true
+- id: fullstory
+  name: Fullstory
+  pattern: \b(na1\.[A-Za-z0-9\+\/]{100})\b
+  keywords:
+  - fullstory
+  verify: true
+- id: gcp
+  name: Gcp
+  pattern: \{[^{]+auth_provider_x509_cert_url[^}]+\}
+  keywords:
+  - provider_x509
+  verify: true
+- id: gcpapplicationdefaultcredentials
+  name: Gcpapplicationdefaultcredentials
+  pattern: \{[^{]+client_secret[^}]+\}
+  keywords:
+  - .apps.googleusercontent.com
+  verify: true
+- id: gemini
+  name: Gemini
+  pattern: \b((?:master-|account-)[0-9A-Za-z]{20})\b
+  keywords:
+  - master-
+  - account-
+  verify: true
+- id: github
+  name: Github
+  pattern: \b((?:ghp|gho|ghu|ghs|ghr|github_pat)_[a-zA-Z0-9_]{36,255})\b
+  keywords:
+  - ghp_
+  - gho_
+  - ghu_
+  - ghs_
+  - ghr_
+  - github_pat_
+  verify: true
+- id: githubtest
+  name: GithubTest
+  pattern: \(\?:([a-zA-Z0-9_|]+)\)_
+  keywords: []
+  verify: true
+- id: gitlab
+  name: Gitlab
+  pattern: \b(glpat-[a-zA-Z0-9\-=_]{20,22})\b
+  keywords:
+  - glpat-
+  verify: true
+- id: gitlaboauth2
+  name: Gitlaboauth2
+  pattern: \b(gloas-[0-9a-f]{64})\b
+  keywords:
+  - gloas-
+  verify: true
+- id: gocardless
+  name: Gocardless
+  pattern: \b(live_[0-9A-Za-z\_\-]{40}[ "'\r\n]{1})
+  keywords:
+  - gocardless
+  verify: true
+- id: googlegemini
+  name: Googlegemini
+  pattern: \b(AIzaSy[A-Za-z0-9_-]{33})
+  keywords:
+  - aizasy
+  verify: true
+- id: googleoauth2accesstoken
+  name: Googleoauth2AccessToken
+  pattern: \b(ya29\.(?i:[a-z0-9_-]{10,}))(?:[^a-z0-9_-]|\z)
+  keywords:
+  - ya29.
+  verify: true
+- id: grafana
+  name: Grafana
+  pattern: \b(glc_eyJ[A-Za-z0-9+\/=]{60,160})
+  keywords:
+  - glc_eyJ
+  verify: true
+- id: grafanaserviceaccount
+  name: Grafanaserviceaccount
+  pattern: \b(glsa_[0-9a-zA-Z_]{41})\b
+  keywords:
+  - glsa_
+  verify: true
+- id: graphcms
+  name: Graphcms
+  pattern: \b(ey[a-zA-Z0-9]{73}.ey[a-zA-Z0-9]{365}.[a-zA-Z0-9_-]{683})\b
+  keywords:
+  - graphcms
+  verify: true
+- id: groq
+  name: Groq
+  pattern: \b(gsk_[a-zA-Z0-9]{52})\b
+  keywords:
+  - gsk_
+  verify: true
+- id: hashicorpvaultbatchtoken
+  name: Hashicorpvaultbatchtoken
+  pattern: \b(hvb\.[A-Za-z0-9_.-]{50,300})(?:[^A-Za-z0-9_.-]|\z)
+  keywords:
+  - hvb.
+  verify: true
+- id: hashicorpvaulttoken
+  name: Hashicorpvaulttoken
+  pattern: \b(hvs\.[A-Za-z0-9_-]{90,120}|s\.[A-Za-z0-9_-]{18,40})(?:$|[^A-Za-z0-9_-])
+  keywords: []
+  verify: true
+- id: hashicorpvaultauth
+  name: Hashicorpvaultauth
+  pattern: (https?:\/\/[^\s\/]*\.hashicorp\.cloud(?::\d+)?)(?:\/[^\s]*)?
+  keywords:
+  - hashicorp
+  verify: true
+- id: hasura
+  name: Hasura
+  pattern: \b([a-zA-Z0-9-]+\.hasura\.app)\b
+  keywords:
+  - hasura
+  verify: true
+- id: heroku
+  name: Heroku
+  pattern: \b(HRKU-AA[0-9a-zA-Z_-]{58})\b
+  keywords:
+  - HRKU-AA
+  verify: true
+- id: apikey
+  name: Apikey
+  pattern: \b(pat-(?:eu|na)1-[A-Za-z0-9]{8}\-[A-Za-z0-9]{4}\-[A-Za-z0-9]{4}\-[A-Za-z0-9]{4}\-[A-Za-z0-9]{12})\b
+  keywords:
+  - pat-na1-
+  - pat-eu1-
+  verify: true
+- id: huggingface
+  name: Huggingface
+  pattern: \b(?:hf_|api_org_)[a-zA-Z0-9]{34}\b
+  keywords:
+  - hf_
+  - api_org_
+  - hf
+  - huggingface
+  - key
+  - https://huggingface.co/api/whoami-v2
+  - Authorization
+  - 'Bearer '
+  - ' || whoamiRes.Auth.AccessToken.Role != '
+  - ":\n\t\t\t// hf_xxxx token\n\t\t\tt := whoamiRes.Auth.AccessToken\n\t\t\ttokenInfo\
+    \ = fmt.Sprintf("
+  - ", t.DisplayName, t.Role)\n\n\t\tcase whoamiRes.Auth.Type != "
+  - ":\n\t\t\t// api_org_xxxx token\n\t\t\ttokenInfo = whoamiRes.Auth.Type\n\n\t\t\
+    default:\n\t\t\ttokenInfo = "
+  - "\n\t\t}\n\n\t\textraData := map[string]string{\n\t\t\t"
+  - ": whoamiRes.Name,\n\t\t\t"
+  - ":    whoamiRes.Email,\n\t\t\t"
+  - ":    tokenInfo,\n\t\t}\n\n\t\t// Condense a list of organizations + roles.\n\t\
+    \torgs := make([]string, 0, len(whoamiRes.Organizations))\n\t\tfor _, org := range\
+    \ whoamiRes.Organizations {\n\t\t\torgs = append(orgs, fmt.Sprintf("
+  - ", org.Name, org.Role))\n\t\t}\n\t\tif len(orgs) > 0 {\n\t\t\textraData["
+  - '] = strings.Join(orgs, '
+  - ")\n\t\t}\n\t\treturn true, extraData, nil\n\t} else if res.StatusCode == 401\
+    \ {\n\t\t// The secret is determinately not verified (nothing to do)\n\t\treturn\
+    \ false, nil, nil\n\t} else {\n\t\terr = fmt.Errorf("
+  verify: true
+- id: humioapitoken
+  name: Humioapitoken
+  pattern: \b([A-Za-z0-9]{24}(?:[A-Za-z0-9]{8})?~[A-Za-z0-9]{44})\b
+  keywords: []
+  verify: true
+- id: intra42
+  name: Intra42
+  pattern: \b(s-s4t2(?:ud|af)-[a-f0-9]{64})\b
+  keywords:
+  - s-s4t2ud-
+  - s-s4t2af-
+  verify: true
+- id: invoiceocean
+  name: Invoiceocean
+  pattern: \b([0-9a-z]{1,}\.invoiceocean\.com)\b
+  keywords:
+  - invoiceocean
+  verify: true
+- id: jdbc
+  name: Jdbc
+  pattern: (?i)jdbc:[\w]{3,10}:[^\s"'<>,{}[\]]{10,511}[^\s"'<>,{}[\]()&]
+  keywords:
+  - jdbc
+  verify: true
+- id: jiratoken
+  name: Jiratoken
+  pattern: \b(ATATT[A-Za-z0-9+/=_-]+=[A-Za-z0-9]{8})\b
+  keywords:
+  - atlassian
+  - confluence
+  - jira
+  verify: true
+- id: jwt
+  name: Jwt
+  pattern: \b((?:eyJ|ewogIC|ewoid)[A-Za-z0-9_-]{12,}={0,2}\.(?:eyJ|ewo)[A-Za-z0-9_-]{12,}={0,2}\.[A-Za-z0-9_-]{12,})\b
+  keywords:
+  - ewogIC
+  - ewoid
+  - eyJ
+  verify: true
+- id: kanban
+  name: Kanban
+  pattern: \b([0-9a-z]{1,}\.kanbantool\.com)\b
+  keywords:
+  - kanban
+  verify: true
+- id: klaviyo
+  name: Klaviyo
+  pattern: \b(pk_([0-9a-f]{34}|[A-Za-z0-9]{6}_[0-9a-f]{34}))\b
+  keywords:
+  - pk_
+  verify: true
+- id: kong
+  name: Kong
+  pattern: \b((?:kpat_|spat_)[a-zA-Z0-9]{49})\b
+  keywords:
+  - kpat_
+  - spat_
+  verify: true
+- id: lambdacloud
+  name: Lambdacloud
+  pattern: \b(secret_[a-z0-9][a-z0-9-]{0,63}_[0-9a-f]{12}4[0-9a-f]{3}[89ab][0-9a-f]{15}\.[A-Za-z0-9]{32})(?:[^A-Za-z0-9]|$)
+  keywords:
+  - secret_
+  verify: true
+- id: langsmith
+  name: Langsmith
+  pattern: \b(lsv2_(?:pt|sk)_[a-f0-9]{32}_[a-f0-9]{10})\b
+  keywords:
+  - lsv2_pt_
+  - lsv2_sk_
+  verify: true
+- id: launchdarkly
+  name: Launchdarkly
+  pattern: \b((?:api|sdk)-[a-z0-9]{8}-[a-z0-9]{4}-4[a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12})\b
+  keywords:
+  - api-
+  - sdk-
+  verify: true
+- id: ldap
+  name: Ldap
+  pattern: \b(?i)ldaps?://[\S]+\b
+  keywords:
+  - ldaps://
+  - ldap://
+  verify: true
+- id: linearapi
+  name: Linearapi
+  pattern: \b(lin_api_[0-9A-Za-z]{40})\b
+  keywords:
+  - lin_api_
+  verify: true
+- id: liveagent
+  name: Liveagent
+  pattern: \b(https?://[A-Za-z0-9-]+\.ladesk\.com)\b
+  keywords:
+  - liveagent
+  - ladesk
+  verify: true
+- id: lob
+  name: Lob
+  pattern: \b((live|test)_[a-f0-9]{35})\b
+  keywords:
+  - live_
+  - test_
+  verify: true
+- id: locationiq
+  name: Locationiq
+  pattern: \b(pk\.[a-zA-Z-0-9]{32})\b
+  keywords:
+  - locationiq
+  verify: true
+- id: loggly
+  name: Loggly
+  pattern: \b([a-zA-Z0-9-]+\.loggly\.com)\b
+  keywords:
+  - loggly
+  verify: true
+- id: mailchimp
+  name: Mailchimp
+  pattern: '[0-9a-f]{32}-us[0-9]{1,2}'
+  keywords:
+  - -us
+  verify: true
+- id: mailgun
+  name: Mailgun
+  pattern: \b(key-[a-z0-9]{32})\b
+  keywords:
+  - mailgun
+  - key-
+  verify: true
+- id: mapbox
+  name: Mapbox
+  pattern: ([a-zA-Z-0-9]{4,32})
+  keywords:
+  - mapbox
+  verify: true
+- id: maxmindlicense
+  name: Maxmindlicense
+  pattern: \b([a-zA-Z0-9]{6}_[a-zA-Z0-9]{29}_mmk)\b
+  keywords:
+  - _mmk
+  verify: true
+- id: microsoftteamswebhook
+  name: Microsoftteamswebhook
+  pattern: (https:\/\/[a-zA-Z-0-9]+\.webhook\.office\.com\/webhookb2\/[a-zA-Z-0-9]{8}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{12}\@[a-zA-Z-0-9]{8}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{12}\/IncomingWebhook\/[a-zA-Z-0-9]{32}\/[a-zA-Z-0-9]{8}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{12})
+  keywords:
+  - webhook.office.com
+  verify: true
+- id: mite
+  name: Mite
+  pattern: \b([0-9a-z-]{1,}.mite.yo.lk)\b
+  keywords:
+  - mite
+  verify: true
+- id: mongodb
+  name: Mongodb
+  pattern: \b(mongodb(?:\+srv)?://(?P<username>\S{3,50}):(?P<password>\S{3,88})@(?P<host>[-.%\w]+(?::\d{1,5})?(?:,[-.%\w]+(?::\d{1,5})?)*)(?:/(?P<authdb>[\w-]+)?(?P<options>\?\w+=[\w@/.$-]+(?:&(?:amp;)?\w+=[\w@/.$-]+)*)?)?)(?:\b|$)
+  keywords:
+  - mongodb
+  verify: true
+- id: newrelicbrowserkey
+  name: Newrelicbrowserkey
+  pattern: \b(NRBR-[0-9a-f]{19})\b
+  keywords:
+  - nrbr-
+  verify: true
+- id: newrelicinsightsinsertkey
+  name: Newrelicinsightsinsertkey
+  pattern: \b(NRII-[a-zA-Z0-9-_]{25})
+  keywords:
+  - nrii-
+  verify: true
+- id: newrelicinsightsquerykey
+  name: Newrelicinsightsquerykey
+  pattern: \b(NRIQ-[a-zA-Z0-9-_]{25})
+  keywords:
+  - nriq-
+  verify: true
+- id: newreliclicensekey
+  name: Newreliclicensekey
+  pattern: \b(([0-9a-f]{32}|eu01xx[0-9a-f]{26})FFFFNRAL)\b
+  keywords:
+  - ffffnral
+  verify: true
+- id: newrelicmobileapptoken
+  name: Newrelicmobileapptoken
+  pattern: \b((AA[0-9a-f]{40}|eu01xx[0-9a-f]{36})-NRMA)\b
+  keywords:
+  - -nrma
+  verify: true
+- id: newrelicuserkey
+  name: Newrelicuserkey
+  pattern: \b(NRAK-[A-Z0-9]{27})\b
+  keywords:
+  - nrak-
+  verify: true
+- id: ngc
+  name: Ngc
+  pattern: \b([[:alnum:]]{84})\b
+  keywords:
+  - ngc
+  verify: true
+- id: nightfall
+  name: Nightfall
+  pattern: \b(NF\-[a-zA-Z0-9]{32})\b
+  keywords:
+  - nightfall
+  verify: true
+- id: notion
+  name: Notion
+  pattern: \b(secret_[A-Za-z0-9]{43})\b
+  keywords:
+  - notion
+  verify: true
+- id: npmtokenv2
+  name: Npmtokenv2
+  pattern: (npm_[0-9a-zA-Z]{36})
+  keywords:
+  - npm_
+  verify: true
+- id: nvapi
+  name: Nvapi
+  pattern: \b(nvapi-[a-zA-Z0-9_-]{64})\b
+  keywords:
+  - nvapi-
+  verify: true
+- id: octopusdeploy
+  name: Octopusdeploy
+  pattern: \b(API-[A-Z0-9]{29,34})\b
+  keywords:
+  - octopus
+  verify: true
+- id: okta
+  name: Okta
+  pattern: \b00[a-zA-Z0-9_-]{40}\b
+  keywords:
+  - .okta
+  verify: true
+- id: onelogin
+  name: Onelogin
+  pattern: (?i)id[a-zA-Z0-9_' "=]{0,20}([a-z0-9]{64})
+  keywords:
+  - onelogin
+  verify: true
+- id: openai
+  name: Openai
+  pattern: \b(sk-(?:(?:proj|svcacct|service)-[A-Za-z0-9_-]+|[a-zA-Z0-9]+)T3BlbkFJ[A-Za-z0-9_-]+)\b
+  keywords:
+  - T3BlbkFJ
+  verify: true
+- id: openaiadmin
+  name: Openaiadmin
+  pattern: \b(sk-admin-[A-Za-z0-9_-]{58}T3BlbkFJ[A-Za-z0-9_-]{58})\b
+  keywords:
+  - sk-admin-
+  verify: true
+- id: openrouter
+  name: Openrouter
+  pattern: \b(sk-or-v1-[0-9a-f]{64})\b
+  keywords:
+  - sk-or-v1-
+  verify: true
+- id: openvpn
+  name: Openvpn
+  pattern: \b([a-zA-Z0-9_-]{64,})\b
+  keywords:
+  - openvpn
+  verify: true
+- id: pagarme
+  name: Pagarme
+  pattern: \b(ak_live_[a-zA-Z0-9]{30})\b
+  keywords:
+  - ak_live_
+  verify: true
+- id: paypaloauth
+  name: Paypaloauth
+  pattern: \b([A-Za-z0-9_\.]{7}-[A-Za-z0-9_\.]{72}|[A-Za-z0-9_\.]{5}-[A-Za-z0-9_\.]{38})\b
+  keywords:
+  - paypal
+  verify: true
+- id: paystack
+  name: Paystack
+  pattern: \b(sk\_[a-z]{1,}\_[A-Za-z0-9]{40})\b
+  keywords:
+  - paystack
+  verify: true
+- id: pganalyzereadkey
+  name: Pganalyzereadkey
+  pattern: \b(pgar_[A-Za-z0-9]{27})\b
+  keywords:
+  - pgar_
+  verify: true
+- id: pinecone
+  name: Pinecone
+  pattern: \b(pcsk_([A-Za-z0-9]{5,6})_[A-Za-z0-9]{63})\b
+  keywords:
+  - pcsk_
+  verify: true
+- id: planetscale
+  name: Planetscale
+  pattern: \b[a-z0-9]{12}\b
+  keywords:
+  - pscale_tkn_
+  verify: true
+- id: planetscaledb
+  name: Planetscaledb
+  pattern: \b[a-z0-9]{20}\b
+  keywords:
+  - pscale_pw_
+  verify: true
+- id: postgres
+  name: Postgres
+  pattern: \b(?i)(postgres(?:ql)?)://\S+\b
+  keywords:
+  - postgres
+  verify: true
+- id: posthog
+  name: Posthog
+  pattern: \b(phx_[a-zA-Z0-9_]{43,48})\b
+  keywords:
+  - phx_
+  verify: true
+- id: postman
+  name: Postman
+  pattern: \b(PMAK-[a-zA-Z-0-9]{59})\b
+  keywords:
+  - PMAK-
+  verify: true
+- id: prefect
+  name: Prefect
+  pattern: \b(pnu_[a-zA-Z0-9]{36})\b
+  keywords:
+  - pnu_
+  verify: true
+- id: privatekey
+  name: Privatekey
+  pattern: (?i)-----\s*?BEGIN[ A-Z0-9_-]*?PRIVATE KEY\s*?-----[\s\S]*?----\s*?END[
+    A-Z0-9_-]*? PRIVATE KEY\s*?-----
+  keywords:
+  - private key
+  verify: true
+- id: pubnubpublishkey
+  name: Pubnubpublishkey
+  pattern: \b(pub-c-[0-9a-z]{8}-[0-9a-z]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})\b
+  keywords:
+  - sub-c-
+  verify: true
+- id: pubnubsubscriptionkey
+  name: Pubnubsubscriptionkey
+  pattern: \b(sub-c-[0-9a-z]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})\b
+  keywords:
+  - sub-c-
+  verify: true
+- id: pulumi
+  name: Pulumi
+  pattern: \b(pul-[a-z0-9]{40})\b
+  keywords:
+  - pul-
+  verify: true
+- id: rabbitmq
+  name: Rabbitmq
+  pattern: \b(?:amqps?):\/\/[\S]{3,50}:([\S]{3,50})@[-.%\w\/:]+\b
+  keywords:
+  - amqp
+  verify: true
+- id: ramp
+  name: Ramp
+  pattern: \b(ramp_id_[[:alnum:]]{40})\b
+  keywords:
+  - ramp_
+  verify: true
+- id: razorpay
+  name: Razorpay
+  pattern: (?i)\brzp_live_[A-Za-z0-9]{14}\b
+  keywords:
+  - rzp_live_
+  verify: true
+- id: readme
+  name: Readme
+  pattern: (rdme_[a-z0-9]{70})
+  keywords:
+  - rdme_
+  verify: true
+- id: reallysimplesystems
+  name: Reallysimplesystems
+  pattern: \b(ey[a-zA-Z0-9-._]{153}.ey[a-zA-Z0-9-._]{916,1000})\b
+  keywords:
+  - reallysimplesystems
+  verify: true
+- id: rechargepayments
+  name: Rechargepayments
+  pattern: \bsk(_test)?_(1|2|3|5|10)x[123]_[0-9a-fA-F]{64}\b
+  keywords:
+  - sk_1x1
+  - sk_1x3
+  - sk_2x1
+  - sk_2x2
+  - sk_3x3
+  - sk_5x3
+  - sk_10x3
+  - sk_test_1x1
+  - sk_test_1x3
+  - sk_test_2x1
+  - sk_test_2x2
+  - sk_test_3x3
+  - sk_test_5x3
+  - sk_test_10x3
+  - X-Recharge-Access-Token
+  verify: true
+- id: redis
+  name: Redis
+  pattern: \bredi[s]{1,2}://[\S]{3,50}:([\S]{3,50})@[-.%\w\/:]+\b
+  keywords:
+  - redis
+  verify: true
+- id: replicate
+  name: Replicate
+  pattern: \b(r8_[0-9A-Za-z-_]{37})\b
+  keywords:
+  - replicate
+  - r8_
+  verify: true
+- id: resend
+  name: Resend
+  pattern: \b(re_[1-9A-HJ-NP-Za-km-z]{8}_[1-9A-HJ-NP-Za-km-z]{24})\b
+  keywords:
+  - re_
+  verify: true
+- id: robinhoodcrypto
+  name: Robinhoodcrypto
+  pattern: \b(rh-api-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\b
+  keywords:
+  - rh-api-
+  verify: true
+- id: rootly
+  name: Rootly
+  pattern: \b(rootly_[a-f0-9]{64})\b
+  keywords:
+  - rootly_
+  verify: true
+- id: rubygems
+  name: Rubygems
+  pattern: \b(rubygems_[a-zA0-9]{48})\b
+  keywords:
+  - rubygems
+  verify: true
+- id: saladcloudapikey
+  name: Saladcloudapikey
+  pattern: \b(salad_cloud_[0-9A-Za-z]{1,7}_[0-9A-Za-z]{7,235})\b
+  keywords:
+  - salad_cloud_
+  verify: true
+- id: salesforce
+  name: Salesforce
+  pattern: \b00[a-zA-Z0-9]{13}![a-zA-Z0-9_.]{96}\b
+  keywords:
+  - salesforce
+  verify: true
+- id: salesforceoauth2
+  name: Salesforceoauth2
+  pattern: \b(?:https?://)?([0-9a-zA-Z\-\.]{1,100}\.my\.salesforce\.com)\b
+  keywords:
+  - salesforce
+  - 3MVG9
+  verify: true
+- id: salesforcerefreshtoken
+  name: Salesforcerefreshtoken
+  pattern: (?i)\b(5AEP861[a-zA-Z0-9._=]{80,})\b
+  keywords:
+  - salesforce
+  - 5AEP861
+  - 3MVG9
+  verify: true
+- id: saucelabs
+  name: Saucelabs
+  pattern: \b(api\.(?:us|eu)-(?:west|east|central)-[0-9].saucelabs\.com)\b
+  keywords:
+  - saucelabs
+  verify: true
+- id: sendgrid
+  name: Sendgrid
+  pattern: \bSG\.[\w\-]{20,24}\.[\w\-]{39,50}\b
+  keywords:
+  - SG.
+  verify: true
+- id: sendinbluev2
+  name: Sendinbluev2
+  pattern: \b(xkeysib\-[A-Za-z0-9_-]{81})\b
+  keywords:
+  - xkeysib
+  verify: true
+- id: sentryorgtoken
+  name: Sentryorgtoken
+  pattern: \b(sntrys_eyJ[a-zA-Z0-9=_+/]{197})\b
+  keywords:
+  - sntrys_eyJ
+  verify: true
+- id: sentrytoken
+  name: Sentrytoken
+  pattern: \b(sntryu_[a-f0-9]{64})\b
+  keywords:
+  - sentry
+  - sntryu
+  verify: true
+- id: shippo
+  name: Shippo
+  pattern: \b(shippo_(live|test)_[a-f0-9]{40})\b
+  keywords:
+  - shippo_live_
+  - shippo_test_
+  verify: true
+- id: shopify
+  name: Shopify
+  pattern: \b(shppa_|shpat_)([0-9A-Fa-f]{32})\b
+  keywords:
+  - shppa_
+  - shpat_
+  verify: true
+- id: shopifyoauth
+  name: Shopifyoauth
+  pattern: \b(shpss_[a-fA-F0-9]{32})\b
+  keywords:
+  - shpss_
+  - myshopify.com
+  verify: true
+- id: signable
+  name: Signable
+  pattern: (?i)([a-z]{2})signable
+  keywords:
+  - signable
+  verify: true
+- id: signalwire
+  name: Signalwire
+  pattern: \b([0-9a-z-]{3,64}\.signalwire\.com)\b
+  keywords:
+  - signalwire
+  verify: true
+- id: slack
+  name: Slack
+  pattern: xoxb\-[0-9]{10,13}\-[0-9]{10,13}[a-zA-Z0-9\-]*
+  keywords:
+  - xoxb-
+  - xoxp-
+  - xoxa-
+  - xoxr-
+  verify: true
+- id: slackwebhook
+  name: Slackwebhook
+  pattern: (https://hooks\.slack\.com/services/T[A-Z0-9]+/B[A-Z0-9]+/[A-Za-z0-9]{23,25})
+  keywords:
+  - hooks.slack.com
+  verify: true
+- id: sonarcloud
+  name: Sonarcloud
+  pattern: \b(sqco_[[:alnum:]]{59})\b
+  keywords:
+  - sqco_
+  verify: true
+- id: sonarqube
+  name: Sonarqube
+  pattern: \b(sq[apu]_[0-9a-f]{40})\b
+  keywords:
+  - squ_
+  - sqa_
+  - sqp_
+  verify: true
+- id: sourcegraph
+  name: Sourcegraph
+  pattern: \b(sgp_(?:[a-fA-F0-9]{16}|local)_[a-fA-F0-9]{40}|sgp_[a-fA-F0-9]{40}|[a-fA-F0-9]{40})\b
+  keywords:
+  - sgp_
+  verify: true
+- id: sourcegraphcody
+  name: Sourcegraphcody
+  pattern: \b(slk_[a-f0-9]{64})\b
+  keywords:
+  - slk_
+  verify: true
+- id: sparkpost
+  name: Sparkpost
+  pattern: \b([a-zA-Z0-9]{40})\b
+  keywords:
+  - sparkpost
+  verify: true
+- id: spectralops
+  name: Spectralops
+  pattern: \b(spu-[a-z0-9]{32})\b
+  keywords:
+  - spu-
+  verify: true
+- id: squareapp
+  name: Squareapp
+  pattern: (?:sandbox-)?sq0i[a-z]{2}-[0-9A-Za-z_-]{22,43}
+  keywords:
+  - sq0i
+  verify: true
+- id: stripe
+  name: Stripe
+  pattern: '[rs]k_live_[a-zA-Z0-9]{20,247}'
+  keywords:
+  - k_live
+  verify: true
+- id: stripepaymentintent
+  name: Stripepaymentintent
+  pattern: \b(pi_[a-zA-Z0-9]{24}_secret_[a-zA-Z0-9]{25})\b
+  keywords:
+  - _secret_
+  verify: true
+- id: sumologickey
+  name: Sumologickey
+  pattern: (?i)api\.(?:au|ca|de|eu|fed|jp|kr|in|us2)\.sumologic\.com
+  keywords:
+  - sumo
+  - accessId
+  - accessKey
+  verify: true
+- id: supabasetoken
+  name: Supabasetoken
+  pattern: \b(sbp_[a-z0-9]{40})\b
+  keywords:
+  - sbp_
+  verify: true
+- id: tableau
+  name: Tableau
+  pattern: \b([A-Za-z0-9+/]{22}==:[A-Za-z0-9]{32})\b
+  keywords:
+  - tableau
+  - online.tableau.com
+  verify: true
+- id: tailscale
+  name: Tailscale
+  pattern: \btskey-[a-z]+-[0-9A-Za-z_]+-[0-9A-Za-z_]+\b
+  keywords:
+  - tskey-
+  - tskey-api-
+  - tskey-oauth-
+  verify: true
+- id: terraformcloudpersonaltoken
+  name: Terraformcloudpersonaltoken
+  pattern: \b([A-Za-z0-9]{14}.atlasv1.[A-Za-z0-9]{67})\b
+  keywords:
+  - .atlasv1.
+  verify: true
+- id: tineswebhook
+  name: Tineswebhook
+  pattern: (https://[\w-]+\.tines\.com/webhook/[a-z0-9]{32}/[a-z0-9]{32})
+  keywords:
+  - tines.com
+  verify: true
+- id: trelloapikey
+  name: Trelloapikey
+  pattern: \b([a-zA-Z-0-9]{64})\b
+  keywords:
+  - trello
+  verify: true
+- id: trufflehogenterprise
+  name: Trufflehogenterprise
+  pattern: \bthog-key-[0-9a-f]{16}\b
+  keywords:
+  - thog
+  verify: true
+- id: twilio
+  name: Twilio
+  pattern: \bAC[0-9a-f]{32}\b
+  keywords:
+  - sid
+  - twilio
+  verify: true
+- id: twilioapikey
+  name: Twilioapikey
+  pattern: \bSK[a-zA-Z0-9]{32}\b
+  keywords:
+  - twilio
+  verify: true
+- id: typeform
+  name: Typeform
+  pattern: \btfp_[a-zA-Z0-9_]{40,59}\b
+  keywords:
+  - tfp_
+  verify: true
+- id: ubidots
+  name: Ubidots
+  pattern: \b(BBFF-[0-9a-zA-Z]{30})\b
+  keywords:
+  - BBFF-
+  verify: true
+- id: uri
+  name: Uri
+  pattern: \bhttps?:\/\/[\w!#$%&()*+,\-./;<=>?@[\\\]^_{|}~]{0,50}:([\w!#$%&()*+,\-./:;<=>?[\\\]^_{|}~]{3,50})@[a-zA-Z0-9.-]+(?:\.[a-zA-Z]{2,})?(?::\d{1,5})?[\w/]+\b
+  keywords:
+  - http://
+  - https://
+  verify: true
+- id: user
+  name: User
+  pattern: \b([a-z0-9-]+\.user\.com)\b
+  keywords:
+  - user.com
+  verify: true
+- id: voiceflow
+  name: Voiceflow
+  pattern: \b(VF\.(?:(?:DM|WS)\.)?[a-fA-F0-9]{24}\.[a-zA-Z0-9]{16})\b
+  keywords:
+  - vf
+  - dm
+  verify: true
+- id: webexbot
+  name: Webexbot
+  pattern: ([a-zA-Z0-9]{64}_[a-zA-Z0-9]{4}_[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})
+  keywords:
+  - spark
+  - webex
+  verify: true
+- id: weightsandbiases
+  name: Weightsandbiases
+  pattern: \b(wandb_v1_[A-Za-z0-9]{27}_[A-Za-z0-9]{49})\b
+  keywords:
+  - wandb_v1_
+  verify: true
+- id: wepay
+  name: Wepay
+  pattern: \b(\d{6})\b
+  keywords:
+  - wepay
+  verify: true
+- id: xai
+  name: Xai
+  pattern: \b(xai-[0-9a-zA-Z_]{80})\b
+  keywords:
+  - xai-
+  verify: true
+- id: zapierwebhook
+  name: Zapierwebhook
+  pattern: (https:\/\/hooks\.zapier\.com\/hooks\/catch\/[A-Za-z0-9\/]{16})
+  keywords:
+  - hooks.zapier.com/hooks/catch/
+  verify: true
+- id: zendeskapi
+  name: Zendeskapi
+  pattern: \b([a-zA-Z-0-9-]{5,16}\@[a-zA-Z-0-9]{4,16}\.[a-zA-Z-0-9]{3,6})\b
+  keywords:
+  - zendesk
+  verify: true
+- id: zohocrm
+  name: Zohocrm
+  pattern: \b(1000\.[a-f0-9]{32}\.[a-f0-9]{32})\b
+  keywords:
+  - '1000.'
+  verify: true
+- id: zulipchat
+  name: Zulipchat
+  pattern: \b([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\b
+  keywords:
+  - zulip
+  verify: true
+- id: keepfilenameregexred
+  name: KeepFilenameRegexRed
+  pattern: .*
+  keywords: []
+  verify: false
+  description: Files with these file name patterns are very interesting in German
+    companies.
+- id: discardbyfileextension
+  name: DiscardByFileExtension
+  pattern: \\\\\.bmp|\\\\\.eps|\\\\\.gif|\\\\\.ico|\\\\\.jfi|\\\\\.jfif|\\\\\.jif|\\\\\.jpe|\\\\\.jpeg|\\\\\.jpg|\\\\\.png|\\\\\.psd|\\\\\.svg|\\\\\.tif|\\\\\.tiff|\\\\\.webp|\\\\\.xcf|\\\\\.ttf|\\\\\.otf|\\\\\.lock|\\\\\.css|\\\\\.less|\\\\\.admx|\\\\\.adml|\\\\\.xsd|\\\\\.nse|\\\\\.xsl
+  keywords:
+  - \\.bmp
+  - \\.eps
+  - \\.gif
+  - \\.ico
+  - \\.jfi
+  verify: false
+  description: Skip any further scanning for files with these extensions.
+- id: discardbyfilename
+  name: DiscardByFileName
+  pattern: jmxremote\\\\\.password\\\\\.template|sceregvl\\\\\.inf
+  keywords:
+  - jmxremote\\.password\\.template
+  - sceregvl\\.inf
+  verify: false
+  description: Skip any further scanning for files with these names.
+- id: keepnamecontainsgreen
+  name: KeepNameContainsGreen
+  pattern: passw|secret|credential|thycotic|cyberark
+  keywords:
+  - passw
+  - secret
+  - credential
+  - thycotic
+  - cyberark
+  verify: false
+  description: A description of what a rule does.
+- id: keepawskeysincode
+  name: KeepAwsKeysInCode
+  pattern: .*
+  keywords: []
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: keepdbconnstringpw
+  name: KeepDbConnStringPw
+  pattern: connectionstring\.\{1,200\}passw
+  keywords:
+  - connectionstring.{1,200}passw
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: keepinlineprivatekey
+  name: KeepInlinePrivateKey
+  pattern: \-\-\-\-\-BEGIN\(\ RSA\|\ OPENSSH\|\ DSA\|\ EC\|\ PGP\)\?\ PRIVATE\ KEY\(\
+    BLOCK\)\?\-\-\-\-\-
+  keywords:
+  - '-----BEGIN( RSA| OPENSSH| DSA| EC| PGP)? PRIVATE KEY( BLOCK)?-----'
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: keeppassorkeyincode
+  name: KeepPassOrKeyInCode
+  pattern: passw\?o\?r\?d\\\\s\*=\\\\s\*\[\\\\'\\\\\\
+  keywords:
+  - passw?o?r?d\\s*=\\s*[\\'\\\
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: keeps3uriprefixincode
+  name: KeepS3UriPrefixInCode
+  pattern: .*
+  keywords: []
+  verify: false
+  description: Files with content matching an AWS S3 or Apache Hadoop S3A URI Prefix
+- id: keepslacktokensincode
+  name: KeepSlackTokensInCode
+  pattern: .*
+  keywords: []
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: keepsqlaccountcreation
+  name: KeepSqlAccountCreation
+  pattern: CREATE\ \(USER\|LOGIN\)\ \.\{0,200\}\ \(IDENTIFIED\ BY\|WITH\ PASSWORD\)
+  keywords:
+  - CREATE (USER|LOGIN) .{0,200} (IDENTIFIED BY|WITH PASSWORD)
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: keepcmdcredentials
+  name: KeepCmdCredentials
+  pattern: passwo\?r\?d\\\\s\*=\\\\s\*\[\\\\'\\\\\\
+  keywords:
+  - passwo?r?d\\s*=\\s*[\\'\\\
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: relaycmdbyextension
+  name: RelayCmdByExtension
+  pattern: \\\\\.bat|\\\\\.cmd
+  keywords:
+  - \\.bat
+  - \\.cmd
+  verify: false
+  description: Files with these extensions will be searched for cmd.exe/batch file
+    related strings.
+- id: keepcsharpdbconnstringsyellow
+  name: KeepCSharpDbConnStringsYellow
+  pattern: Data\ Source=\.\+Integrated\ Security=\(SSPI\|true\)|Integrated\ Security=\(SSPI\|true\);\.\*Data\
+    Source=\.\+
+  keywords:
+  - Data Source=.+Integrated Security=(SSPI|true)
+  - Integrated Security=(SSPI|true);.*Data Source=.+
+  verify: false
+  description: Match SQL connection strings that appear to use integrated security
+    (so no passwords).
+- id: keepcsharpviewstatekeys
+  name: KeepCSharpViewstateKeys
+  pattern: validationkey\\\\s\*=\\\\s\*\[\\\\'\\\\\\
+  keywords:
+  - validationkey\\s*=\\s*[\\'\\\
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: relaycsharpbyextension
+  name: RelayCSharpByExtension
+  pattern: \\\\\.aspx|\\\\\.ashx|\\\\\.asmx|\\\\\.asp|\\\\\.cshtml|\\\\\.cs|\\\\\.ascx|\\\\\.config
+  keywords:
+  - \\.aspx
+  - \\.ashx
+  - \\.asmx
+  - \\.asp
+  - \\.cshtml
+  verify: false
+  description: Files with these extensions will be searched for CSharp and ASP.NET
+    related strings.
+- id: keepconfigbyname
+  name: KeepConfigByName
+  pattern: \\\\\.htpasswd|accounts\\\\\.v4
+  keywords:
+  - \\.htpasswd
+  - accounts\\.v4
+  verify: false
+  description: Files with these exact names are very interesting.
+- id: relayconfigbyextension
+  name: RelayConfigByExtension
+  pattern: \\\\\.yaml|\\\\\.yml|\\\\\.toml|\\\\\.xml|\\\\\.json|\\\\\.config|\\\\\.ini|\\\\\.inf|\\\\\.cnf|\\\\\.conf|\\\\\.properties|\\\\\.env|\\\\\.dist|\\\\\.txt|\\\\\.sql|\\\\\.log|\\\\\.sqlite|\\\\\.sqlite3|\\\\\.fdb|\\\\\.tfvars
+  keywords:
+  - \\.yaml
+  - \\.yml
+  - \\.toml
+  - \\.xml
+  - \\.json
+  verify: false
+  description: Files with these extensions will be subjected to a generic search for
+    keys and such.
+- id: keepjavadbconnstrings
+  name: KeepJavaDbConnStrings
+  pattern: '\\\\\.getConnection\\\\\(\\\\\\|,\
+
+    '
+  keywords:
+  - \\.getConnection\\(\\\
+  - ',
+
+    '
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: relayjavabyextension
+  name: RelayJavaByExtension
+  pattern: \\\\\.jsp|\\\\\.do|\\\\\.java|\\\\\.cfm
+  keywords:
+  - \\.jsp
+  - \\.do
+  - \\.java
+  - \\.cfm
+  verify: false
+  description: Files with these extensions will be searched for Java and ColdFusion
+    related strings.
+- id: relayjsbyextension
+  name: RelayJsByExtension
+  pattern: \\\\\.js|\\\\\.cjs|\\\\\.mjs|\\\\\.cs|\\\\\.ts|\\\\\.tsx|\\\\\.ls|\\\\\.es6|\\\\\.es
+  keywords:
+  - \\.js
+  - \\.cjs
+  - \\.mjs
+  - \\.cs
+  - \\.ts
+  verify: false
+  description: Files with these extensions will be searched for JavaScript related
+    strings.
+- id: keepperldbconnstrings
+  name: KeepPerlDbConnStrings
+  pattern: DBI\\\\\-\\\\>connect\\\\\(
+  keywords:
+  - DBI\\-\\>connect\\(
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: relayperlbyextension
+  name: RelayPerlByExtension
+  pattern: \\\\\.pl
+  keywords:
+  - \\.pl
+  verify: false
+  description: Files with these extensions will be searched for Perl related strings.
+- id: keepphpbyname
+  name: KeepPhpByName
+  pattern: LocalSettings\\\\\.php
+  keywords:
+  - LocalSettings\\.php
+  verify: false
+  description: Files with these exact names are very interesting.
+- id: keepphpdbconnstrings
+  name: KeepPhpDbConnStrings
+  pattern: mysql_connect\\\\s\*\\\\\(\.\*\\\\\$\.\*\\\\\)|mysql_pconnect\\\\s\*\\\\\(\.\*\\\\\$\.\*\\\\\)|mysql_change_user\\\\s\*\\\\\(\.\*\\\\\$\.\*\\\\\)|pg_connect\\\\s\*\\\\\(\.\*\\\\\$\.\*\\\\\)|pg_pconnect\\\\s\*\\\\\(\.\*\\\\\$\.\*\\\\\)
+  keywords:
+  - mysql_connect\\s*\\(.*\\$.*\\)
+  - mysql_pconnect\\s*\\(.*\\$.*\\)
+  - mysql_change_user\\s*\\(.*\\$.*\\)
+  - pg_connect\\s*\\(.*\\$.*\\)
+  - pg_pconnect\\s*\\(.*\\$.*\\)
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: relayphpbyextension
+  name: RelayPhpByExtension
+  pattern: \\\\\.php|\\\\\.phtml|\\\\\.inc|\\\\\.php3|\\\\\.php5|\\\\\.php7
+  keywords:
+  - \\.php
+  - \\.phtml
+  - \\.inc
+  - \\.php3
+  - \\.php5
+  verify: false
+  description: Files with these extensions will be searched for php related strings.
+- id: keeppshistorybyname
+  name: KeepPSHistoryByName
+  pattern: ConsoleHost_history\\\\\.txt|Visual\ Studio\ Code\ Host_history\\\\\.txt
+  keywords:
+  - ConsoleHost_history\\.txt
+  - Visual Studio Code Host_history\\.txt
+  verify: false
+  description: Files with these exact names will be searched for PowerShell related
+    strings.
+- id: keeppscredentials
+  name: KeepPsCredentials
+  pattern: \-SecureString|\-AsPlainText
+  keywords:
+  - -SecureString
+  - -AsPlainText
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: relaypsbyextension
+  name: RelayPsByExtension
+  pattern: \\\\\.psd1|\\\\\.psm1|\\\\\.ps1
+  keywords:
+  - \\.psd1
+  - \\.psm1
+  - \\.ps1
+  verify: false
+  description: Files with these extensions will be searched for PowerShell related
+    strings.
+- id: keeppydbconnstrings
+  name: KeepPyDbConnStrings
+  pattern: mysql\\\\\.connector\\\\\.connect\\\\\(|psycopg2\\\\\.connect\\\\\(
+  keywords:
+  - mysql\\.connector\\.connect\\(
+  - psycopg2\\.connect\\(
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: relaypythonbyextension
+  name: RelayPythonByExtension
+  pattern: \\\\\.py
+  keywords:
+  - \\.py
+  verify: false
+  description: Files with these extensions will be searched for python related strings.
+- id: keeprubybyname
+  name: KeepRubyByName
+  pattern: database\\\\\.yml|\\\\\.secret_token\\\\\.rb|knife\\\\\.rb|carrierwave\\\\\.rb|omniauth\\\\\.rb
+  keywords:
+  - database\\.yml
+  - \\.secret_token\\.rb
+  - knife\\.rb
+  - carrierwave\\.rb
+  - omniauth\\.rb
+  verify: false
+  description: Files with these exact names are very interesting.
+- id: keeprubydbconnstrings
+  name: KeepRubyDbConnStrings
+  pattern: DBI\\\\\.connect\\\\\(
+  keywords:
+  - DBI\\.connect\\(
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: relayrubybyextension
+  name: RelayRubyByExtension
+  pattern: \\\\\.rb
+  keywords:
+  - \\.rb
+  verify: false
+  description: Files with these extensions will be searched for Rubby related strings.
+- id: relayshellscriptbyextension
+  name: RelayShellScriptByExtension
+  pattern: \\\\\.netrc|\\\\\.exports|\\\\\.functions|\\\\\.extra|\\\\\.npmrc|\\\\\.env|\\\\\.bashrc|\\\\\.profile|\\\\\.zshrc|\\\\\.bash_history|\\\\\.zsh_history|\\\\\.sh_history|zhistory|\\\\\.irb_history
+  keywords:
+  - \\.netrc
+  - \\.exports
+  - \\.functions
+  - \\.extra
+  - \\.npmrc
+  verify: false
+  description: Files with these extensions will be searched for Bash related strings.
+- id: relayvbscriptbyextension
+  name: RelayVBScriptByExtension
+  pattern: \\\\\.vbs|\\\\\.vbe|\\\\\.wsf|\\\\\.wsc|\\\\\.asp|\\\\\.hta
+  keywords:
+  - \\.vbs
+  - \\.vbe
+  - \\.wsf
+  - \\.wsc
+  - \\.asp
+  verify: false
+  description: Files with these extensions will be searched for cmd.exe/batch file
+    related strings.
+- id: relayinfraconfigbyextension
+  name: RelayInfraConfigByExtension
+  pattern: \\\\\.xml|\\\\\.json|\\\\\.config|\\\\\.ini|\\\\\.inf|\\\\\.cnf|\\\\\.conf|\\\\\.txt
+  keywords:
+  - \\.xml
+  - \\.json
+  - \\.config
+  - \\.ini
+  - \\.inf
+  verify: false
+  description: Files with these extensions will be subjected to a generic search for
+    keys and such.
+- id: relaycertbyextension
+  name: RelayCertByExtension
+  pattern: \\\\\.pem|\\\\\.der|\\\\\.pfx|\\\\\.pk12|\\\\\.p12|\\\\\.pkcs12
+  keywords:
+  - \\.pem
+  - \\.der
+  - \\.pfx
+  - \\.pk12
+  - \\.p12
+  verify: false
+  description: Files with these extensions will be parsed as x509 certificates to
+    see if they have private keys.
+- id: keepjenkinsbyname
+  name: KeepJenkinsByName
+  pattern: jenkins\\\\\.plugins\\\\\.publish_over_ssh\\\\\.BapSshPublisherPlugin\\\\\.xml|credentials\\\\\.xml
+  keywords:
+  - jenkins\\.plugins\\.publish_over_ssh\\.BapSshPublisherPlugin\\.xml
+  - credentials\\.xml
+  verify: false
+  description: Files with these exact names are very interesting.
+- id: keepdatabasebyextension
+  name: KeepDatabaseByExtension
+  pattern: \\\\\.mdf|\\\\\.sdf|\\\\\.sqldump|\\\\\.bak
+  keywords:
+  - \\.mdf
+  - \\.sdf
+  - \\.sqldump
+  - \\.bak
+  verify: false
+  description: Files with these extensions are a little interesting.
+- id: keepdefenderconfigbyname
+  name: KeepDefenderConfigByName
+  pattern: SensorConfiguration\.json|mdatp_managed\.json
+  keywords:
+  - SensorConfiguration.json
+  - mdatp_managed.json
+  verify: false
+  description: Files containing Defender Configs are very interesting.
+- id: keepdeployimagebyextension
+  name: KeepDeployImageByExtension
+  pattern: \\\\\.wim|\\\\\.ova|\\\\\.ovf
+  keywords:
+  - \\.wim
+  - \\.ova
+  - \\.ovf
+  verify: false
+  description: Files with these extensions are a little interesting.
+- id: keepdomainjoincredsbyname
+  name: KeepDomainJoinCredsByName
+  pattern: customsettings\.ini
+  keywords:
+  - customsettings.ini
+  verify: false
+  description: Files containing Domain Join Credes are quite interesting.
+- id: keepdomainjoincredsbypath
+  name: KeepDomainJoinCredsByPath
+  pattern: control\\\\\\\\customsettings\.ini
+  keywords:
+  - control\\\\customsettings.ini
+  verify: false
+  description: Files with a path containing these strings are very interesting.
+- id: keepsccmbootvarcredsbypath
+  name: KeepSCCMBootVarCredsByPath
+  pattern: REMINST\\\\\\\\SMSTemp\\\\\\\\\.\*\\\\\.var|SMS\\\\\\\\data\\\\\\\\Variables\.dat|SMS\\\\\\\\data\\\\\\\\Policy\.xml
+  keywords:
+  - REMINST\\\\SMSTemp\\\\.*\\.var
+  - SMS\\\\data\\\\Variables.dat
+  - SMS\\\\data\\\\Policy.xml
+  verify: false
+  description: Files with a path containing these strings are very interesting.
+- id: relayunattendxml
+  name: RelayUnattendXml
+  pattern: unattend\\\\\.xml|Autounattend\\\\\.xml
+  keywords:
+  - unattend\\.xml
+  - Autounattend\\.xml
+  verify: false
+  description: Look inside unattend.xml files for actual values.
+- id: keepftpserverconfigbyname
+  name: KeepFtpServerConfigByName
+  pattern: proftpdpasswd|filezilla\\\\\.xml
+  keywords:
+  - proftpdpasswd
+  - filezilla\\.xml
+  verify: false
+  description: Files with these exact names are very interesting.
+- id: keepinfraascodebyextension
+  name: KeepInfraAsCodeByExtension
+  pattern: \\\\\.cscfg|\\\\\.ucs|\\\\\.tfvars
+  keywords:
+  - \\.cscfg
+  - \\.ucs
+  - \\.tfvars
+  verify: false
+  description: Files with these extensions are very very interesting.
+- id: keepmemdumpbyextension
+  name: KeepMemDumpByExtension
+  pattern: \\\\\.dmp
+  keywords:
+  - \\.dmp
+  verify: false
+  description: Files with these extensions are a little interesting.
+- id: keepmemdumpbyname
+  name: KeepMemDumpByName
+  pattern: MEMORY\\\\\.DMP|hiberfil\\\\\.sys|lsass\\\\\.dmp|lsass\\\\\.exe\\\\\.dmp
+  keywords:
+  - MEMORY\\.DMP
+  - hiberfil\\.sys
+  - lsass\\.dmp
+  - lsass\\.exe\\.dmp
+  verify: false
+  description: Files with these exact names are very very interesting.
+- id: keepnetconfigcreds
+  name: KeepNetConfigCreds
+  pattern: NVRAM\ config\ last\ updated|enable\ password\ \\\\\.|simple\-bind\ authenticated\
+    encrypt
+  keywords:
+  - NVRAM config last updated
+  - enable password \\.
+  - simple-bind authenticated encrypt
+  verify: false
+  description: A description of what a rule does.
+- id: keepnetconfigfilebyname
+  name: KeepNetConfigFileByName
+  pattern: running\-config\\\\\.cfg|startup\-config\\\\\.cfg|running\-config|startup\-config
+  keywords:
+  - running-config\\.cfg
+  - startup-config\\.cfg
+  - running-config
+  - startup-config
+  verify: false
+  description: Files with these exact names are very very interesting.
+- id: relaynetconfigbyname
+  name: RelayNetConfigByName
+  pattern: cisco|router|firewall|switch
+  keywords:
+  - cisco
+  - router
+  - firewall
+  - switch
+  verify: false
+  description: Files with these name patterns will be searched for Cisco bits.
+- id: keepkerberoscredentialsbyextension
+  name: KeepKerberosCredentialsByExtension
+  pattern: \\\\\.keytab|\\\\\.CCACHE
+  keywords:
+  - \\.keytab
+  - \\.CCACHE
+  verify: false
+  description: Files with these extensions are interesting.
+- id: keepkerberoscredentialsbyname
+  name: KeepKerberosCredentialsByName
+  pattern: krb5cc_\.\*
+  keywords:
+  - krb5cc_.*
+  verify: false
+  description: Files with these names are interesting.
+- id: keepnixlocalhashesbyname
+  name: KeepNixLocalHashesByName
+  pattern: shadow|pwd\\\\\.db|passwd
+  keywords:
+  - shadow
+  - pwd\\.db
+  - passwd
+  verify: false
+  description: Files with these exact names are very very interesting.
+- id: keeppcapbyextension
+  name: KeepPcapByExtension
+  pattern: \\\\\.pcap|\\\\\.cap|\\\\\.pcapng
+  keywords:
+  - \\.pcap
+  - \\.cap
+  - \\.pcapng
+  verify: false
+  description: Files with these extensions are a little interesting.
+- id: keepcyberarkconfigsbyname
+  name: KeepCyberArkConfigsByName
+  pattern: Psmapp\\\\\.cred|psmgw\\\\\.cred|backup\\\\\.key|MasterReplicationUser\\\\\.pass|RecPrv\\\\\.key|ReplicationUser\\\\\.pass|Server\\\\\.key|VaultEmergency\\\\\.pass|VaultUser\\\\\.pass|Vault\\\\\.ini|PADR\\\\\.ini|PARAgent\\\\\.ini|CACPMScanner\\\\\.exe\\\\\.config|PVConfiguration\\\\\.xml
+  keywords:
+  - Psmapp\\.cred
+  - psmgw\\.cred
+  - backup\\.key
+  - MasterReplicationUser\\.pass
+  - RecPrv\\.key
+  verify: false
+  description: Files with these exact names are very very interesting.
+- id: keepcyberarkbyextension
+  name: KeepCyberArkByExtension
+  pattern: \\\\\.cred|\\\\\.pass
+  keywords:
+  - \\.cred
+  - \\.pass
+  verify: false
+  description: Files with these extensions are QUITE interesting.
+- id: keepvmdisksbyextension
+  name: KeepVMDisksByExtension
+  pattern: \\\\\.vmdk|\\\\\.vdi|\\\\\.vhd|\\\\\.vhdx
+  keywords:
+  - \\.vmdk
+  - \\.vdi
+  - \\.vhd
+  - \\.vhdx
+  verify: false
+  description: Virtual Machine Disks can contain sensitive data or credentials.
+- id: keepwinhashesbyname
+  name: KeepWinHashesByName
+  pattern: NTDS\.DIT|SYSTEM|SAM|SECURITY
+  keywords:
+  - NTDS.DIT
+  - SYSTEM
+  - SAM
+  - SECURITY
+  verify: false
+  description: Files with these exact names are very very interesting.
+- id: keepcloudapikeysbyname
+  name: KeepCloudApiKeysByName
+  pattern: \\\\\.tugboat
+  keywords:
+  - \\.tugboat
+  verify: false
+  description: Files with these exact names are very interesting.
+- id: keepcloudapikeysbypath
+  name: KeepCloudApiKeysByPath
+  pattern: \\\\\\\\\\\\\.aws\\\\\\\\|doctl\\\\\\\\config\.yaml
+  keywords:
+  - \\\\\\.aws\\\\
+  - doctl\\\\config.yaml
+  verify: false
+  description: Files with a path containing these strings are very very interesting.
+- id: keepffloginsjsonrelay
+  name: KeepFfLoginsJsonRelay
+  pattern: logins\\\\\.json
+  keywords:
+  - logins\\.json
+  verify: false
+  description: Files with these extensions will be searched for Firefox/Thunderbird
+    backups related strings.
+- id: keepdbmgtconfigbyname
+  name: KeepDbMgtConfigByName
+  pattern: SqlStudio\\\\\.bin|\\\\\.mysql_history|\\\\\.psql_history|\\\\\.pgpass|\\\\\.dbeaver\-data\-sources\\\\\.xml|credentials\-config\\\\\.json|dbvis\\\\\.xml|robomongo\\\\\.json
+  keywords:
+  - SqlStudio\\.bin
+  - \\.mysql_history
+  - \\.psql_history
+  - \\.pgpass
+  - \\.dbeaver-data-sources\\.xml
+  verify: false
+  description: Files with these exact names are very interesting.
+- id: keepgitcredsbyname
+  name: KeepGitCredsByName
+  pattern: \\\\\.git\-credentials
+  keywords:
+  - \\.git-credentials
+  verify: false
+  description: Files with these exact names are very interesting.
+- id: keepshellhistorybyname
+  name: KeepShellHistoryByName
+  pattern: \\\\\.bash_history|\\\\\.zsh_history|\\\\\.sh_history|zhistory|\\\\\.irb_history|ConsoleHost_History\\\\\.txt
+  keywords:
+  - \\.bash_history
+  - \\.zsh_history
+  - \\.sh_history
+  - zhistory
+  - \\.irb_history
+  verify: false
+  description: Files with these exact names are very interesting.
+- id: keepshellrcfilesbyname
+  name: KeepShellRcFilesByName
+  pattern: \\\\\.netrc|_netrc|\\\\\.exports|\\\\\.functions|\\\\\.extra|\\\\\.npmrc|\\\\\.env|\\\\\.bashrc|\\\\\.profile|\\\\\.zshrc
+  keywords:
+  - \\.netrc
+  - _netrc
+  - \\.exports
+  - \\.functions
+  - \\.extra
+  verify: false
+  description: Files with these exact names are very interesting.
+- id: keeppassmgrsbyextension
+  name: KeepPassMgrsByExtension
+  pattern: \\\\\.kdbx|\\\\\.kdb|\\\\\.psafe3|\\\\\.kwallet|\\\\\.keychain|\\\\\.agilekeychain|\\\\\.cred
+  keywords:
+  - \\.kdbx
+  - \\.kdb
+  - \\.psafe3
+  - \\.kwallet
+  - \\.keychain
+  verify: false
+  description: Files with these extensions are very very interesting.
+- id: keeppasswordfilesbyname
+  name: KeepPasswordFilesByName
+  pattern: passwords\\\\\.txt|pass\\\\\.txt|accounts\\\\\.txt|passwords\\\\\.doc|pass\\\\\.doc|accounts\\\\\.doc|passwords\\\\\.xls|pass\\\\\.xls|accounts\\\\\.xls|passwords\\\\\.docx|pass\\\\\.docx|accounts\\\\\.docx|passwords\\\\\.xlsx|pass\\\\\.xlsx|accounts\\\\\.xlsx|secrets\\\\\.txt|secrets\\\\\.doc|secrets\\\\\.xls|secrets\\\\\.docx|BitlockerLAPSPasswords\\\\\.csv|secrets\\\\\.xlsx
+  keywords:
+  - passwords\\.txt
+  - pass\\.txt
+  - accounts\\.txt
+  - passwords\\.doc
+  - pass\\.doc
+  verify: false
+  description: Files with these exact names are very interesting.
+- id: keepftpclientconfigconfigbyname
+  name: KeepFtpClientConfigConfigByName
+  pattern: recentservers\\\\\.xml|sftp\-config\\\\\.json
+  keywords:
+  - recentservers\\.xml
+  - sftp-config\\.json
+  verify: false
+  description: Files with these exact names are very interesting.
+- id: keeprdppasswords
+  name: KeepRdpPasswords
+  pattern: password\ 51\\\\:b
+  keywords:
+  - password 51\\:b
+  verify: false
+  description: Files with contents matching these regexen are very interesting.
+- id: keepremoteaccessconfbyextension
+  name: KeepRemoteAccessConfByExtension
+  pattern: \\\\\.rdg|\\\\\.rtsz|\\\\\.rtsx|\\\\\.ovpn|\\\\\.tvopt|\\\\\.sdtid
+  keywords:
+  - \\.rdg
+  - \\.rtsz
+  - \\.rtsx
+  - \\.ovpn
+  - \\.tvopt
+  verify: false
+  description: Files with these extensions are a little interesting.
+- id: keepremoteaccessconfbyname
+  name: KeepRemoteAccessConfByName
+  pattern: mobaxterm\\\\\.ini|mobaxterm\ backup\\\\\.zip|confCons\.xml
+  keywords:
+  - mobaxterm\\.ini
+  - mobaxterm backup\\.zip
+  - confCons.xml
+  verify: false
+  description: Files with these exact names are very very interesting.
+- id: relayrdpbyextension
+  name: RelayRdpByExtension
+  pattern: \\\\\.rdp
+  keywords:
+  - \\.rdp
+  verify: false
+  description: Look inside .rdp files for actual values.
+- id: keepsshkeysbyfilename
+  name: KeepSSHKeysByFileName
+  pattern: id_rsa|id_dsa|id_ecdsa|id_ed25519
+  keywords:
+  - id_rsa
+  - id_dsa
+  - id_ecdsa
+  - id_ed25519
+  verify: false
+  description: SSHKeys
+- id: keepsshfilesbypath
+  name: KeepSSHFilesByPath
+  pattern: \\\\\\\\\\\\\.ssh\\\\\\\\
+  keywords:
+  - \\\\\\.ssh\\\\
+  verify: false
+  description: Files with a path containing these strings are very very interesting.
+- id: keepsshkeysbyfileextension
+  name: KeepSSHKeysByFileExtension
+  pattern: \\\\\.ppk
+  keywords:
+  - \\.ppk
+  verify: false
+  description: SSHKeys
+- id: certcontentbyending
+  name: CertContentByEnding
+  pattern: _rsa|_dsa|_ed25519|_ecdsa
+  keywords:
+  - _rsa
+  - _dsa
+  - _ed25519
+  - _ecdsa
+  verify: false
+  description: Files ending like this will be grepped for private keys.
+- id: discardlargefalseposdirs
+  name: DiscardLargeFalsePosDirs
+  pattern: \\\\\\\\puppet\\\\\\\\share\\\\\\\\doc|\\\\\\\\lib\\\\\\\\ruby|\\\\\\\\lib\\\\\\\\site\-packages|\\\\\\\\usr\\\\\\\\share\\\\\\\\doc|node_modules|vendor\\\\\\\\bundle|vendor\\\\\\\\cache|\\\\\\\\doc\\\\\\\\openssl|Anaconda3\\\\\\\\Lib\\\\\\\\test|WindowsPowerShell\\\\\\\\Modules|Python\\\\d\*\\\\\\\\Lib|Reference\
+    Assemblies\\\\\\\\Microsoft\\\\\\\\Framework\\\\\\\\\.NETFramework|dotnet\\\\\\\\sdk|dotnet\\\\\\\\shared|Modules\\\\\\\\Microsoft\\\\\.PowerShell\\\\\.Security|Windows\\\\\\\\assembly
+  keywords:
+  - \\\\puppet\\\\share\\\\doc
+  - \\\\lib\\\\ruby
+  - \\\\lib\\\\site-packages
+  - \\\\usr\\\\share\\\\doc
+  - node_modules
+  verify: false
+  description: File paths that will be skipped entirely.
+- id: discardwinsystemdirs
+  name: DiscardWinSystemDirs
+  pattern: \\\\\\\\winsxs|\\\\\\\\syswow64|\\\\\\\\system32|\\\\\\\\systemapps|\\\\\\\\windows\\\\\\\\servicing|\\\\\\\\servicing|\\\\\\\\Microsoft\\\\\.NET\\\\\\\\Framework|\\\\\\\\windows\\\\\\\\immersivecontrolpanel|\\\\\\\\windows\\\\\\\\diagnostics|\\\\\\\\windows\\\\\\\\debug|\\\\\\\\locale|\\\\\\\\chocolatey\\\\\\\\helpers|\\\\\\\\sources\\\\\\\\sxs|\\\\\\\\localization|\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Microsoft|\\\\\\\\AppData\\\\\\\\Roaming\\\\\\\\Microsoft\\\\\\\\Windows|\\\\\\\\AppData\\\\\\\\Roaming\\\\\\\\Microsoft\\\\\\\\Teams|\\\\\\\\wsuscontent|\\\\\\\\Application\
+    Data\\\\\\\\Microsoft\\\\\\\\CLR\ Security\ Config|\\\\\\\\servicing\\\\\\\\LCU
+  keywords:
+  - \\\\winsxs
+  - \\\\syswow64
+  - \\\\system32
+  - \\\\systemapps
+  - \\\\windows\\\\servicing
+  verify: false
+  description: File paths that will be skipped entirely.
+- id: discardpostmatchbyname
+  name: DiscardPostMatchByName
+  pattern: credentialprovider\\\\\.idl|pspasswd64\\\\\.exe|pspasswd\\\\\.exe|psexec\\\\\.exe|psexec64\\\\\.exe
+  keywords:
+  - credentialprovider\\.idl
+  - pspasswd64\\.exe
+  - pspasswd\\.exe
+  - psexec\\.exe
+  - psexec64\\.exe
+  verify: false
+  description: Post-match check for specific filenames
+- id: discardpostmatchbypath
+  name: DiscardPostMatchByPath
+  pattern: Windows\ Kits\\\\\\\\10|Git\\\\\\\\mingw64|Git\\\\\\\\usr\\\\\\\\lib|ProgramData\\\\\\\\Microsoft\\\\\\\\NetFramework\\\\\\\\BreadcrumbStore|\\\\\.MSSQLSERVER\\\\\\\\MSSQL\\\\\\\\Binn\\\\\\\\Templates
+  keywords:
+  - Windows Kits\\\\10
+  - Git\\\\mingw64
+  - Git\\\\usr\\\\lib
+  - ProgramData\\\\Microsoft\\\\NetFramework\\\\BreadcrumbStore
+  - \\.MSSQLSERVER\\\\MSSQL\\\\Binn\\\\Templates
+  verify: false
+  description: Post-match check for specific path elements
+- id: discardnonfileshares
+  name: DiscardNonFileShares
+  pattern: \\\\\\\\print\\\\\$|\\\\\\\\ipc\\\\\$
+  keywords:
+  - \\\\print\\$
+  - \\\\ipc\\$
+  verify: false
+  description: Skips scanning inside shares ending with these words.
+- id: keepdollarshares
+  name: KeepDollarShares
+  pattern: \\\\\\\\C\\\\\$|\\\\\\\\ADMIN\\\\\$
+  keywords:
+  - \\\\C\\$
+  - \\\\ADMIN\\$
+  verify: false
+  description: Notifies the user that they can read C$ or ADMIN$ or something fun/noisy,
+    but doesn't actually scan inside it.
+- id: keepsccmshares
+  name: KeepSCCMShares
+  pattern: \\\\\\\\SCCMContentLib\\\\\$
+  keywords:
+  - \\\\SCCMContentLib\\$
+  verify: false
+  description: Notifies the user that they can read SCCMContentLib$ so they can take
+    CMLoot for a spin.
+- id: keepsecretsplusblack
+  name: KeepSecretsPlusBlack
+  pattern: cpassword\\\\s\*=\\\\s\*\(\?:\&quot;\|\\
+  keywords:
+  - cpassword\\s*=\\s*(?:&quot;|\
+  verify: false
+  description: GPP cpassword and GCP service-account private keys - immediately usable
+    credentials.
+- id: keepsecretsplusred
+  name: KeepSecretsPlusRed
+  pattern: .*
+  keywords: []
+  verify: false
+  description: Cloud/CI provider tokens, Azure storage keys, DB connection URIs, Ansible
+    vaults, PowerShell secure strings and inline net/psexec creds.
+- id: keepsecretsplusyellow
+  name: KeepSecretsPlusYellow
+  pattern: .*
+  keywords: []
+  verify: false
+  description: 'JWTs, Authorization: Bearer headers, and generic secret/token/password
+    assignments - worth a look but higher false-positive rate.'
+- id: keepterraformstate
+  name: KeepTerraformState
+  pattern: \\\\\.tfstate|\\\\\.tfstate\\\\\.backup
+  keywords:
+  - \\.tfstate
+  - \\.tfstate\\.backup
+  verify: false
+  description: Terraform state files hold the RESOLVED values of every secret in the
+    config.
+- id: relayextendedcontentbyextension
+  name: RelayExtendedContentByExtension
+  pattern: \\\\\.config|\\\\\.xml|\\\\\.json|\\\\\.yml|\\\\\.yaml|\\\\\.ini|\\\\\.env|\\\\\.txt|\\\\\.ps1|\\\\\.psm1|\\\\\.psd1|\\\\\.bat|\\\\\.cmd|\\\\\.sh|\\\\\.bash|\\\\\.py|\\\\\.rb|\\\\\.php|\\\\\.pl|\\\\\.js|\\\\\.ts|\\\\\.java|\\\\\.cs|\\\\\.go|\\\\\.tf|\\\\\.tfvars|\\\\\.tfstate|\\\\\.properties|\\\\\.conf|\\\\\.cnf|\\\\\.inf|\\\\\.reg|\\\\\.sql|\\\\\.md|\\\\\.log|\\\\\.csv|\\\\\.toml
+  keywords:
+  - \\.config
+  - \\.xml
+  - \\.json
+  - \\.yml
+  - \\.yaml
+  verify: false
+  description: Files with these extensions are searched for extended secret patterns.
