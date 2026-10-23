@@ -200,24 +200,25 @@ popularity-contest popularity-contest/participate boolean false
     $preseedContent | Out-File -FilePath "$workDir\tftp\preseed.cfg" -Encoding UTF8
 
     # Extract kernel and initrd from ISO for network boot
-    Write-Host "Extracting boot files from ISO..." -ForegroundColor Green
+    # No admin / no mount needed: read the ISO as an archive with pycdlib.
+    Write-Host "Extracting boot files from ISO (no mount required)..." -ForegroundColor Green
 
-    # Mount ISO and extract boot files
-    $mountResult = Mount-DiskImage -ImagePath (Resolve-Path $ISOPath).Path -PassThru
-    $driveLetter = ($mountResult | Get-Volume).DriveLetter
+    $pyExe = "$workDir\..\python\tools\python.exe"
+    if (-not (Test-Path $pyExe)) { $pyExe = "python" }
+    $extractor = "$workDir\extract_boot.py"
+    if (-not (Test-Path $extractor)) {
+        Write-Host "Installing pycdlib (needed to read the ISO without mounting)..." -ForegroundColor Yellow
+        & $pyExe -m pip install pycdlib
+    }
+    & $pyExe $extractor
 
-    if ($driveLetter) {
-        Copy-Item "${driveLetter}:\install.amd\vmlinuz" "$workDir\tftp\vmlinuz" -Force
-        Copy-Item "${driveLetter}:\install.amd\initrd.gz" "$workDir\tftp\initrd.gz" -Force
-        Dismount-DiskImage -ImagePath (Resolve-Path $ISOPath).Path
+    # Create virtual disk
+    Write-Host "Creating virtual disk ($VMSize)..." -ForegroundColor Yellow
+    & .\qemu\qemu-img.exe create -f qcow2 "$workDir\$VMName.qcow2" $VMSize
 
-        # Create virtual disk
-        Write-Host "Creating virtual disk ($VMSize)..." -ForegroundColor Yellow
-        & .\qemu\qemu-img.exe create -f qcow2 "$workDir\$VMName.qcow2" $VMSize
+    # QEMU arguments with TFTP server and network boot
 
-        # QEMU arguments with TFTP server and network boot                    
- 
-        $qemuArgs = @(
+    $qemuArgs = @(
             "-name", $VMName,
             "-m", $Global:Memory,
             "-smp", $CPUs,
@@ -236,9 +237,6 @@ popularity-contest popularity-contest/participate boolean false
 		Write-Host "Installing Debian with ISO $Global:debianIso and Image $workDir\$VMName.qcow2 " -ForegroundColor Green
 		Start-Process -FilePath ".\qemu\qemu-system-x86_64.exe" -ArgumentList $qemuArgs -WorkingDirectory ".\qemu\" -RedirectStandardOutput RedirectStandardOutput.txt -RedirectStandardError RedirectStandardError.txt -NoNewWindow -wait
 		Write-Host "Debian Install Complete! Run this script again to start the image!" -ForegroundColor Green
-    } else {
-        Write-Error "Failed to mount ISO file"
-    }
 }
   
 
