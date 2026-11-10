@@ -1,21 +1,23 @@
 # PowerShell Debian NoAdmin - Pure PowerShell + portable 7-Zip
-# UltraVNC deployed from the UltraVNC_1830.zip package (no installer, no admin).
+# No admin required. No Mount-DiskImage. No installer execution.
+# QEMU is extracted directly from its NSIS setup EXE using 7-Zip.
 
-# Prevent UAC elevation prompts when running the QEMU installer (scoped to installer only)
-# This is set globally so it is in effect before Start-Process is first called.
-# QEMU itself does not need this and we clear it after the installer runs.
-$env:__COMPAT_LAYER = "RUNASINVOKER"
+$env:__COMPAT_LAYER = "RUNASINVOKER"  # suppress UAC prompts during setup; cleared after
 
-$workDir = Get-Location
+$workDir   = Get-Location
 New-Item -ItemType Directory -Path $workDir -Force | Out-Null
 Set-Location $workDir
 
-$debianUrl   = "https://cloud.debian.org/images/archive/12.7.0/amd64/iso-cd/debian-12.7.0-amd64-netinst.iso"
-$debianIso   = "$workDir\debian-12.7.0-amd64-netinst.iso"
-$qemuUrl     = "https://qemu.weilnetz.de/w64/2021/qemu-w64-setup-20210208.exe"
-$Memory      = "4096"
+$debianUrl = "https://cloud.debian.org/images/archive/12.7.0/amd64/iso-cd/debian-12.7.0-amd64-netinst.iso"
+$debianIso = "$workDir\debian-12.7.0-amd64-netinst.iso"
+$qemuUrl   = "https://qemu.weilnetz.de/w64/2021/qemu-w64-setup-20210208.exe"
+$Memory    = "4096"
 
 $env:PATH += ";$workDir\qemu"
+
+# ---------------------------------------------------------------------------
+# Functions
+# ---------------------------------------------------------------------------
 
 function Download-File {
     param([string]$Url, [string]$File)
@@ -29,50 +31,81 @@ function Download-File {
     $request.Headers.Add("DNT", "1")
     $request.Headers.Add("Upgrade-Insecure-Requests", "1")
 
-    $response = $request.GetResponse()
+    $response       = $request.GetResponse()
     $responseStream = $response.GetResponseStream()
-    $fileStream = [System.IO.FileStream]::new($File, 'Create')
+    $fileStream     = [System.IO.FileStream]::new($File, 'Create')
     $responseStream.CopyTo($fileStream)
     $fileStream.Close()
     $responseStream.Close()
     $response.Close()
 }
 
-# Download Debian ISO
-if (Test-Path $debianIso) {
-    Write-Host "Debian ISO exists" -ForegroundColor Green
-} else {
-    Write-Host "Downloading Debian ISO..." -ForegroundColor Yellow
-    Download-File $debianUrl $debianIso
+# Acquires portable 7-Zip (no admin). Idempotent — skips if already present.
+# Bootstrap chain: 7zr.exe -> extra.7z (gets 7za.exe) -> 7z installer (gets 7z.exe + 7z.dll)
+function Install-7Zip {
+    $sevenZipExe = "$workDir\7z.exe"
+    $sevenZipDll = "$workDir\7z.dll"
+    if ((Test-Path $sevenZipExe) -and (Test-Path $sevenZipDll)) { return }
+
+    Write-Host "Bootstrapping portable 7-Zip..." -ForegroundColor Yellow
+
+    $sevenZipRUrl     = "https://github.com/ip7z/7zip/releases/download/26.05/7zr.exe"
+    $sevenZipR        = "$workDir\_7zr.exe"
+    $sevenZipExtraUrl = "https://www.7-zip.org/a/7z2301-extra.7z"
+    $sevenZipExtra    = "$workDir\_7zextra.7z"
+    $sevenZipInstUrl  = "https://www.7-zip.org/a/7z2301-x64.exe"
+    $sevenZipInst     = "$workDir\_7zinst.exe"
+
+    (New-Object System.Net.WebClient).DownloadFile($sevenZipRUrl, $sevenZipR)
+    (New-Object System.Net.WebClient).DownloadFile($sevenZipExtraUrl, $sevenZipExtra)
+    & $sevenZipR x $sevenZipExtra -o"$workDir\_7zextra" -y | Out-Null
+    (New-Object System.Net.WebClient).DownloadFile($sevenZipInstUrl, $sevenZipInst)
+    & "$workDir\_7zextra\7za.exe" x $sevenZipInst -o"$workDir\_7zsrc" -y | Out-Null
+    Copy-Item "$workDir\_7zsrc\7z.exe" $sevenZipExe -Force
+    Copy-Item "$workDir\_7zsrc\7z.dll" $sevenZipDll -Force
+    Remove-Item $sevenZipInst  -Force -ErrorAction SilentlyContinue
+    Remove-Item $sevenZipExtra -Force -ErrorAction SilentlyContinue
+    Remove-Item "$workDir\_7zextra" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item "$workDir\_7zsrc"   -Recurse -Force -ErrorAction SilentlyContinue
+
+    Write-Host "7-Zip ready." -ForegroundColor Green
 }
 
-# Download & install QEMU (silent, no admin)
-if (Test-Path .\qemu\qemu-system-x86_64.exe) {
-    Write-Host "QEMU Exists" -ForegroundColor Green
-    # Clear RUNASINVOKER so QEMU processes are not affected by it
-    $env:__COMPAT_LAYER = ""
-} else {
-    Write-Host "Downloading QEMU" -ForegroundColor Yellow
-    Download-File $qemuUrl "$workDir\qemu-w64-setup.exe"
-    Start-Process -FilePath "$workDir\qemu-w64-setup.exe" -ArgumentList "/S", "/D=$workDir\qemu\" -Wait -NoNewWindow
-    # Clear RUNASINVOKER so QEMU processes are not affected by it
-    $env:__COMPAT_LAYER = ""
+# Extracts QEMU from its NSIS setup EXE using 7-Zip. No installer execution, no admin.
+function Install-QEMU {
+    if (Test-Path "$workDir\qemu\qemu-system-x86_64.exe") {
+        Write-Host "QEMU exists." -ForegroundColor Green
+        return
+    }
+
+    Write-Host "Downloading QEMU setup EXE..." -ForegroundColor Yellow
+    $qemuSetup = "$workDir\qemu-w64-setup.exe"
+    Download-File $qemuUrl $qemuSetup
+
+    Install-7Zip
+    $sevenZipExe = "$workDir\7z.exe"
+
+    Write-Host "Extracting QEMU from setup EXE using 7-Zip..." -ForegroundColor Yellow
+    New-Item -ItemType Directory -Path "$workDir\qemu" -Force | Out-Null
+    & $sevenZipExe x $qemuSetup -o"$workDir\qemu" -y | Out-Null
+
+    if (Test-Path "$workDir\qemu\qemu-system-x86_64.exe") {
+        Write-Host "QEMU extracted successfully." -ForegroundColor Green
+        Remove-Item $qemuSetup -Force -ErrorAction SilentlyContinue
+    } else {
+        Write-Host "ERROR: QEMU extraction failed - qemu-system-x86_64.exe not found." -ForegroundColor Red
+        exit 1
+    }
 }
 
+# Detects the best available QEMU accelerator; sets $Global:bestAccel.
 function CheckAccel {
-    # Auto-detect the best available accelerator; fall back to TCG.
     $Global:bestAccel = "tcg"
-    if (Test-Path ".\qemu\qemu-system-x86_64w.exe") {
-        # The -accel help output goes to stderr, so capture both streams into a
-        # variable; matching against the captured text is far more reliable than
-        # matching the raw stderr stream objects.
-        $accelOut = "$workDir\_accel_help.txt"
-        $accelTest = (& ".\qemu\qemu-system-x86_64w.exe" -accel help 2>&1 | Out-String)
-        if ($accelTest -like "*whpx*") { $Global:bestAccel = "whpx" }
-        elseif ($accelTest -like "*hax*") { $Global:bestAccel = "hax" }
-        elseif ($accelTest -like "*hvf*")  { $Global:bestAccel = "hvf" }
-        $accelTest | Out-File -FilePath $accelOut -Encoding ASCII
-        Remove-Item $accelOut -Force -ErrorAction SilentlyContinue
+    if (Test-Path "$workDir\qemu\qemu-system-x86_64w.exe") {
+        $accelTest = (& "$workDir\qemu\qemu-system-x86_64w.exe" -accel help 2>&1 | Out-String)
+        if ($accelTest -like "*whpx*")     { $Global:bestAccel = "whpx" }
+        elseif ($accelTest -like "*hax*")  { $Global:bestAccel = "hax"  }
+        elseif ($accelTest -like "*hvf*")  { $Global:bestAccel = "hvf"  }
     }
     Write-Host "Using acceleration: $Global:bestAccel" -ForegroundColor Cyan
     if ($Global:bestAccel -eq "tcg") {
@@ -87,49 +120,24 @@ function CheckAccel {
     }
 }
 
-# Acquires portable 7-Zip (no admin) and extracts the Debian kernel + initrd from the ISO.
-# Idempotent: the 7-Zip binaries are cached, and the caller decides whether to call this.
+# Extracts vmlinuz and initrd.gz from the Debian ISO using 7-Zip. Idempotent.
 function Install-DebianBootFiles {
     param([string]$ISOPath = $debianIso)
 
-    # === Acquire portable 7-Zip console (no admin). Debian 12 ISOs are zstd-compressed,
-    # so we need a modern 7z.exe (7za alone cannot read zstd). Bootstrap chain:
-    #   1. 7zr.exe  -> standalone reader of .7z format (bootstrap)
-    #   2. extra.7z -> extracted with 7zr to obtain 7za.exe
-    #   3. installer exe -> extracted with 7za.exe to obtain 7z.exe + 7z.dll
-    Write-Host "Downloading portable 7-Zip console..." -ForegroundColor Yellow
-
-    $sevenZipExe   = "$workDir\7z.exe"
-    $sevenZipDll   = "$workDir\7z.dll"
-
-    if (-not (Test-Path $sevenZipExe) -or -not (Test-Path $sevenZipDll)) {
-        $sevenZipRUrl = "https://github.com/ip7z/7zip/releases/download/26.05/7zr.exe"
-        $sevenZipR    = "$workDir\_7zr.exe"
-        $sevenZipExtraUrl = "https://www.7-zip.org/a/7z2301-extra.7z"
-        $sevenZipExtra  = "$workDir\_7zextra.7z"
-        $sevenZipInstUrl = "https://www.7-zip.org/a/7z2301-x64.exe"
-        $sevenZipInst   = "$workDir\_7zinst.exe"
-
-        (New-Object System.Net.WebClient).DownloadFile($sevenZipRUrl, $sevenZipR)
-        (New-Object System.Net.WebClient).DownloadFile($sevenZipExtraUrl, $sevenZipExtra)
-        & $sevenZipR x $sevenZipExtra -o"$workDir\_7zextra" -y | Out-Null
-        (New-Object System.Net.WebClient).DownloadFile($sevenZipInstUrl, $sevenZipInst)
-        & "$workDir\_7zextra\7za.exe" x $sevenZipInst -o"$workDir\_7zsrc" -y | Out-Null
-        Copy-Item "$workDir\_7zsrc\7z.exe" $sevenZipExe -Force
-        Copy-Item "$workDir\_7zsrc\7z.dll" $sevenZipDll -Force
-        Remove-Item $sevenZipInst -Force
-        Remove-Item $sevenZipExtra -Force
-        Remove-Item "$workDir\_7zextra" -Recurse -Force -ErrorAction SilentlyContinue
-        Remove-Item "$workDir\_7zsrc" -Recurse -Force -ErrorAction SilentlyContinue
+    if ((Test-Path "$workDir\tftp\vmlinuz") -and (Test-Path "$workDir\tftp\initrd.gz")) {
+        Write-Host "Boot files already present, skipping extraction." -ForegroundColor Green
+        return
     }
 
-    Write-Host "Extracting vmlinuz and initrd.gz from ISO using 7-Zip..." -ForegroundColor Green
+    Install-7Zip
+    $sevenZipExe = "$workDir\7z.exe"
 
+    Write-Host "Extracting vmlinuz and initrd.gz from ISO using 7-Zip..." -ForegroundColor Green
     # Debian 12 ISO layout: install.amd\vmlinuz and install.amd\initrd.gz
     & $sevenZipExe e "$ISOPath" "install.amd\vmlinuz" "install.amd\initrd.gz" -o"$workDir\tftp" -y | Out-Null
 
     if ((Test-Path "$workDir\tftp\vmlinuz") -and (Test-Path "$workDir\tftp\initrd.gz")) {
-        Write-Host "Boot files extracted successfully with 7-Zip." -ForegroundColor Green
+        Write-Host "Boot files extracted successfully." -ForegroundColor Green
     } else {
         Write-Host "ERROR: Failed to extract boot files from ISO." -ForegroundColor Red
         exit 1
@@ -140,14 +148,12 @@ function Install-DebianVM {
     param(
         [string]$VMName = "debian-vm",
         [string]$VMSize = "200G",
-        [int]$Memory = $Global:Memory,
-        [int]$CPUs = 1,
-        [string]$ISOPath = "$Global:debianIso"
+        [int]$CPUs     = 1,
+        [string]$ISOPath = $debianIso
     )
-    # Create TFTP directory for QEMU
+
     New-Item -ItemType Directory -Path "$workDir\tftp" -Force | Out-Null
 
-    # Completely rewritten preseed content with modern practices
     $preseedContent = @"
 ### Localization and Language
 d-i debian-installer/locale string en_US.UTF-8
@@ -170,7 +176,7 @@ d-i apt-setup/contrib boolean true
 d-i apt-setup/services-select multiselect security, updates
 d-i apt-setup/security_host string security.debian.org
 
-### Account Setup - Modern approach with sudo user
+### Account Setup
 d-i passwd/root-login boolean false
 d-i passwd/make-user boolean true
 d-i passwd/user-fullname string internet
@@ -252,42 +258,40 @@ d-i hw-detect/load_firmware boolean true
 popularity-contest popularity-contest/participate boolean false
 "@
 
-    # Save preseed to TFTP directory
     $preseedContent | Out-File -FilePath "$workDir\tftp\preseed.cfg" -Encoding UTF8
 
-    # Extract kernel and initrd from ISO using 7-Zip (no admin, no Mount-DiskImage)
-    Write-Host "Extracting boot files from ISO..." -ForegroundColor Green
     Install-DebianBootFiles -ISOPath $ISOPath
 
-    # Create virtual disk
     Write-Host "Creating virtual disk ($VMSize)..." -ForegroundColor Yellow
-    & .\qemu\qemu-img.exe create -f qcow2 "$workDir\$VMName.qcow2" $VMSize
+    & "$workDir\qemu\qemu-img.exe" create -f qcow2 "$workDir\$VMName.qcow2" $VMSize
 
-    # QEMU arguments with TFTP server and network boot
     $qemuArgs = @(
-        "-name", $VMName,
-        "-m", $Global:Memory,
-        "-smp", $CPUs,
-        "-drive", "file=$workDir\$VMName.qcow2,format=qcow2,if=virtio",
-        "-cdrom", "$Global:debianIso",
-        "-netdev", "user,id=net0,tftp=$workDir\tftp,hostfwd=tcp::3388-:3389",
-        "-device", "virtio-net,netdev=net0",
-        "-kernel", "$workDir\tftp\vmlinuz",
-        "-initrd", "$workDir\tftp\initrd.gz",
-        "-append", "auto=true priority=critical url=tftp://10.0.2.2/preseed.cfg interface=auto netcfg/dhcp_timeout=60 debian-installer/allow_unauthenticated_ssl=true --- quiet",
-        "-boot", "order=dc",
+        "-name",    $VMName,
+        "-m",       $Memory,
+        "-smp",     $CPUs,
+        "-drive",   "file=$workDir\$VMName.qcow2,format=qcow2,if=virtio",
+        "-cdrom",   $ISOPath,
+        "-netdev",  "user,id=net0,tftp=$workDir\tftp,hostfwd=tcp::3388-:3389",
+        "-device",  "virtio-net,netdev=net0",
+        "-kernel",  "$workDir\tftp\vmlinuz",
+        "-initrd",  "$workDir\tftp\initrd.gz",
+        "-append",  '"auto=true priority=critical url=tftp://10.0.2.2/preseed.cfg interface=auto netcfg/dhcp_timeout=60 debian-installer/allow_unauthenticated_ssl=true quiet"',
+        "-boot",    "order=dc",
         "-machine", "pc,kernel-irqchip=off",
-        "-accel", "$Global:bestAccel"
+        "-accel",   $Global:bestAccel
     )
-    Write-Host "Starting QEMU install..." -ForegroundColor Green
-    Write-Host "ISO:   $Global:debianIso" -ForegroundColor Cyan
+
+    Write-Host "Starting Debian installer..." -ForegroundColor Green
+    Write-Host "ISO:   $ISOPath" -ForegroundColor Cyan
     Write-Host "Image: $workDir\$VMName.qcow2" -ForegroundColor Cyan
+
     $proc = Start-Process -FilePath "$workDir\qemu\qemu-system-x86_64.exe" `
                           -ArgumentList $qemuArgs `
                           -WorkingDirectory "$workDir\qemu" `
                           -RedirectStandardOutput "$workDir\qemu-install-stdout.txt" `
                           -RedirectStandardError  "$workDir\qemu-install-stderr.txt" `
                           -NoNewWindow -PassThru -Wait
+
     if ($proc.ExitCode -ne 0) {
         Write-Host "QEMU installer exited with code $($proc.ExitCode)" -ForegroundColor Red
         Write-Host "--- STDERR ---" -ForegroundColor Red
@@ -296,57 +300,78 @@ popularity-contest popularity-contest/participate boolean false
         Get-Content "$workDir\qemu-install-stdout.txt" | Write-Host -ForegroundColor Yellow
         exit 1
     }
-    Write-Host "Debian Install Complete! Run this script again to start the image!" -ForegroundColor Green
+
+    Write-Host "Debian install complete! Run this script again to start the VM." -ForegroundColor Green
     CheckAndStartQEMU
 }
 
 function StartQEMU {
     param([string]$VMName = "debian-vm")
     $qcowFile = "$workDir\$VMName.qcow2"
-    if (Test-Path $qcowFile) {
-        Write-Host "Starting existing VM: $qcowFile" -ForegroundColor Green
-        $qemuArgs = @(
-            "-name", $VMName,
-            "-m", $Memory,
-            "-drive", "file=$qcowFile,format=qcow2,if=virtio",
-            "-netdev", "user,id=net0,hostfwd=tcp::2223-:22,hostfwd=tcp::3388-:3389",
-            "-device", "virtio-net,netdev=net0",
-            "-accel", "$Global:bestAccel",
-            "-display", "sdl",
-            "-vga", "virtio"
-        )
-        Write-Host "Running: qemu-system-x86_64.exe $qemuArgs" -ForegroundColor Cyan
-        $proc = Start-Process -FilePath "$workDir\qemu\qemu-system-x86_64.exe" `
-                      -ArgumentList $qemuArgs `
-                      -WorkingDirectory "$workDir\qemu" `
-                      -RedirectStandardOutput "$workDir\qemu-start-stdout.txt" `
-                      -RedirectStandardError  "$workDir\qemu-start-stderr.txt" `
-                      -NoNewWindow -PassThru -Wait
-        if ($proc.ExitCode -ne 0) {
-            Write-Host "QEMU exited with code $($proc.ExitCode)" -ForegroundColor Red
-            Write-Host "--- STDERR ---" -ForegroundColor Red
-            Get-Content "$workDir\qemu-start-stderr.txt" | Write-Host -ForegroundColor Red
-            Write-Host "--- STDOUT ---" -ForegroundColor Yellow
-            Get-Content "$workDir\qemu-start-stdout.txt" | Write-Host -ForegroundColor Yellow
-        }
-    } else {
-        Write-Host "No VM found at $qcowFile. Run the script again to install." -ForegroundColor Red
+    if (-not (Test-Path $qcowFile)) {
+        Write-Host "No VM image found at $qcowFile. Run the script again to install." -ForegroundColor Red
+        return
+    }
+
+    Write-Host "Starting existing VM: $qcowFile" -ForegroundColor Green
+
+    $qemuArgs = @(
+        "-name",   $VMName,
+        "-m",      $Memory,
+        "-drive",  "file=$qcowFile,format=qcow2,if=virtio",
+        "-netdev", "user,id=net0,hostfwd=tcp::2223-:22,hostfwd=tcp::3388-:3389",
+        "-device", "virtio-net,netdev=net0",
+        "-accel",  $Global:bestAccel,
+        "-display","sdl",
+        "-vga",    "virtio"
+    )
+
+    Write-Host "Running: qemu-system-x86_64.exe $qemuArgs" -ForegroundColor Cyan
+
+    $proc = Start-Process -FilePath "$workDir\qemu\qemu-system-x86_64.exe" `
+                          -ArgumentList $qemuArgs `
+                          -WorkingDirectory "$workDir\qemu" `
+                          -RedirectStandardOutput "$workDir\qemu-start-stdout.txt" `
+                          -RedirectStandardError  "$workDir\qemu-start-stderr.txt" `
+                          -NoNewWindow -PassThru -Wait
+
+    if ($proc.ExitCode -ne 0) {
+        Write-Host "QEMU exited with code $($proc.ExitCode)" -ForegroundColor Red
+        Write-Host "--- STDERR ---" -ForegroundColor Red
+        Get-Content "$workDir\qemu-start-stderr.txt" | Write-Host -ForegroundColor Red
+        Write-Host "--- STDOUT ---" -ForegroundColor Yellow
+        Get-Content "$workDir\qemu-start-stdout.txt" | Write-Host -ForegroundColor Yellow
     }
 }
 
-
 function CheckAndStartQEMU {
-    $qcowFiles = Get-ChildItem -Path "." -Filter "*.qcow2"
+    $qcowFiles = Get-ChildItem -Path $workDir -Filter "*.qcow2"
     if ($qcowFiles.Count -gt 0) {
         Write-Host "Existing VM found. Starting..." -ForegroundColor Green
         StartQEMU
     } else {
-        Write-Host "No VM found. Installing new Debian VM..." -ForegroundColor Yellow
+        Write-Host "No VM found. Installing Debian..." -ForegroundColor Yellow
         Install-DebianVM
     }
 }
 
-# === Main ===
-CheckAccel
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
 
+# Download Debian ISO
+if (Test-Path $debianIso) {
+    Write-Host "Debian ISO exists." -ForegroundColor Green
+} else {
+    Write-Host "Downloading Debian ISO..." -ForegroundColor Yellow
+    Download-File $debianUrl $debianIso
+}
+
+# Extract QEMU from its setup EXE using 7-Zip (no admin, no installer execution)
+Install-QEMU
+
+# RUNASINVOKER no longer needed — QEMU must not run under it
+$env:__COMPAT_LAYER = ""
+
+CheckAccel
 CheckAndStartQEMU
