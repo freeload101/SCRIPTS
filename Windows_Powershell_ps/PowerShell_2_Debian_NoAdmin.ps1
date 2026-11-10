@@ -66,6 +66,16 @@ function CheckAccel {
         Remove-Item $accelOut -Force -ErrorAction SilentlyContinue
     }
     Write-Host "Using acceleration: $Global:bestAccel" -ForegroundColor Cyan
+    if ($Global:bestAccel -eq "tcg") {
+        Write-Host ""
+        Write-Host "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" -ForegroundColor Red
+        Write-Host "!!  WARNING: No hardware acceleration available - using TCG     !!" -ForegroundColor Red
+        Write-Host "!!  This will be EXTREMELY SLOW. Enable Hyper-V, WHPX, or HAX  !!" -ForegroundColor Red
+        Write-Host "!!  in Windows Features for dramatically better performance.    !!" -ForegroundColor Red
+        Write-Host "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" -ForegroundColor Red
+        Write-Host ""
+        Start-Sleep -Seconds 10
+    }
 }
 
 # Acquires portable 7-Zip (no admin) and extracts the Debian kernel + initrd from the ISO.
@@ -125,8 +135,7 @@ function Install-DebianVM {
         [int]$CPUs = 1,
         [string]$ISOPath = "$Global:debianIso"
     )
-	# Create TFTP directory for QEMU
-   
+    # Create TFTP directory for QEMU
     New-Item -ItemType Directory -Path "$workDir\tftp" -Force | Out-Null
 
     # Completely rewritten preseed content with modern practices
@@ -234,52 +243,38 @@ d-i hw-detect/load_firmware boolean true
 popularity-contest popularity-contest/participate boolean false
 "@
 
-
     # Save preseed to TFTP directory
- 
     $preseedContent | Out-File -FilePath "$workDir\tftp\preseed.cfg" -Encoding UTF8
 
-    # Extract kernel and initrd from ISO for network boot
+    # Extract kernel and initrd from ISO using 7-Zip (no admin, no Mount-DiskImage)
     Write-Host "Extracting boot files from ISO..." -ForegroundColor Green
+    Install-DebianBootFiles -ISOPath $ISOPath
 
-    # Mount ISO and extract boot files
-    $mountResult = Mount-DiskImage -ImagePath (Resolve-Path $ISOPath).Path -PassThru
-    $driveLetter = ($mountResult | Get-Volume).DriveLetter
+    # Create virtual disk
+    Write-Host "Creating virtual disk ($VMSize)..." -ForegroundColor Yellow
+    & .\qemu\qemu-img.exe create -f qcow2 "$workDir\$VMName.qcow2" $VMSize
 
-    if ($driveLetter) {
-        Copy-Item "${driveLetter}:\install.amd\vmlinuz" "$workDir\tftp\vmlinuz" -Force
-        Copy-Item "${driveLetter}:\install.amd\initrd.gz" "$workDir\tftp\initrd.gz" -Force
-        Dismount-DiskImage -ImagePath (Resolve-Path $ISOPath).Path
-
-        # Create virtual disk
-        Write-Host "Creating virtual disk ($VMSize)..." -ForegroundColor Yellow
-        & .\qemu\qemu-img.exe create -f qcow2 "$workDir\$VMName.qcow2" $VMSize
-
-        # QEMU arguments with TFTP server and network boot                    
- 
-        $qemuArgs = @(
-            "-name", $VMName,
-            "-m", $Global:Memory,
-            "-smp", $CPUs,
-            "-drive", "`"file=$workDir\$VMName.qcow2,format=qcow2,if=virtio`"",
-            "-cdrom", "`"$Global:debianIso`"",
-            "-netdev", "user,id=net0,tftp=..\tftp,hostfwd=tcp::3388-:3389",
-            "-device", "virtio-net,netdev=net0",
-            "-kernel", "`"$workDir\tftp\vmlinuz`"",
-            "-initrd", "`"$workDir\tftp\initrd.gz`"",
-            "-append", "`"auto=true priority=critical url=tftp://10.0.2.2/preseed.cfg interface=auto netcfg/dhcp_timeout=60 debian-installer/allow_unauthenticated_ssl=true --- quiet `" ",
-            "-boot", "order=dc",
-            "-machine", "pc,kernel-irqchip=off",
-            "-accel", "$Global:bestAccel"
-        )
-		Write-Host "Starting QEMU with qemu-system-x86_64.exe $qemuArgs" -ForegroundColor Green
-		Write-Host "Installing Debian with ISO $Global:debianIso and Image $workDir\$VMName.qcow2 " -ForegroundColor Green
-		Start-Process -FilePath ".\qemu\qemu-system-x86_64.exe" -ArgumentList $qemuArgs -WorkingDirectory ".\qemu\" -RedirectStandardOutput RedirectStandardOutput.txt -RedirectStandardError RedirectStandardError.txt -NoNewWindow -wait
-		Write-Host "Debian Install Complete! Run this script again to start the image!" -ForegroundColor Green
-		CheckAndStartQEMU
-    } else {
-        Write-Error "Failed to mount ISO file"
-    }
+    # QEMU arguments with TFTP server and network boot
+    $qemuArgs = @(
+        "-name", $VMName,
+        "-m", $Global:Memory,
+        "-smp", $CPUs,
+        "-drive", "`"file=$workDir\$VMName.qcow2,format=qcow2,if=virtio`"",
+        "-cdrom", "`"$Global:debianIso`"",
+        "-netdev", "user,id=net0,tftp=..\tftp,hostfwd=tcp::3388-:3389",
+        "-device", "virtio-net,netdev=net0",
+        "-kernel", "`"$workDir\tftp\vmlinuz`"",
+        "-initrd", "`"$workDir\tftp\initrd.gz`"",
+        "-append", "`"auto=true priority=critical url=tftp://10.0.2.2/preseed.cfg interface=auto netcfg/dhcp_timeout=60 debian-installer/allow_unauthenticated_ssl=true --- quiet `" ",
+        "-boot", "order=dc",
+        "-machine", "pc,kernel-irqchip=off",
+        "-accel", "$Global:bestAccel"
+    )
+    Write-Host "Starting QEMU with qemu-system-x86_64.exe $qemuArgs" -ForegroundColor Green
+    Write-Host "Installing Debian with ISO $Global:debianIso and Image $workDir\$VMName.qcow2 " -ForegroundColor Green
+    Start-Process -FilePath ".\qemu\qemu-system-x86_64.exe" -ArgumentList $qemuArgs -WorkingDirectory ".\qemu\" -RedirectStandardOutput RedirectStandardOutput.txt -RedirectStandardError RedirectStandardError.txt -NoNewWindow -wait
+    Write-Host "Debian Install Complete! Run this script again to start the image!" -ForegroundColor Green
+    CheckAndStartQEMU
 }
 
 function StartQEMU {
