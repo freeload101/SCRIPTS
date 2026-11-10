@@ -1,5 +1,11 @@
 # PowerShell Debian NoAdmin - Pure PowerShell + portable 7-Zip
 # UltraVNC deployed from the UltraVNC_1830.zip package (no installer, no admin).
+
+# Prevent UAC elevation prompts when running the QEMU installer (scoped to installer only)
+# This is set globally so it is in effect before Start-Process is first called.
+# QEMU itself does not need this and we clear it after the installer runs.
+$env:__COMPAT_LAYER = "RUNASINVOKER"
+
 $workDir = Get-Location
 New-Item -ItemType Directory -Path $workDir -Force | Out-Null
 Set-Location $workDir
@@ -43,11 +49,14 @@ if (Test-Path $debianIso) {
 # Download & install QEMU (silent, no admin)
 if (Test-Path .\qemu\qemu-system-x86_64.exe) {
     Write-Host "QEMU Exists" -ForegroundColor Green
+    # Clear RUNASINVOKER so QEMU processes are not affected by it
+    $env:__COMPAT_LAYER = ""
 } else {
     Write-Host "Downloading QEMU" -ForegroundColor Yellow
     Download-File $qemuUrl "$workDir\qemu-w64-setup.exe"
-    $env:__COMPAT_LAYER = "RUNASINVOKER"
     Start-Process -FilePath "$workDir\qemu-w64-setup.exe" -ArgumentList "/S", "/D=$workDir\qemu\" -Wait -NoNewWindow
+    # Clear RUNASINVOKER so QEMU processes are not affected by it
+    $env:__COMPAT_LAYER = ""
 }
 
 function CheckAccel {
@@ -259,20 +268,34 @@ popularity-contest popularity-contest/participate boolean false
         "-name", $VMName,
         "-m", $Global:Memory,
         "-smp", $CPUs,
-        "-drive", "`"file=$workDir\$VMName.qcow2,format=qcow2,if=virtio`"",
-        "-cdrom", "`"$Global:debianIso`"",
-        "-netdev", "user,id=net0,tftp=..\tftp,hostfwd=tcp::3388-:3389",
+        "-drive", "file=$workDir\$VMName.qcow2,format=qcow2,if=virtio",
+        "-cdrom", "$Global:debianIso",
+        "-netdev", "user,id=net0,tftp=$workDir\tftp,hostfwd=tcp::3388-:3389",
         "-device", "virtio-net,netdev=net0",
-        "-kernel", "`"$workDir\tftp\vmlinuz`"",
-        "-initrd", "`"$workDir\tftp\initrd.gz`"",
-        "-append", "`"auto=true priority=critical url=tftp://10.0.2.2/preseed.cfg interface=auto netcfg/dhcp_timeout=60 debian-installer/allow_unauthenticated_ssl=true --- quiet `" ",
+        "-kernel", "$workDir\tftp\vmlinuz",
+        "-initrd", "$workDir\tftp\initrd.gz",
+        "-append", "auto=true priority=critical url=tftp://10.0.2.2/preseed.cfg interface=auto netcfg/dhcp_timeout=60 debian-installer/allow_unauthenticated_ssl=true --- quiet",
         "-boot", "order=dc",
         "-machine", "pc,kernel-irqchip=off",
         "-accel", "$Global:bestAccel"
     )
-    Write-Host "Starting QEMU with qemu-system-x86_64.exe $qemuArgs" -ForegroundColor Green
-    Write-Host "Installing Debian with ISO $Global:debianIso and Image $workDir\$VMName.qcow2 " -ForegroundColor Green
-    Start-Process -FilePath ".\qemu\qemu-system-x86_64.exe" -ArgumentList $qemuArgs -WorkingDirectory ".\qemu\" -RedirectStandardOutput RedirectStandardOutput.txt -RedirectStandardError RedirectStandardError.txt -NoNewWindow -wait
+    Write-Host "Starting QEMU install..." -ForegroundColor Green
+    Write-Host "ISO:   $Global:debianIso" -ForegroundColor Cyan
+    Write-Host "Image: $workDir\$VMName.qcow2" -ForegroundColor Cyan
+    $proc = Start-Process -FilePath "$workDir\qemu\qemu-system-x86_64.exe" `
+                          -ArgumentList $qemuArgs `
+                          -WorkingDirectory "$workDir\qemu" `
+                          -RedirectStandardOutput "$workDir\qemu-install-stdout.txt" `
+                          -RedirectStandardError  "$workDir\qemu-install-stderr.txt" `
+                          -NoNewWindow -PassThru -Wait
+    if ($proc.ExitCode -ne 0) {
+        Write-Host "QEMU installer exited with code $($proc.ExitCode)" -ForegroundColor Red
+        Write-Host "--- STDERR ---" -ForegroundColor Red
+        Get-Content "$workDir\qemu-install-stderr.txt" | Write-Host -ForegroundColor Red
+        Write-Host "--- STDOUT ---" -ForegroundColor Yellow
+        Get-Content "$workDir\qemu-install-stdout.txt" | Write-Host -ForegroundColor Yellow
+        exit 1
+    }
     Write-Host "Debian Install Complete! Run this script again to start the image!" -ForegroundColor Green
     CheckAndStartQEMU
 }
@@ -281,22 +304,33 @@ function StartQEMU {
     param([string]$VMName = "debian-vm")
     $qcowFile = "$workDir\$VMName.qcow2"
     if (Test-Path $qcowFile) {
-        Write-Host "Starting existing VM..." -ForegroundColor Green
+        Write-Host "Starting existing VM: $qcowFile" -ForegroundColor Green
         $qemuArgs = @(
             "-name", $VMName,
             "-m", $Memory,
-            "-drive", "`"file=$qcowFile,format=qcow2,if=virtio`"",
-            "-netdev", "user,id=net0,hostfwd=tcp::2222-:22",
+            "-drive", "file=$qcowFile,format=qcow2,if=virtio",
+            "-netdev", "user,id=net0,hostfwd=tcp::2223-:22,hostfwd=tcp::3388-:3389",
             "-device", "virtio-net,netdev=net0",
             "-accel", "$Global:bestAccel",
-            "-display", "gtk",
-            "-L", "$workDir\qemu"
+            "-display", "sdl",
+            "-vga", "virtio"
         )
-        Start-Process -FilePath ".\qemu\qemu-system-x86_64.exe" `
+        Write-Host "Running: qemu-system-x86_64.exe $qemuArgs" -ForegroundColor Cyan
+        $proc = Start-Process -FilePath "$workDir\qemu\qemu-system-x86_64.exe" `
                       -ArgumentList $qemuArgs `
-                      -WorkingDirectory ".\qemu\" 
+                      -WorkingDirectory "$workDir\qemu" `
+                      -RedirectStandardOutput "$workDir\qemu-start-stdout.txt" `
+                      -RedirectStandardError  "$workDir\qemu-start-stderr.txt" `
+                      -NoNewWindow -PassThru -Wait
+        if ($proc.ExitCode -ne 0) {
+            Write-Host "QEMU exited with code $($proc.ExitCode)" -ForegroundColor Red
+            Write-Host "--- STDERR ---" -ForegroundColor Red
+            Get-Content "$workDir\qemu-start-stderr.txt" | Write-Host -ForegroundColor Red
+            Write-Host "--- STDOUT ---" -ForegroundColor Yellow
+            Get-Content "$workDir\qemu-start-stdout.txt" | Write-Host -ForegroundColor Yellow
+        }
     } else {
-        Write-Host "No VM found. Run the script again to install." -ForegroundColor Red
+        Write-Host "No VM found at $qcowFile. Run the script again to install." -ForegroundColor Red
     }
 }
 
