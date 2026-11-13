@@ -193,6 +193,42 @@ CapsLock & e::
 ; STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP STARTUP 
 ; SetTimer AntiIdleUnknown, 65000, 0
 
+
+
+; Global array to keep track of hidden window IDs
+global HiddenWindows := []
+
+; Alt + Left Click: Hide the window under the mouse cursor
+~Alt & LButton:: {
+    try {
+        ; Get the window handle (HWND) underneath the mouse cursor
+        MouseGetPos ,, &targetWin
+        if targetWin {
+            ; Verify it's a valid window and hide it
+            WinHide(targetWin)
+            ; Save its ID to our list so we can unhide it later
+            HiddenWindows.Push(targetWin)
+        }
+    }
+}
+
+; Alt + Right Click: Unhide all windows that were hidden by this script
+~Alt & RButton:: {
+    global HiddenWindows
+    
+    ; Loop through each saved window ID and show it again
+    for winID in HiddenWindows {
+        try {
+            WinShow(winID)
+        }
+    }
+    
+    ; Clear the tracking array after unhiding
+    HiddenWindows := []
+}
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;
 ;Sends F22 to anti idle
 ;;;;;;;;;;;;;;;;;;;;
